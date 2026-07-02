@@ -200,7 +200,7 @@ async function seed() {
 
   // Homepage global: only populate when empty, so re-seeding never clobbers
   // edits made in the admin. Pre-filling lets editors see the live copy.
-  const homepage = (await payload.findGlobal({ slug: 'homepage' })) as Record<string, unknown>
+  const homepage = (await payload.findGlobal({ slug: 'homepage' })) as unknown as Record<string, unknown>
   if (!homepage?.heroHeading) {
     await payload.updateGlobal({
       slug: 'homepage',

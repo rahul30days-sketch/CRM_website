@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Star } from 'lucide-react'
 import { ConsoleHero } from '@/components/console/console-hero'
 import { HeroDashboardImage } from '@/components/console/hero-dashboard-image'
+import { HeroVisuals } from '@/components/console/hero-visuals'
 import { StatStrip } from '@/components/sections/stat-strip'
 import { LogoCloud } from '@/components/sections/logo-cloud'
 import { ModuleRows } from '@/components/sections/module-rows'
@@ -63,6 +64,7 @@ export default async function HomePage() {
 
       {/* Hero — atmospheric mesh, copy rail + floating glass dashboard */}
       <section className="mesh noise relative overflow-hidden">
+        <HeroVisuals />
         <div className="shell relative z-10 pb-16 pt-16 lg:pb-24 lg:pt-24">
           <div className="mx-auto max-w-3xl text-center">
             <p className="kicker mb-5 text-sm font-bold !text-[rgb(var(--c-brand-deep))] sm:text-base">

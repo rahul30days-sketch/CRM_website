@@ -210,6 +210,7 @@ export interface SiteSettings {
   tagline: string
   logo: MediaRef
   heroDashboard: MediaRef
+  favicon: MediaRef
 }
 
 const fallbackSiteSettings: SiteSettings = {
@@ -217,6 +218,7 @@ const fallbackSiteSettings: SiteSettings = {
   tagline: 'The sales command center for Indian teams',
   logo: null,
   heroDashboard: null,
+  favicon: null,
 }
 
 function toMediaRef(m: unknown, fallbackAlt: string): MediaRef {
@@ -243,6 +245,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       tagline: settings?.tagline || fallbackSiteSettings.tagline,
       logo: toMediaRef(settings?.logo, name),
       heroDashboard: toMediaRef(settings?.heroDashboard, `${name} dashboard`),
+      favicon: toMediaRef(settings?.favicon, `${name} favicon`),
     }
   }, fallbackSiteSettings)
 }

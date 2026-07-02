@@ -60,17 +60,27 @@ export default async function PricingPage() {
               <p className="mt-1 text-sm text-fog">{plan.forWhom}</p>
 
               <div className="mt-6 border-y border-line py-5">
-                {plan.priceMonthly !== null ? (
+                {plan.priceMonthly !== null && plan.priceMonthly !== undefined ? (
                   <>
                     <p className="font-mono text-4xl font-semibold tabular-nums text-bright">
                       ₹{plan.priceMonthly}
                       <span className="text-base font-normal text-fog"> /user/mo</span>
                     </p>
-                    {plan.priceYearly !== null ? (
+                    {plan.priceYearly !== null && plan.priceYearly !== undefined ? (
                       <p className="mt-1.5 font-mono text-xs tabular-nums text-won">
                         ₹{plan.priceYearly}/user/mo billed yearly
                       </p>
                     ) : null}
+                  </>
+                ) : plan.priceYearly !== null && plan.priceYearly !== undefined ? (
+                  <>
+                    <p className="font-mono text-4xl font-semibold tabular-nums text-bright">
+                      ₹{plan.priceYearly}
+                      <span className="text-base font-normal text-fog"> /user/mo</span>
+                    </p>
+                    <p className="mt-1.5 font-mono text-xs tabular-nums text-won">
+                      billed yearly
+                    </p>
                   </>
                 ) : (
                   <p className="font-mono text-3xl font-semibold text-bright">Custom</p>

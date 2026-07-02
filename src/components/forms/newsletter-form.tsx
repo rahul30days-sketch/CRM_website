@@ -5,6 +5,7 @@ import { useActionState } from 'react'
 import { subscribeNewsletter, type FormState } from '@/lib/actions'
 import { Input } from '@/components/ui/field'
 import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 
 const initialState: FormState = { status: 'idle', message: '' }
 
@@ -35,8 +36,14 @@ export function NewsletterForm() {
           placeholder="you@company.in"
           className="max-w-56"
         />
-        <Button type="submit" size="sm" className="h-auto" disabled={pending}>
-          {pending ? 'Joining…' : 'Join'}
+        <Button type="submit" size="sm" className="h-auto inline-flex items-center justify-center" disabled={pending}>
+          {pending ? (
+            <>
+              <Spinner invert className="me-2" /> Joining…
+            </>
+          ) : (
+            'Join'
+          )}
         </Button>
       </div>
       {/* Honeypot + time trap — invisible to real users */}

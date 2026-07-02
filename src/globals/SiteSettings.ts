@@ -17,6 +17,14 @@ export const SiteSettings: GlobalConfig = {
     },
     { name: 'logo', type: 'upload', relationTo: 'media' },
     {
+      name: 'favicon',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description: 'Favicon for the website. Recommended size: 32x32px or 48x48px in PNG or SVG format.',
+      },
+    },
+    {
       name: 'heroDashboard',
       type: 'upload',
       relationTo: 'media',

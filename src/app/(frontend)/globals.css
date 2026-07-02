@@ -24,6 +24,10 @@
 
   /* Ink button (highest-contrast object on a light-blue field) */
   --btn-ink: 17 23 38; /* #111726 */
+
+  /* Standard background/foreground mappings for shadcn-like components */
+  --background: rgb(var(--c-base));
+  --foreground: rgb(var(--c-ink));
 }
 
 @layer base {

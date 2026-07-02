@@ -6,6 +6,7 @@ import { CheckCircle2 } from 'lucide-react'
 import { submitDemoRequest, type FormState } from '@/lib/actions'
 import { Field, Input, Select, Textarea } from '@/components/ui/field'
 import { Button } from '@/components/ui/button'
+import { Spinner } from '@/components/ui/spinner'
 import { modules } from '@/content/modules'
 
 const initialState: FormState = { status: 'idle', message: '' }
@@ -92,8 +93,14 @@ export function DemoForm({ source = 'demo-page' }: { source?: string }) {
         </p>
       ) : null}
 
-      <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-auto">
-        {pending ? 'Sending…' : 'Book my demo'}
+      <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-auto inline-flex items-center justify-center">
+        {pending ? (
+          <>
+            <Spinner invert className="me-2" /> Sending…
+          </>
+        ) : (
+          'Book my demo'
+        )}
       </Button>
       <p className="text-xs text-fog">
         A product specialist calls within one working day. Your details are used only to arrange

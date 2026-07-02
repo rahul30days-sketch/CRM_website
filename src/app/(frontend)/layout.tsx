@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import { Inter, Inter_Tight, JetBrains_Mono } from 'next/font/google'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
+import { RouteTransitionProvider } from '@/components/route-transition-provider'
+import { getSiteSettings } from '@/lib/cms'
 import './globals.css'
 
 // Display: bold, slightly geometric, tight tracking on large sizes.
@@ -29,20 +31,30 @@ const mono = JetBrains_Mono({
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: 'EZCRM — The sales command center for Indian teams',
-    template: '%s · EZCRM',
-  },
-  description:
-    'Leads, WhatsApp, quotations and pipelines on one screen. EZCRM pulls enquiries from IndiaMART, JustDial and Facebook, routes them in seconds, and shows you the numbers all day.',
-  openGraph: {
-    type: 'website',
-    siteName: 'EZCRM',
-    locale: 'en_IN',
-  },
-  robots: { index: true, follow: true },
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings()
+  const faviconUrl = settings.favicon?.url || '/icon.svg'
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: `${settings.siteName} — ${settings.tagline}`,
+      template: `%s · ${settings.siteName}`,
+    },
+    description:
+      'Leads, WhatsApp, quotations and pipelines on one screen. EZCRM pulls enquiries from IndiaMART, JustDial and Facebook, routes them in seconds, and shows you the numbers all day.',
+    icons: {
+      icon: faviconUrl,
+      shortcut: faviconUrl,
+      apple: faviconUrl,
+    },
+    openGraph: {
+      type: 'website',
+      siteName: settings.siteName,
+      locale: 'en_IN',
+    },
+    robots: { index: true, follow: true },
+  }
 }
 
 export const viewport: Viewport = {
@@ -53,17 +65,19 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
       <body className="flex min-h-screen flex-col">
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-chip focus:bg-brand focus:px-4 focus:py-2 focus:font-mono focus:text-sm focus:text-white"
-        >
-          Skip to content
-        </a>
-        <Header />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <Footer />
+        <RouteTransitionProvider>
+          <a
+            href="#main"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-chip focus:bg-brand focus:px-4 focus:py-2 focus:font-mono focus:text-sm focus:text-white"
+          >
+            Skip to content
+          </a>
+          <Header />
+          <main id="main" className="flex-1">
+            {children}
+          </main>
+          <Footer />
+        </RouteTransitionProvider>
       </body>
     </html>
   )

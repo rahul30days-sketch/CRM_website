@@ -1235,6 +1235,10 @@ export interface SiteSetting {
   tagline?: string | null;
   logo?: (string | null) | Media;
   /**
+   * Favicon for the website. Recommended size: 32x32px or 48x48px in PNG or SVG format.
+   */
+  favicon?: (string | null) | Media;
+  /**
    * Homepage hero image — a screenshot of your live dashboard. When set, it replaces the built-in animated demo. Use a wide (e.g. 1600×1000) PNG/JPG; remember to fill the alt text.
    */
   heroDashboard?: (string | null) | Media;
@@ -1358,6 +1362,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   siteName?: T;
   tagline?: T;
   logo?: T;
+  favicon?: T;
   heroDashboard?: T;
   defaultOgImage?: T;
   social?:
