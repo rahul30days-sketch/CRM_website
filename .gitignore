@@ -1,0 +1,15 @@
+node_modules
+.next
+dist
+build
+
+# env — real secrets never enter the repo
+.env
+.env.local
+.env.*.local
+
+# payload uploads
+/media
+
+*.tsbuildinfo
+.DS_Store

@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * EZCRM — light only. One surface, powder-blue atmosphere.
+ * Tokens are RGB triplets so Tailwind alpha modifiers work.
+ */
+:root {
+  --c-base: 255 255 255; /* #FFFFFF page base */
+  --c-panel: 255 255 255; /* card fills */
+  --c-sky: 238 244 255; /* #EEF4FF soft section fill / glass interior */
+  --c-mist: 220 232 251; /* #DCE8FB gradient mid-stop */
+  --c-powder: 199 219 247; /* #C7DBF7 gradient deep-stop, edges only */
+  --c-brand: 43 92 230; /* #2B5CE6 primary blue — links, active, data */
+  --c-brand-hi: 91 132 240; /* #5B84F0 lighter brand, gradient partner */
+  --c-brand-deep: 30 66 180; /* pressed brand */
+  --c-ink: 15 26 51; /* #0F1A33 headlines, near-black */
+  --c-slate: 84 96 122; /* #54607A body text */
+  --c-line: 226 233 245; /* #E2E9F5 hairlines, borders */
+  --c-won: 16 138 74; /* #108A4A deal won / positive */
+  --c-info: 43 92 230; /* brand blue for info */
+  --c-due: 208 74 60; /* #D04A3C overdue / attention */
+
+  /* Ink button (highest-contrast object on a light-blue field) */
+  --btn-ink: 17 23 38; /* #111726 */
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-base text-ink font-sans antialiased;
+  }
+
+  ::selection {
+    @apply bg-brand text-white;
+  }
+
+  /* Visible keyboard focus — brand-blue ring */
+  :focus-visible {
+    outline: 2px solid rgb(var(--c-brand));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .tabular,
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  .shell {
+    @apply mx-auto w-full max-w-shell px-5 sm:px-8;
+  }
+
+  /* Soft white card with a layered, blue-tinted shadow. */
+  .panel-frame {
+    @apply rounded-card border border-line bg-white shadow-glass;
+  }
+
+  /* Translucent glass over a gradient — light-source border on top/left. */
+  .glass {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(20px) saturate(1.1);
+    -webkit-backdrop-filter: blur(20px) saturate(1.1);
+    border: 1px solid rgb(var(--c-line));
+    border-top-color: rgba(255, 255, 255, 0.85);
+    border-left-color: rgba(255, 255, 255, 0.85);
+    @apply rounded-card shadow-glass;
+  }
+
+  .kicker {
+    @apply font-mono text-[0.6875rem] font-medium uppercase tracking-[0.16em] text-brand;
+  }
+
+  /* Ink primary button */
+  .btn-ink {
+    background: rgb(var(--btn-ink));
+    @apply text-white;
+  }
+}
+
+@layer utilities {
+  /*
+   * Atmosphere: 2–3 large, low-opacity radial glows offset from each other
+   * for an organic mesh — light through a window, never a diagonal band.
+   * Center stays near-white so text is crisp; color pushes to edges/top.
+   */
+  .mesh {
+    background-color: rgb(var(--c-base));
+    background-image:
+      radial-gradient(60rem 40rem at 50% -10%, rgba(199, 219, 247, 0.85), transparent 60%),
+      radial-gradient(45rem 35rem at 12% 8%, rgba(91, 132, 240, 0.16), transparent 55%),
+      radial-gradient(50rem 38rem at 92% 4%, rgba(147, 178, 240, 0.2), transparent 55%);
+  }
+
+  .mesh-deep {
+    background-color: rgb(var(--c-sky));
+    background-image:
+      radial-gradient(60rem 44rem at 50% 120%, rgba(43, 92, 230, 0.5), transparent 60%),
+      radial-gradient(40rem 34rem at 8% 90%, rgba(91, 132, 240, 0.4), transparent 55%),
+      radial-gradient(46rem 36rem at 96% 100%, rgba(199, 219, 247, 0.9), transparent 55%);
+  }
+
+  /*
+   * Film grain over gradients — kills color banding, the #1 "flat AI
+   * gradient" tell. ~3% opacity fractal noise.
+   */
+  .noise::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* Live-events ticker — seamless loop, paused on hover. */
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-track {
+  animation: ticker-scroll 45s linear infinite;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .ticker-track {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
