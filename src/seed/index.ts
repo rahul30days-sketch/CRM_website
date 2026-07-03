@@ -247,6 +247,33 @@ async function seed() {
     })
     log('Seeded homepage content')
   }
+
+  // Demo page global: only populate when empty, so re-seeding never clobbers
+  // edits made in the admin. Pre-filling lets editors see the live copy.
+  const demoPage = (await payload.findGlobal({ slug: 'demo-page' })) as unknown as Record<string, unknown>
+  if (!demoPage?.heading) {
+    await payload.updateGlobal({
+      slug: 'demo-page',
+      data: {
+        kicker: 'Book a demo',
+        heading: 'Thirty minutes. Your leads live.',
+        lede: 'Fill this in and a product specialist — someone who can configure the system, not read a script — calls you within one working day.',
+        whatToExpect: [
+          { item: 'A 30-minute screen-share at a time you pick — no webinar, no recording of you' },
+          { item: 'We connect a sample lead source and run a lead through capture → WhatsApp → quote, live' },
+          { item: 'You bring the messy reality: Excel sheets, multiple numbers, odd processes — that’s the point' },
+          { item: 'Straight pricing at the end, and a trial tenant set up before we hang up if you want one' },
+        ],
+        preferToTalk: {
+          heading: 'Prefer to talk first?',
+          phone: '+91 98765 43210',
+          email: 'hello@ezcrm.in',
+        },
+      },
+    })
+    log('Seeded demo page content')
+  }
+
   log('Updated globals')
 
   log('Seed complete.')

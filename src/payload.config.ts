@@ -23,6 +23,7 @@ import { AuditLogs } from '@/collections/AuditLogs'
 import { SiteSettings } from '@/globals/SiteSettings'
 import { Navigation } from '@/globals/Navigation'
 import { Homepage } from '@/globals/Homepage'
+import { DemoPage } from '@/globals/DemoPage'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -56,7 +57,7 @@ export default buildConfig({
     AuditLogs,
     Users,
   ],
-  globals: [Homepage, SiteSettings, Navigation],
+  globals: [Homepage, SiteSettings, Navigation, DemoPage],
   editor: lexicalEditor(),
   i18n: {
     translations: {

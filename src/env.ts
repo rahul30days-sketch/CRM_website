@@ -20,6 +20,9 @@ const serverEnvSchema = z.object({
   SITE_URL: z.string().url().default('http://localhost:3000'),
   // Optional integrations — validated when present so a typo fails fast.
   REVALIDATION_SECRET: z.string().min(16).optional(),
+  // CRM incoming-webhook URL — demo/contact leads are forwarded here.
+  // Contains a secret token, so it is server-only (never NEXT_PUBLIC_).
+  CRM_WEBHOOK_URL: z.string().url().optional(),
   SMTP_HOST: z.string().optional(),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
@@ -31,6 +34,7 @@ const parsed = serverEnvSchema.safeParse({
   PAYLOAD_SECRET: process.env.PAYLOAD_SECRET,
   SITE_URL: process.env.SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL,
   REVALIDATION_SECRET: process.env.REVALIDATION_SECRET,
+  CRM_WEBHOOK_URL: process.env.CRM_WEBHOOK_URL,
   SMTP_HOST: process.env.SMTP_HOST,
   SMTP_USER: process.env.SMTP_USER,
   SMTP_PASS: process.env.SMTP_PASS,

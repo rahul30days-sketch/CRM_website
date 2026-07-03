@@ -85,7 +85,7 @@ export default async function SecurityPage() {
     <>
       <PageIntro
         kicker="Security & trust"
-        title="Your customer list is your business. We treat it that way."
+        title="Your customer list is your business, We treat it that way."
         lede="A CRM holds the most commercially sensitive data an SMB owns. This page explains — specifically, not in badges — how EZCRM protects it."
       />
 

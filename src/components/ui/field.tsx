@@ -2,7 +2,7 @@ import * as React from 'react'
 import { cn } from '@/lib/utils'
 
 const inputStyles =
-  'w-full rounded-chip border border-line bg-white px-3.5 py-2.5 text-sm text-ink placeholder:text-slate/50 shadow-sm transition-colors focus-visible:border-brand focus-visible:outline-none'
+  'w-full rounded-chip border border-line bg-white px-3.5 py-2.5 text-sm text-ink placeholder:text-slate/50 shadow-sm transition-all focus-visible:border-brand focus-visible:ring-4 focus-visible:ring-brand/10 focus-visible:outline-none'
 
 export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
   ({ className, ...props }, ref) => (
@@ -22,8 +22,28 @@ Textarea.displayName = 'Textarea'
 export const Select = React.forwardRef<
   HTMLSelectElement,
   React.SelectHTMLAttributes<HTMLSelectElement>
->(({ className, ...props }, ref) => (
-  <select ref={ref} className={cn(inputStyles, 'appearance-none', className)} {...props} />
+>(({ className, children, ...props }, ref) => (
+  <div className="relative w-full">
+    <select
+      ref={ref}
+      className={cn(inputStyles, 'appearance-none pr-10', className)}
+      {...props}
+    >
+      {children}
+    </select>
+    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate/50">
+      <svg
+        className="h-4 w-4"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        aria-hidden="true"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
+  </div>
 ))
 Select.displayName = 'Select'
 

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState, Suspense } from 'react'
+import React, { createContext, useContext, useEffect, useRef, useState, Suspense } from 'react'
 import { usePathname, useSearchParams, useRouter as useNextRouter } from 'next/navigation'
 import { Spinner } from '@/components/ui/spinner'
 
@@ -8,29 +8,45 @@ const TransitionContext = createContext<{
   startTransition: (href: string) => void
 } | null>(null)
 
+// Only reveal the loader if a navigation is actually slow. Prefetched/cached
+// route transitions finish in well under this, so the loader never flashes on
+// fast navigations — which is what made every click feel like it "loaded".
+const REVEAL_DELAY_MS = 180
+
 function RouteTransitionInner({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
+  const revealTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Dismiss loader when the page path or query params update
+  const clearReveal = () => {
+    if (revealTimer.current) {
+      clearTimeout(revealTimer.current)
+      revealTimer.current = null
+    }
+  }
+
+  // Route committed → cancel any pending reveal and hide the loader.
   useEffect(() => {
+    clearReveal()
     setLoading(false)
   }, [pathname, searchParams])
 
-  // Safety fallback timeout to prevent infinite loading overlays
+  // Clean up the pending timer on unmount.
+  useEffect(() => () => clearReveal(), [])
+
+  // Safety fallback so the overlay can never get stuck.
   useEffect(() => {
     if (!loading) return
-    const timer = setTimeout(() => {
-      setLoading(false)
-    }, 10000)
+    const timer = setTimeout(() => setLoading(false), 10000)
     return () => clearTimeout(timer)
   }, [loading])
 
   const startTransition = (href: string) => {
     const currentUrl = window.location.pathname + window.location.search
     if (href && href !== currentUrl && href.startsWith('/')) {
-      setLoading(true)
+      clearReveal()
+      revealTimer.current = setTimeout(() => setLoading(true), REVEAL_DELAY_MS)
     }
   }
 
@@ -73,7 +89,7 @@ function RouteTransitionInner({ children }: { children: React.ReactNode }) {
     <TransitionContext.Provider value={{ startTransition }}>
       {loading && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-white/70 backdrop-blur-[2px] transition-all duration-300"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-white/70"
           id="global-page-loader"
           role="status"
           aria-live="polite"

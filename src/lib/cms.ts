@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
@@ -27,20 +28,28 @@ import {
  * MongoDB is configured, and stays up if the database blips.
  */
 
-const CMS_TIMEOUT_MS = 6000
+// A healthy Local API + Mongo read returns in tens of ms. Cap low so a DB
+// hiccup falls back fast instead of stalling the render for seconds.
+const CMS_TIMEOUT_MS = 2000
 
 async function withFallback<T>(fetcher: () => Promise<T | null>, fallback: T): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined
   try {
     const result = await Promise.race([
       fetcher(),
-      new Promise<null>((resolve) => setTimeout(() => resolve(null), CMS_TIMEOUT_MS)),
+      new Promise<null>((resolve) => {
+        timer = setTimeout(() => resolve(null), CMS_TIMEOUT_MS)
+      }),
     ])
     return result ?? fallback
   } catch {
     return fallback
+  } finally {
+    clearTimeout(timer)
   }
 }
 
+// getPayload memoizes its own instance; this is a thin alias.
 async function payloadClient() {
   return getPayload({ config })
 }
@@ -213,11 +222,31 @@ export interface SiteSettings {
   favicon: MediaRef
 }
 
+/**
+ * Bundled default images (in /public/defaults). Used whenever the matching
+ * Site Settings upload is empty, so the header logo and hero dashboard ALWAYS
+ * render an image — never the text wordmark or the animated demo. Replace the
+ * files in public/defaults to change the defaults, or upload in the admin to
+ * override per-site.
+ */
+const DEFAULT_LOGO: MediaRef = {
+  url: '/defaults/logo.png',
+  alt: 'EZCRM',
+  width: 500,
+  height: 163,
+}
+const DEFAULT_DASHBOARD: MediaRef = {
+  url: '/defaults/dashboard.png',
+  alt: 'EZCRM dashboard',
+  width: 1599,
+  height: 766,
+}
+
 const fallbackSiteSettings: SiteSettings = {
   siteName: 'EZCRM',
   tagline: 'The sales command center for Indian teams',
-  logo: null,
-  heroDashboard: null,
+  logo: DEFAULT_LOGO,
+  heroDashboard: DEFAULT_DASHBOARD,
   favicon: null,
 }
 
@@ -234,7 +263,9 @@ function toMediaRef(m: unknown, fallbackAlt: string): MediaRef {
   return null
 }
 
-export async function getSiteSettings(): Promise<SiteSettings> {
+// cache() dedupes per server request: the layout's metadata, Header and
+// Footer all call this, so it runs once per render instead of 3×.
+export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
   return withFallback<SiteSettings>(async () => {
     const payload = await payloadClient()
     // depth: 1 populates the `logo` upload relation with its url/dimensions.
@@ -243,12 +274,12 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     return {
       siteName: name,
       tagline: settings?.tagline || fallbackSiteSettings.tagline,
-      logo: toMediaRef(settings?.logo, name),
-      heroDashboard: toMediaRef(settings?.heroDashboard, `${name} dashboard`),
+      logo: toMediaRef(settings?.logo, name) ?? DEFAULT_LOGO,
+      heroDashboard: toMediaRef(settings?.heroDashboard, `${name} dashboard`) ?? DEFAULT_DASHBOARD,
       favicon: toMediaRef(settings?.favicon, `${name} favicon`),
     }
   }, fallbackSiteSettings)
-}
+})
 
 export interface HomepageContent {
   hero: {
@@ -383,7 +414,8 @@ export async function getHomepage(): Promise<HomepageContent> {
   }, fallbackHomepage)
 }
 
-export async function getNavigation(): Promise<typeof fallbackNav> {
+// Deduped per request: called by both Header and Footer.
+export const getNavigation = cache(async (): Promise<typeof fallbackNav> => {
   return withFallback(async () => {
     const payload = await payloadClient()
     const navGlobal = (await payload.findGlobal({ slug: 'navigation' })) as AnyDoc
@@ -398,4 +430,56 @@ export async function getNavigation(): Promise<typeof fallbackNav> {
       footer: footer.length > 0 ? footer : fallbackNav.footer,
     }
   }, fallbackNav)
+})
+
+export interface DemoPageContent {
+  kicker: string
+  heading: string
+  lede: string
+  whatToExpect: string[]
+  preferToTalk: {
+    heading: string
+    phone: string
+    email: string
+  }
+}
+
+const fallbackDemoPage: DemoPageContent = {
+  kicker: 'Book a demo',
+  heading: 'Thirty minutes. Your leads live.',
+  lede: 'Fill this in and a product specialist — someone who can configure the system, not read a script — calls you within one working day.',
+  whatToExpect: [
+    'A 30-minute screen-share at a time you pick — no webinar, no recording of you',
+    'We connect a sample lead source and run a lead through capture → WhatsApp → quote, live',
+    'You bring the messy reality: Excel sheets, multiple numbers, odd processes — that’s the point',
+    'Straight pricing at the end, and a trial tenant set up before we hang up if you want one',
+  ],
+  preferToTalk: {
+    heading: 'Prefer to talk first?',
+    phone: '+91 98765 43210',
+    email: 'hello@ezcrm.in',
+  },
+}
+
+export async function getDemoPage(): Promise<DemoPageContent> {
+  return withFallback<DemoPageContent>(async () => {
+    const payload = await payloadClient()
+    const d = (await payload.findGlobal({ slug: 'demo-page', depth: 0 })) as AnyDoc
+    if (!d) return null
+    const fb = fallbackDemoPage
+    const whatToExpect = (d.whatToExpect ?? [])
+      .map((item: AnyDoc) => item.item)
+      .filter(Boolean)
+    return {
+      kicker: pick(d.kicker, fb.kicker),
+      heading: pick(d.heading, fb.heading),
+      lede: pick(d.lede, fb.lede),
+      whatToExpect: whatToExpect.length > 0 ? whatToExpect : fb.whatToExpect,
+      preferToTalk: {
+        heading: pick(d.preferToTalk?.heading, fb.preferToTalk.heading),
+        phone: pick(d.preferToTalk?.phone, fb.preferToTalk.phone),
+        email: pick(d.preferToTalk?.email, fb.preferToTalk.email),
+      },
+    }
+  }, fallbackDemoPage)
 }

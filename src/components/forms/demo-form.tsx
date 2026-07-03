@@ -93,7 +93,7 @@ export function DemoForm({ source = 'demo-page' }: { source?: string }) {
         </p>
       ) : null}
 
-      <Button type="submit" size="lg" disabled={pending} className="w-full sm:w-auto inline-flex items-center justify-center">
+      <Button type="submit" variant="brand" size="lg" disabled={pending} className="w-full sm:w-auto inline-flex items-center justify-center">
         {pending ? (
           <>
             <Spinner invert className="me-2" /> Sending…

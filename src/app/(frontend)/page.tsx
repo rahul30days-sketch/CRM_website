@@ -31,6 +31,10 @@ export default async function HomePage() {
     getHomepage(),
   ])
 
+  const kickerParts = home.hero.kicker.split('·').map((s) => s.trim())
+  const brandPart = kickerParts[0] && kickerParts[1] ? kickerParts[0] : 'EZCRM'
+  const textPart = kickerParts[1] ? kickerParts.slice(1).join(' · ') : home.hero.kicker
+
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
   const avatars = [
     { initial: 'R', bg: 'bg-brand' },
@@ -67,9 +71,38 @@ export default async function HomePage() {
         <HeroVisuals />
         <div className="shell relative z-10 pb-16 pt-16 lg:pb-24 lg:pt-24">
           <div className="mx-auto max-w-3xl text-center">
-            <p className="kicker mb-5 text-sm font-bold !text-[rgb(var(--c-brand-deep))] sm:text-base">
-              {home.hero.kicker}
-            </p>
+            <div className="mb-6 flex justify-center">
+              <Link
+                href="/features"
+                className="group relative inline-flex items-center gap-2.5 rounded-full border border-brand/20 bg-brand/[0.03] p-1.5 pr-4 text-xs font-semibold text-brand transition-all duration-300 hover:border-brand/40 hover:bg-brand/[0.06] hover:shadow-[0_0_20px_rgba(43,92,230,0.12)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+              >
+                {/* Brand Pill with subtle glow */}
+                <span className="relative flex h-6 items-center gap-1.5 rounded-full bg-gradient-to-r from-brand to-brand/80 px-2.5 text-[10px] font-extrabold uppercase tracking-[0.08em] text-white shadow-[0_2px_4px_rgba(43,92,230,0.2)]">
+                  {/* Micro pulsing active indicator */}
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-white opacity-75 animate-ping" />
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white" />
+                  </span>
+                  {brandPart}
+                </span>
+
+                {/* Kicker Text */}
+                <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate group-hover:text-brand transition-colors duration-300">
+                  {textPart}
+                </span>
+
+                {/* Dynamic Arrow Indicator */}
+                <svg
+                  className="h-3 w-3 translate-x-0 transition-transform duration-300 group-hover:translate-x-1 text-brand/70 group-hover:text-brand"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="3.5"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            </div>
             <h1 className="font-display text-4xl font-extrabold leading-[1.03] tracking-tight text-ink sm:text-5xl lg:text-[4.25rem]">
               {home.hero.heading}
             </h1>

@@ -115,11 +115,13 @@ export interface Config {
     homepage: Homepage;
     'site-settings': SiteSetting;
     navigation: Navigation;
+    'demo-page': DemoPage;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
+    'demo-page': DemoPageSelect<false> | DemoPageSelect<true>;
   };
   locale: null;
   widgets: {
@@ -1287,6 +1289,32 @@ export interface Navigation {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "demo-page".
+ */
+export interface DemoPage {
+  id: string;
+  kicker?: string | null;
+  heading?: string | null;
+  lede?: string | null;
+  /**
+   * What to expect list on the left side of the demo page.
+   */
+  whatToExpect?:
+    | {
+        item: string;
+        id?: string | null;
+      }[]
+    | null;
+  preferToTalk?: {
+    heading?: string | null;
+    phone?: string | null;
+    email?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "homepage_select".
  */
 export interface HomepageSelect<T extends boolean = true> {
@@ -1403,6 +1431,31 @@ export interface NavigationSelect<T extends boolean = true> {
               id?: T;
             };
         id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "demo-page_select".
+ */
+export interface DemoPageSelect<T extends boolean = true> {
+  kicker?: T;
+  heading?: T;
+  lede?: T;
+  whatToExpect?:
+    | T
+    | {
+        item?: T;
+        id?: T;
+      };
+  preferToTalk?:
+    | T
+    | {
+        heading?: T;
+        phone?: T;
+        email?: T;
       };
   updatedAt?: T;
   createdAt?: T;

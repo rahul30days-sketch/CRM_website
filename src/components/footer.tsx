@@ -1,18 +1,29 @@
 import Link from 'next/link'
-import { getNavigation } from '@/lib/cms'
+import { getNavigation, getSiteSettings } from '@/lib/cms'
 import { NewsletterForm } from '@/components/forms/newsletter-form'
 
 export async function Footer() {
-  const { footer } = await getNavigation()
+  const [{ footer }, settings] = await Promise.all([getNavigation(), getSiteSettings()])
   const year = new Date().getFullYear()
 
   return (
     <footer className="border-t border-line bg-sky">
       <div className="shell grid gap-10 py-16 lg:grid-cols-[1.4fr_repeat(4,1fr)]">
         <div className="space-y-4">
-          <p className="font-display text-lg font-extrabold text-ink">
-            EZ<span className="text-brand">CRM</span>
-          </p>
+          <Link href="/" aria-label={`${settings.siteName} home`} className="inline-block">
+            {settings.logo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={settings.logo.url}
+                alt={settings.logo.alt}
+                className="h-10 w-auto max-w-[200px] object-contain"
+              />
+            ) : (
+              <span className="font-display text-lg font-extrabold text-ink">
+                EZ<span className="text-brand">CRM</span>
+              </span>
+            )}
+          </Link>
           <p className="max-w-xs text-sm leading-relaxed text-fog">
             The sales command center for Indian teams — leads, WhatsApp, quotations and pipelines
             on one screen.

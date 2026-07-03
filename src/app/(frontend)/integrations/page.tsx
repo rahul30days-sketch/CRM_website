@@ -27,7 +27,7 @@ export default async function IntegrationsPage() {
     <>
       <PageIntro
         kicker="Integrations"
-        title="Your leads are already somewhere. We go get them."
+        title="Your leads are already somewhere we go get them."
         lede="Every connector below is one-click or one-key setup — no agency required. Multiple accounts per platform are supported, so three Facebook pages or two IndiaMART subscriptions are fine."
       />
 

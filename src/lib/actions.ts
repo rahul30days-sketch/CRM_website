@@ -56,6 +56,52 @@ async function verifyOrigin(): Promise<boolean> {
   return check(origin) || check(referer)
 }
 
+/**
+ * Forward a captured lead to the external CRM incoming-webhook, best-effort.
+ * Runs server-side (CSP doesn't apply), after the lead is already saved in
+ * Payload — so a slow or failing webhook never loses the lead or blocks the
+ * user's form. Bounded by a 6s timeout; failures are logged, never thrown.
+ */
+async function forwardToCrm(lead: {
+  name: string
+  workEmail: string
+  phone: string
+  company: string
+  companySize?: string
+  interest?: string
+  message?: string
+  source?: string
+}): Promise<void> {
+  if (!env.CRM_WEBHOOK_URL) return
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 6000)
+  try {
+    const res = await fetch(env.CRM_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        name: lead.name,
+        email: lead.workEmail,
+        phone: lead.phone,
+        company: lead.company,
+        company_size: lead.companySize,
+        module_interest: lead.interest,
+        message: lead.message,
+        source: lead.source || 'ezcrm-website',
+        submitted_at: new Date().toISOString(),
+      }),
+    })
+    if (!res.ok) {
+      console.error(`CRM webhook responded ${res.status} for ${lead.workEmail}`)
+    }
+  } catch (error) {
+    console.error('CRM webhook forward failed:', error)
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+
 function botChecks(formData: FormData): boolean {
   // Honeypot: real users never see or fill "website".
   if (String(formData.get('website') ?? '') !== '') return false
@@ -146,6 +192,10 @@ export async function submitDemoRequest(_prev: FormState, formData: FormData): P
         status: 'new',
       },
     })
+
+    // Push the lead to the external CRM. Awaited (bounded) so serverless
+    // functions don't get frozen before it completes, but never fatal.
+    await forwardToCrm({ ...data, interest })
 
     return {
       status: 'success',

@@ -102,8 +102,17 @@ export function HeaderNav({ items, brand }: { items: NavItem[]; brand: React.Rea
                 </Link>
               </li>
             ))}
-            <li className="pt-2">
-              <Link href="/demo" className={cn(buttonVariants(), 'w-full')}>
+             <li className="grid grid-cols-2 gap-2 pt-2">
+              <a
+                href="https://premium.ezcrm.in/login"
+                className={cn(buttonVariants({ variant: 'secondary' }), 'w-full text-center')}
+              >
+                Log in
+              </a>
+              <Link
+                href="/demo"
+                className={cn(buttonVariants(), 'w-full text-center')}
+              >
                 Get started
               </Link>
             </li>
