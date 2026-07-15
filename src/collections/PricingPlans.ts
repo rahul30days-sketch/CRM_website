@@ -2,12 +2,17 @@ import type { CollectionConfig } from 'payload'
 import { isLoggedIn, isAdmin } from '@/access'
 import { auditAfterChange, auditAfterDelete } from '@/hooks/audit'
 
+/**
+ * Billing plans, mirroring the live EZCRM plans (product Admin → Plans).
+ * Pricing is flat per plan (not per seat). Quotas are label/value pairs so a
+ * new quota can be added here without a schema change.
+ */
 export const PricingPlans: CollectionConfig = {
   slug: 'pricing-plans',
   admin: {
     useAsTitle: 'name',
     group: 'Content',
-    defaultColumns: ['name', 'priceMonthly', 'mostPopular', 'order'],
+    defaultColumns: ['name', 'priceMonthly', 'priceYearly', 'mostPopular', 'order'],
   },
   access: {
     read: isLoggedIn,
@@ -20,25 +25,50 @@ export const PricingPlans: CollectionConfig = {
     afterDelete: [auditAfterDelete],
   },
   fields: [
-    { name: 'name', type: 'text', required: true },
-    { name: 'forWhom', type: 'text', required: true, admin: { description: 'e.g. “For a 3-person sales desk”' } },
+    { name: 'name', type: 'text', required: true, admin: { description: 'e.g. “Pro”' } },
+    {
+      name: 'forWhom',
+      type: 'text',
+      required: true,
+      admin: { description: 'e.g. “Full-featured CRM for professional teams”' },
+    },
     {
       name: 'priceMonthly',
       type: 'number',
-      admin: { description: 'Per user per month, in ₹. Leave empty for “Talk to us”.' },
+      admin: { description: 'Flat ₹ per month. Use 0 for a Free plan; leave empty for “Custom”.' },
+    },
+    {
+      name: 'priceQuarterly',
+      type: 'number',
+      admin: { description: 'Flat ₹ billed quarterly (optional).' },
     },
     {
       name: 'priceYearly',
       type: 'number',
-      admin: { description: 'Per user per month when billed yearly, in ₹.' },
+      admin: { description: 'Flat ₹ billed yearly — the annual total (optional).' },
+    },
+    {
+      name: 'trialText',
+      type: 'text',
+      admin: { description: 'e.g. “30-day free trial”. Leave empty to hide.' },
+    },
+    {
+      name: 'limits',
+      type: 'array',
+      label: 'Plan limits / quotas',
+      admin: { description: 'Shown as a list on the card, e.g. Users → 5, Storage → 5 GB.' },
+      fields: [
+        { name: 'label', type: 'text', required: true },
+        { name: 'value', type: 'text', required: true },
+      ],
     },
     {
       name: 'features',
       type: 'array',
-      required: true,
+      label: 'Extra feature bullets (optional)',
       fields: [{ name: 'feature', type: 'text', required: true }],
     },
-    { name: 'limitsNote', type: 'text', admin: { description: 'e.g. “Up to 25,000 contacts”' } },
+    { name: 'limitsNote', type: 'text', admin: { description: 'Small print under the price.' } },
     {
       name: 'cta',
       type: 'group',

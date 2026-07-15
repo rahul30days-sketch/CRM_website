@@ -10,6 +10,7 @@ export const nav = {
     { label: 'Features', href: '/features' },
     { label: 'Integrations', href: '/integrations' },
     { label: 'Pricing', href: '/pricing' },
+    { label: 'Compare', href: '/vs' },
     { label: 'Customers', href: '/customers' },
     { label: 'Security', href: '/security' },
     { label: 'Blog', href: '/blog' },
@@ -129,68 +130,120 @@ export const integrations: IntegrationContent[] = [
   },
 ]
 
+/**
+ * Plans mirror the live EZCRM billing plans (Admin → Plans). Pricing is flat
+ * per plan (not per seat), with quotas listed as label/value pairs so a new
+ * quota can be added from the CMS without a schema change.
+ */
 export interface PricingPlanContent {
   name: string
   forWhom: string
   priceMonthly: number | null
+  priceQuarterly: number | null
   priceYearly: number | null
+  trialText: string
+  limits: { label: string; value: string }[]
   features: string[]
   limitsNote: string
   cta: { label: string; href: string }
   mostPopular: boolean
 }
 
+export interface PricingAddonContent {
+  name: string
+  price: number
+  unit: string
+}
+
+export const pricingAddons: PricingAddonContent[] = [
+  { name: 'Additional User', price: 999, unit: '/user/month' },
+  { name: 'Additional Storage', price: 299, unit: '/GB/month' },
+  { name: 'Additional Contacts', price: 999, unit: '/1000 contacts' },
+]
+
 export const pricingPlans: PricingPlanContent[] = [
   {
-    name: 'Desk',
-    forWhom: 'For a small sales desk getting off spreadsheets',
-    priceMonthly: 599,
-    priceYearly: 499,
-    features: [
-      'Leads, contacts, deals & one pipeline',
-      'Dashboard with live KPIs',
-      'Activities, calendar & reminders',
-      'Bulk XLSX import/export',
-      'Email support',
+    name: 'Free',
+    forWhom: 'Get started with basic CRM features',
+    priceMonthly: 0,
+    priceQuarterly: null,
+    priceYearly: null,
+    trialText: '30-day free trial',
+    limits: [
+      { label: 'Admins', value: '1' },
+      { label: 'Users', value: '5' },
+      { label: 'Contacts', value: '500' },
+      { label: 'Storage', value: '512 MB' },
+      { label: 'SMTP', value: '1' },
+      { label: 'WhatsApp', value: '0' },
+      { label: 'SMS', value: '0' },
     ],
-    limitsNote: 'Up to 5 users · 10,000 contacts',
+    features: [],
+    limitsNote: 'Free forever · 30-day full-feature trial',
+    cta: { label: 'Start free', href: '/demo' },
+    mostPopular: false,
+  },
+  {
+    name: 'Starter',
+    forWhom: 'For growing teams with advanced features',
+    priceMonthly: 1667,
+    priceQuarterly: 5000,
+    priceYearly: 15000,
+    trialText: '',
+    limits: [
+      { label: 'Admins', value: '1' },
+      { label: 'Users', value: '1' },
+      { label: 'Contacts', value: '2,000' },
+      { label: 'Storage', value: '1 GB' },
+      { label: 'SMTP', value: '1' },
+      { label: 'WhatsApp', value: '1' },
+      { label: 'SMS', value: '1' },
+    ],
+    features: [],
+    limitsNote: '₹5,000 billed quarterly',
     cta: { label: 'Start free trial', href: '/demo' },
     mostPopular: false,
   },
   {
-    name: 'Floor',
-    forWhom: 'For teams running multi-channel follow-up',
-    priceMonthly: 1199,
-    priceYearly: 999,
-    features: [
-      'Everything in Desk',
-      'WhatsApp Business inbox (official API)',
-      'Email & SMS campaigns with DLT templates',
-      'Lead Integration Hub: Facebook, IndiaMART, JustDial',
-      'Quotations with product catalog & GST',
-      'Funnels & automations',
-      'Round-robin routing',
+    name: 'Pro',
+    forWhom: 'Full-featured CRM for professional teams',
+    priceMonthly: 3334,
+    priceQuarterly: 10000,
+    priceYearly: 30000,
+    trialText: '',
+    limits: [
+      { label: 'Admins', value: '1' },
+      { label: 'Users', value: '5' },
+      { label: 'Contacts', value: '5,000' },
+      { label: 'Storage', value: '5 GB' },
+      { label: 'SMTP', value: '5' },
+      { label: 'WhatsApp', value: '2' },
+      { label: 'SMS', value: '2' },
     ],
-    limitsNote: 'Up to 25 users · 50,000 contacts',
+    features: [],
+    limitsNote: '₹10,000 billed quarterly',
     cta: { label: 'Start free trial', href: '/demo' },
     mostPopular: true,
   },
   {
-    name: 'Command',
-    forWhom: 'For multi-branch operations and resellers',
-    priceMonthly: null,
-    priceYearly: null,
-    features: [
-      'Everything in Floor',
-      'Multi-tenant white-label & reseller branding',
-      'Data-scoped roles across branches',
-      'AI chatbot & AI insights',
-      'Ticketing with SLA policies',
-      'REST API & custom webhooks',
-      'Priority support & onboarding',
+    name: 'Enterprise',
+    forWhom: 'Unlimited CRM for large organizations',
+    priceMonthly: 5000,
+    priceQuarterly: 15000,
+    priceYearly: 50000,
+    trialText: '',
+    limits: [
+      { label: 'Admins', value: '1' },
+      { label: 'Users', value: '10' },
+      { label: 'Contacts', value: '20,000' },
+      { label: 'Storage', value: '10 GB' },
+      { label: 'SMTP', value: '15' },
+      { label: 'WhatsApp', value: '5' },
+      { label: 'SMS', value: '5' },
     ],
-    limitsNote: 'Unlimited users · custom limits',
-    cta: { label: 'Talk to us', href: '/contact' },
+    features: [],
+    limitsNote: '₹15,000 billed quarterly',
+    cta: { label: 'Talk to sales', href: '/contact' },
     mostPopular: false,
   },
 ]

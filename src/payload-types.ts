@@ -76,6 +76,7 @@ export interface Config {
     faqs: Faq;
     'team-members': TeamMember;
     integrations: Integration;
+    comparisons: Comparison;
     media: Media;
     'demo-requests': DemoRequest;
     'newsletter-subscribers': NewsletterSubscriber;
@@ -97,6 +98,7 @@ export interface Config {
     faqs: FaqsSelect<false> | FaqsSelect<true>;
     'team-members': TeamMembersSelect<false> | TeamMembersSelect<true>;
     integrations: IntegrationsSelect<false> | IntegrationsSelect<true>;
+    comparisons: ComparisonsSelect<false> | ComparisonsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     'demo-requests': DemoRequestsSelect<false> | DemoRequestsSelect<true>;
     'newsletter-subscribers': NewsletterSubscribersSelect<false> | NewsletterSubscribersSelect<true>;
@@ -113,12 +115,14 @@ export interface Config {
   fallbackLocale: null;
   globals: {
     homepage: Homepage;
+    pricing: Pricing;
     'site-settings': SiteSetting;
     navigation: Navigation;
     'demo-page': DemoPage;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
+    pricing: PricingSelect<false> | PricingSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     navigation: NavigationSelect<false> | NavigationSelect<true>;
     'demo-page': DemoPageSelect<false> | DemoPageSelect<true>;
@@ -485,25 +489,48 @@ export interface CaseStudy {
  */
 export interface PricingPlan {
   id: string;
+  /**
+   * e.g. “Pro”
+   */
   name: string;
   /**
-   * e.g. “For a 3-person sales desk”
+   * e.g. “Full-featured CRM for professional teams”
    */
   forWhom: string;
   /**
-   * Per user per month, in ₹. Leave empty for “Talk to us”.
+   * Flat ₹ per month. Use 0 for a Free plan; leave empty for “Custom”.
    */
   priceMonthly?: number | null;
   /**
-   * Per user per month when billed yearly, in ₹.
+   * Flat ₹ billed quarterly (optional).
+   */
+  priceQuarterly?: number | null;
+  /**
+   * Flat ₹ billed yearly — the annual total (optional).
    */
   priceYearly?: number | null;
-  features: {
-    feature: string;
-    id?: string | null;
-  }[];
   /**
-   * e.g. “Up to 25,000 contacts”
+   * e.g. “30-day free trial”. Leave empty to hide.
+   */
+  trialText?: string | null;
+  /**
+   * Shown as a list on the card, e.g. Users → 5, Storage → 5 GB.
+   */
+  limits?:
+    | {
+        label: string;
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
+  features?:
+    | {
+        feature: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Small print under the price.
    */
   limitsNote?: string | null;
   cta: {
@@ -524,6 +551,76 @@ export interface Faq {
   question: string;
   answer: string;
   category: 'general' | 'pricing' | 'whatsapp' | 'security' | 'onboarding';
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "comparisons".
+ */
+export interface Comparison {
+  id: string;
+  /**
+   * e.g. “Zoho CRM”
+   */
+  competitor: string;
+  /**
+   * URL segment → /vs/<slug>. e.g. “zoho”
+   */
+  slug: string;
+  /**
+   * e.g. “EZCRM vs Zoho CRM”
+   */
+  kicker?: string | null;
+  heading: string;
+  lede: string;
+  /**
+   * One-paragraph honest positioning summary.
+   */
+  verdict?: string | null;
+  ezcrmWinsWhen?:
+    | {
+        point: string;
+        id?: string | null;
+      }[]
+    | null;
+  competitorFitsWhen?:
+    | {
+        point: string;
+        id?: string | null;
+      }[]
+    | null;
+  rows?:
+    | {
+        feature: string;
+        ezcrm: 'yes' | 'partial' | 'no';
+        competitor: 'yes' | 'partial' | 'no';
+        /**
+         * Optional caveat shown under the row.
+         */
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  differentiators?:
+    | {
+        title: string;
+        detail: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * How to switch from this competitor.
+   */
+  migration?: string | null;
+  faqs?:
+    | {
+        question: string;
+        answer: string;
+        id?: string | null;
+      }[]
+    | null;
   order?: number | null;
   updatedAt: string;
   createdAt: string;
@@ -672,6 +769,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'integrations';
         value: string | Integration;
+      } | null)
+    | ({
+        relationTo: 'comparisons';
+        value: string | Comparison;
       } | null)
     | ({
         relationTo: 'media';
@@ -940,7 +1041,16 @@ export interface PricingPlansSelect<T extends boolean = true> {
   name?: T;
   forWhom?: T;
   priceMonthly?: T;
+  priceQuarterly?: T;
   priceYearly?: T;
+  trialText?: T;
+  limits?:
+    | T
+    | {
+        label?: T;
+        value?: T;
+        id?: T;
+      };
   features?:
     | T
     | {
@@ -995,6 +1105,57 @@ export interface IntegrationsSelect<T extends boolean = true> {
   category?: T;
   description?: T;
   logo?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "comparisons_select".
+ */
+export interface ComparisonsSelect<T extends boolean = true> {
+  competitor?: T;
+  slug?: T;
+  kicker?: T;
+  heading?: T;
+  lede?: T;
+  verdict?: T;
+  ezcrmWinsWhen?:
+    | T
+    | {
+        point?: T;
+        id?: T;
+      };
+  competitorFitsWhen?:
+    | T
+    | {
+        point?: T;
+        id?: T;
+      };
+  rows?:
+    | T
+    | {
+        feature?: T;
+        ezcrm?: T;
+        competitor?: T;
+        note?: T;
+        id?: T;
+      };
+  differentiators?:
+    | T
+    | {
+        title?: T;
+        detail?: T;
+        id?: T;
+      };
+  migration?: T;
+  faqs?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
   order?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1229,6 +1390,33 @@ export interface Homepage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pricing".
+ */
+export interface Pricing {
+  id: string;
+  addonsHeading?: string | null;
+  addons?:
+    | {
+        /**
+         * e.g. “Additional User”
+         */
+        name: string;
+        /**
+         * ₹ amount, e.g. 999
+         */
+        price: number;
+        /**
+         * e.g. “/user/month”
+         */
+        unit: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-settings".
  */
 export interface SiteSetting {
@@ -1377,6 +1565,24 @@ export interface HomepageSelect<T extends boolean = true> {
     | {
         label?: T;
         href?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pricing_select".
+ */
+export interface PricingSelect<T extends boolean = true> {
+  addonsHeading?: T;
+  addons?:
+    | T
+    | {
+        name?: T;
+        price?: T;
+        unit?: T;
+        id?: T;
       };
   updatedAt?: T;
   createdAt?: T;

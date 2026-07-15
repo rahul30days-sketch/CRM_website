@@ -8,9 +8,11 @@ import {
   faqs as fallbackFaqs,
   integrations as fallbackIntegrations,
   pricingPlans as fallbackPricing,
+  pricingAddons as fallbackAddons,
   testimonials as fallbackTestimonials,
   type FaqContent,
   type IntegrationContent,
+  type PricingAddonContent,
   type PricingPlanContent,
   type TestimonialContent,
 } from '@/content/site'
@@ -20,6 +22,10 @@ import {
   type BlogPostContent,
   type CaseStudyContent,
 } from '@/content/stories'
+import {
+  comparisons as fallbackComparisons,
+  type ComparisonContent,
+} from '@/content/comparisons'
 
 /**
  * All CMS reads go through the Local API (same Node process — no network
@@ -98,23 +104,38 @@ export async function getModuleBySlug(slug: string): Promise<ModuleContent | und
   return all.find((m) => m.slug === slug)
 }
 
-export async function getPricingPlans(): Promise<PricingPlanContent[]> {
-  return withFallback(async () => {
+export const getPricingPlans = cache(async (): Promise<PricingPlanContent[]> => {
+  return withFallback<PricingPlanContent[]>(async () => {
     const payload = await payloadClient()
-    const { docs } = await payload.find({ collection: 'pricing-plans', limit: 10, sort: 'order' })
+    const { docs } = await payload.find({ collection: 'pricing-plans', limit: 20, sort: 'order' })
     if (docs.length === 0) return null
     return docs.map((doc: AnyDoc) => ({
       name: doc.name,
       forWhom: doc.forWhom ?? '',
+      // `?? null` (not `||`) so a Free plan's 0 survives.
       priceMonthly: doc.priceMonthly ?? null,
+      priceQuarterly: doc.priceQuarterly ?? null,
       priceYearly: doc.priceYearly ?? null,
+      trialText: doc.trialText ?? '',
+      limits: (doc.limits ?? []).map((l: AnyDoc) => ({ label: l.label, value: l.value })),
       features: (doc.features ?? []).map((f: AnyDoc) => f.feature),
       limitsNote: doc.limitsNote ?? '',
       cta: { label: doc.cta?.label ?? 'Start free trial', href: doc.cta?.href ?? '/demo' },
       mostPopular: Boolean(doc.mostPopular),
     }))
   }, fallbackPricing)
-}
+})
+
+export const getPricingAddons = cache(async (): Promise<PricingAddonContent[]> => {
+  return withFallback<PricingAddonContent[]>(async () => {
+    const payload = await payloadClient()
+    const doc = (await payload.findGlobal({ slug: 'pricing' })) as AnyDoc
+    const addons = (doc?.addons ?? [])
+      .map((a: AnyDoc) => ({ name: a.name, price: a.price, unit: a.unit }))
+      .filter((a: AnyDoc) => a.name && a.unit)
+    return addons.length > 0 ? addons : null
+  }, fallbackAddons)
+})
 
 export async function getTestimonials(): Promise<TestimonialContent[]> {
   return withFallback<TestimonialContent[]>(async () => {
@@ -180,6 +201,42 @@ export async function getCaseStudies(): Promise<CaseStudyContent[]> {
 
 export async function getCaseStudy(slug: string): Promise<CaseStudyContent | undefined> {
   const all = await getCaseStudies()
+  return all.find((c) => c.slug === slug)
+}
+
+export const getComparisons = cache(async (): Promise<ComparisonContent[]> => {
+  return withFallback<ComparisonContent[]>(async () => {
+    const payload = await payloadClient()
+    const { docs } = await payload.find({ collection: 'comparisons', limit: 50, sort: 'order' })
+    if (docs.length === 0) return null
+    return docs.map((doc: AnyDoc) => ({
+      slug: doc.slug,
+      competitor: doc.competitor,
+      kicker: doc.kicker || `EZCRM vs ${doc.competitor}`,
+      heading: doc.heading,
+      lede: doc.lede,
+      verdict: doc.verdict ?? '',
+      ezcrmWinsWhen: (doc.ezcrmWinsWhen ?? []).map((p: AnyDoc) => p.point),
+      competitorFitsWhen: (doc.competitorFitsWhen ?? []).map((p: AnyDoc) => p.point),
+      rows: (doc.rows ?? []).map((r: AnyDoc) => ({
+        feature: r.feature,
+        ezcrm: r.ezcrm,
+        competitor: r.competitor,
+        note: r.note || undefined,
+      })),
+      differentiators: (doc.differentiators ?? []).map((d: AnyDoc) => ({
+        title: d.title,
+        detail: d.detail,
+      })),
+      migration: doc.migration ?? '',
+      faqs: (doc.faqs ?? []).map((f: AnyDoc) => ({ question: f.question, answer: f.answer })),
+      order: doc.order ?? 0,
+    }))
+  }, fallbackComparisons)
+})
+
+export async function getComparison(slug: string): Promise<ComparisonContent | undefined> {
+  const all = await getComparisons()
   return all.find((c) => c.slug === slug)
 }
 

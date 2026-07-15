@@ -3,8 +3,9 @@ import config from '@payload-config'
 import crypto from 'crypto'
 
 import { modules } from '@/content/modules'
-import { faqs, integrations, nav, pricingPlans, testimonials } from '@/content/site'
+import { faqs, integrations, nav, pricingAddons, pricingPlans, testimonials } from '@/content/site'
 import { blogPosts, caseStudies } from '@/content/stories'
+import { comparisons } from '@/content/comparisons'
 
 /**
  * Seeds Payload with the factory content from src/content/*.
@@ -101,25 +102,76 @@ async function seed() {
     log(`Seeded ${integrations.length} integrations`)
   }
 
-  // ── Pricing plans ──────────────────────────────────────────────────────
-  if (await isEmpty(payload, 'pricing-plans')) {
-    for (const [i, plan] of pricingPlans.entries()) {
+  // ── Comparisons (EZCRM vs …) ──────────────────────────────────────────
+  if (await isEmpty(payload, 'comparisons')) {
+    for (const c of comparisons) {
       await payload.create({
-        collection: 'pricing-plans',
+        collection: 'comparisons',
         data: {
-          name: plan.name,
-          forWhom: plan.forWhom,
-          priceMonthly: plan.priceMonthly ?? undefined,
-          priceYearly: plan.priceYearly ?? undefined,
-          features: plan.features.map((feature) => ({ feature })),
-          limitsNote: plan.limitsNote,
-          cta: plan.cta,
-          mostPopular: plan.mostPopular,
-          order: i,
+          slug: c.slug,
+          competitor: c.competitor,
+          kicker: c.kicker,
+          heading: c.heading,
+          lede: c.lede,
+          verdict: c.verdict,
+          ezcrmWinsWhen: c.ezcrmWinsWhen.map((point) => ({ point })),
+          competitorFitsWhen: c.competitorFitsWhen.map((point) => ({ point })),
+          rows: c.rows,
+          differentiators: c.differentiators,
+          migration: c.migration,
+          faqs: c.faqs,
+          order: c.order,
         },
       })
     }
-    log(`Seeded ${pricingPlans.length} pricing plans`)
+    log(`Seeded ${comparisons.length} comparisons`)
+  }
+
+  // ── Pricing plans ──────────────────────────────────────────────────────
+  // Plans mirror the live billing plans, so seed by name: create missing ones
+  // and refresh existing ones. Set SEED_RESET_PLANS=1 to drop stale plans that
+  // no longer exist in src/content/site.ts (e.g. after a plan rename).
+  {
+    const names = pricingPlans.map((p) => p.name)
+    if (process.env.SEED_RESET_PLANS === '1') {
+      const stale = await payload.find({
+        collection: 'pricing-plans',
+        where: { name: { not_in: names } },
+        limit: 100,
+      })
+      for (const doc of stale.docs) {
+        await payload.delete({ collection: 'pricing-plans', id: doc.id })
+      }
+      if (stale.docs.length > 0) log(`Removed ${stale.docs.length} stale pricing plans`)
+    }
+
+    for (const [i, plan] of pricingPlans.entries()) {
+      const data = {
+        name: plan.name,
+        forWhom: plan.forWhom,
+        priceMonthly: plan.priceMonthly ?? undefined,
+        priceQuarterly: plan.priceQuarterly ?? undefined,
+        priceYearly: plan.priceYearly ?? undefined,
+        trialText: plan.trialText,
+        limits: plan.limits,
+        features: plan.features.map((feature) => ({ feature })),
+        limitsNote: plan.limitsNote,
+        cta: plan.cta,
+        mostPopular: plan.mostPopular,
+        order: i,
+      }
+      const existing = await payload.find({
+        collection: 'pricing-plans',
+        where: { name: { equals: plan.name } },
+        limit: 1,
+      })
+      if (existing.docs[0]) {
+        await payload.update({ collection: 'pricing-plans', id: existing.docs[0].id, data })
+      } else {
+        await payload.create({ collection: 'pricing-plans', data })
+      }
+    }
+    log(`Seeded/updated ${pricingPlans.length} pricing plans`)
   }
 
   // ── FAQs ───────────────────────────────────────────────────────────────
@@ -188,6 +240,10 @@ async function seed() {
 
   // ── Globals ────────────────────────────────────────────────────────────
   await payload.updateGlobal({ slug: 'navigation', data: nav })
+  await payload.updateGlobal({
+    slug: 'pricing',
+    data: { addonsHeading: 'Add-on Pricing', addons: pricingAddons },
+  })
   await payload.updateGlobal({
     slug: 'site-settings',
     data: {

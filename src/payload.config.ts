@@ -17,11 +17,13 @@ import { PricingPlans } from '@/collections/PricingPlans'
 import { Faqs } from '@/collections/Faqs'
 import { TeamMembers } from '@/collections/TeamMembers'
 import { Integrations } from '@/collections/Integrations'
+import { Comparisons } from '@/collections/Comparisons'
 import { DemoRequests } from '@/collections/DemoRequests'
 import { NewsletterSubscribers } from '@/collections/NewsletterSubscribers'
 import { AuditLogs } from '@/collections/AuditLogs'
 import { SiteSettings } from '@/globals/SiteSettings'
 import { Navigation } from '@/globals/Navigation'
+import { Pricing } from '@/globals/Pricing'
 import { Homepage } from '@/globals/Homepage'
 import { DemoPage } from '@/globals/DemoPage'
 
@@ -51,13 +53,14 @@ export default buildConfig({
     Faqs,
     TeamMembers,
     Integrations,
+    Comparisons,
     Media,
     DemoRequests,
     NewsletterSubscribers,
     AuditLogs,
     Users,
   ],
-  globals: [Homepage, SiteSettings, Navigation, DemoPage],
+  globals: [Homepage, Pricing, SiteSettings, Navigation, DemoPage],
   editor: lexicalEditor(),
   i18n: {
     translations: {

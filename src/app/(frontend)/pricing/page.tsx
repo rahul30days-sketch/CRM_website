@@ -6,8 +6,10 @@ import { FaqList } from '@/components/sections/faq-list'
 import { CtaBand } from '@/components/sections/cta-band'
 import { JsonLd } from '@/components/json-ld'
 import { buttonVariants } from '@/components/ui/button'
-import { getFaqs, getPricingPlans } from '@/lib/cms'
+import { getFaqs, getPricingAddons, getPricingPlans } from '@/lib/cms'
 import { cn } from '@/lib/utils'
+
+const inr = (n: number) => new Intl.NumberFormat('en-IN').format(n)
 
 export const revalidate = 300
 
@@ -18,7 +20,11 @@ export const metadata: Metadata = {
 }
 
 export default async function PricingPage() {
-  const [plans, pricingFaqs] = await Promise.all([getPricingPlans(), getFaqs('pricing')])
+  const [plans, pricingFaqs, addons] = await Promise.all([
+    getPricingPlans(),
+    getFaqs('pricing'),
+    getPricingAddons(),
+  ])
 
   return (
     <>
@@ -41,78 +47,117 @@ export default async function PricingPage() {
       />
 
       <div className="shell pb-20">
-        <div className="grid gap-5 lg:grid-cols-3">
-          {plans.map((plan) => (
-            <section
-              key={plan.name}
-              aria-label={`${plan.name} plan`}
-              className={cn(
-                'panel-frame relative flex flex-col p-6',
-                plan.mostPopular && 'border-marigold/60',
-              )}
-            >
-              {plan.mostPopular ? (
-                <p className="absolute -top-3 left-6 rounded-chip bg-marigold px-2.5 py-0.5 font-mono text-[0.625rem] font-semibold uppercase tracking-wider text-console">
-                  Most teams pick this
-                </p>
-              ) : null}
-              <h2 className="font-display text-2xl font-bold text-bright">{plan.name}</h2>
-              <p className="mt-1 text-sm text-fog">{plan.forWhom}</p>
-
-              <div className="mt-6 border-y border-line py-5">
-                {plan.priceMonthly !== null && plan.priceMonthly !== undefined ? (
-                  <>
-                    <p className="font-mono text-4xl font-semibold tabular-nums text-bright">
-                      ₹{plan.priceMonthly}
-                      <span className="text-base font-normal text-fog"> /user/mo</span>
-                    </p>
-                    {plan.priceYearly !== null && plan.priceYearly !== undefined ? (
-                      <p className="mt-1.5 font-mono text-xs tabular-nums text-won">
-                        ₹{plan.priceYearly}/user/mo billed yearly
-                      </p>
-                    ) : null}
-                  </>
-                ) : plan.priceYearly !== null && plan.priceYearly !== undefined ? (
-                  <>
-                    <p className="font-mono text-4xl font-semibold tabular-nums text-bright">
-                      ₹{plan.priceYearly}
-                      <span className="text-base font-normal text-fog"> /user/mo</span>
-                    </p>
-                    <p className="mt-1.5 font-mono text-xs tabular-nums text-won">
-                      billed yearly
-                    </p>
-                  </>
-                ) : (
-                  <p className="font-mono text-3xl font-semibold text-bright">Custom</p>
-                )}
-                <p className="mt-2 font-mono text-[0.6875rem] uppercase tracking-wider text-fog">
-                  {plan.limitsNote}
-                </p>
-              </div>
-
-              <ul className="my-6 flex-1 space-y-2.5">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex gap-2.5 text-sm text-fog">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-won" aria-hidden />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                href={plan.cta.href}
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {plans.map((plan) => {
+            const isFree = plan.priceMonthly === 0
+            const hasPrice = plan.priceMonthly !== null && plan.priceMonthly !== undefined
+            return (
+              <section
+                key={plan.name}
+                aria-label={`${plan.name} plan`}
                 className={cn(
-                  buttonVariants({ variant: plan.mostPopular ? 'primary' : 'secondary' }),
-                  'w-full',
+                  'panel-frame relative flex flex-col p-6',
+                  plan.mostPopular && 'border-brand/60',
                 )}
               >
-                {plan.cta.label}
-              </Link>
-            </section>
-          ))}
+                {plan.mostPopular ? (
+                  <p className="absolute -top-3 left-6 rounded-chip bg-brand px-2.5 py-0.5 font-mono text-[0.625rem] font-semibold uppercase tracking-wider text-white">
+                    Most teams pick this
+                  </p>
+                ) : null}
+                <h2 className="font-display text-2xl font-bold text-ink">{plan.name}</h2>
+                <p className="mt-1 text-sm text-slate">{plan.forWhom}</p>
+
+                <div className="mt-6 border-y border-line py-5">
+                  {isFree ? (
+                    <p className="font-display text-3xl font-bold text-ink">Free</p>
+                  ) : hasPrice ? (
+                    <p className="font-mono text-4xl font-semibold tabular-nums text-ink">
+                      ₹{inr(plan.priceMonthly as number)}
+                      <span className="text-base font-normal text-slate"> /mo</span>
+                    </p>
+                  ) : (
+                    <p className="font-mono text-3xl font-semibold text-ink">Custom</p>
+                  )}
+
+                  {plan.priceYearly ? (
+                    <p className="mt-1.5 font-mono text-xs tabular-nums text-slate">
+                      or ₹{inr(plan.priceYearly)}/year
+                    </p>
+                  ) : null}
+                  {plan.trialText ? (
+                    <p className="mt-1.5 font-mono text-xs font-semibold text-brand">
+                      {plan.trialText}
+                    </p>
+                  ) : null}
+                  {plan.limitsNote ? (
+                    <p className="mt-2 font-mono text-[0.6875rem] uppercase tracking-wider text-slate">
+                      {plan.limitsNote}
+                    </p>
+                  ) : null}
+                </div>
+
+                {/* Quotas — tabular so the numbers line up across cards */}
+                {plan.limits.length > 0 ? (
+                  <dl className="my-5 space-y-2">
+                    {plan.limits.map((l) => (
+                      <div key={l.label} className="flex items-baseline justify-between gap-3">
+                        <dt className="text-sm text-slate">{l.label}</dt>
+                        <dd className="font-mono text-sm font-semibold tabular-nums text-ink">
+                          {l.value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                ) : null}
+
+                <ul className="mb-6 flex-1 space-y-2.5">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex gap-2.5 text-sm text-slate">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-won" aria-hidden />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <Link
+                  href={plan.cta.href}
+                  className={cn(
+                    buttonVariants({ variant: plan.mostPopular ? 'primary' : 'secondary' }),
+                    'w-full',
+                  )}
+                >
+                  {plan.cta.label}
+                </Link>
+              </section>
+            )
+          })}
         </div>
 
-        <p className="mt-6 text-center text-sm text-fog">
+        {/* Add-on pricing */}
+        {addons.length > 0 ? (
+          <section className="panel-frame mt-8 p-6 sm:p-8" aria-labelledby="addons-heading">
+            <h2 id="addons-heading" className="kicker mb-5">
+              Add-on Pricing
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {addons.map((a) => (
+                <div
+                  key={a.name}
+                  className="flex items-baseline justify-between gap-3 rounded-chip border border-line bg-sky/40 px-4 py-3.5"
+                >
+                  <span className="text-sm font-medium text-ink">{a.name}</span>
+                  <span className="shrink-0 font-mono text-sm font-semibold tabular-nums text-brand">
+                    ₹{inr(a.price)}
+                    <span className="font-normal text-slate"> {a.unit}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        <p className="mt-6 text-center text-sm text-slate">
           WhatsApp conversation charges and SMS/DLT costs are billed at operator rates — we don’t
           mark them up.
         </p>

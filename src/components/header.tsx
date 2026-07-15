@@ -1,13 +1,24 @@
 import Link from 'next/link'
-import { getNavigation, getSiteSettings } from '@/lib/cms'
+import { getComparisons, getNavigation, getSiteSettings } from '@/lib/cms'
 import { HeaderNav } from '@/components/header-nav'
 
 export async function Header() {
-  const [{ header }, settings] = await Promise.all([getNavigation(), getSiteSettings()])
+  const [{ header }, settings, comparisons] = await Promise.all([
+    getNavigation(),
+    getSiteSettings(),
+    getComparisons(),
+  ])
+
+  // Nav items whose href matches a key get a hover dropdown. Compare lists
+  // every "EZCRM vs …" matchup, straight from the comparisons collection.
+  const dropdowns: Record<string, { label: string; href: string }[]> = {
+    '/vs': comparisons.map((c) => ({ label: c.competitor, href: `/vs/${c.slug}` })),
+  }
 
   return (
     <HeaderNav
       items={header}
+      dropdowns={dropdowns}
       brand={
         <Link href="/" className="flex items-baseline gap-2" aria-label={`${settings.siteName} home`}>
           {settings.logo ? (
