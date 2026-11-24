@@ -33,7 +33,10 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings()
-  const faviconUrl = settings.favicon?.url || '/icon.svg'
+  // Point at the stable dynamic endpoint (src/app/site-favicon) rather than the
+  // media URL directly, so favicon changes in the admin take effect without a
+  // rebuild and a cached fallback render can't pin the wrong icon into static HTML.
+  const faviconUrl = '/site-favicon'
 
   return {
     metadataBase: new URL(siteUrl),

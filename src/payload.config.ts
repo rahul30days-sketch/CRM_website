@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url'
 import { buildConfig } from 'payload'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import sharp from 'sharp'
 
 import { env } from '@/env'
@@ -74,6 +75,17 @@ export default buildConfig({
       },
     },
   },
+  // Vercel's filesystem is read-only and ephemeral, so Payload's default
+  // disk-backed uploads (staticDir: 'media') would 404 in production and
+  // reject new admin uploads. Route media through Vercel Blob instead.
+  // Disabled without a token so local dev still writes to ./media.
+  plugins: [
+    vercelBlobStorage({
+      enabled: Boolean(env.BLOB_READ_WRITE_TOKEN),
+      collections: { media: true },
+      token: env.BLOB_READ_WRITE_TOKEN,
+    }),
+  ],
   // One less exposed surface: the site only uses the Local API.
   graphQL: { disable: true },
   secret: env.PAYLOAD_SECRET,

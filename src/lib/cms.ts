@@ -34,9 +34,11 @@ import {
  * MongoDB is configured, and stays up if the database blips.
  */
 
-// A healthy Local API + Mongo read returns in tens of ms. Cap low so a DB
-// hiccup falls back fast instead of stalling the render for seconds.
-const CMS_TIMEOUT_MS = 2000
+// A healthy Local API + Mongo read returns in tens of ms when the function
+// runs near the database (see regions: ["bom1"] in vercel.json). The cap gives
+// cold-start connection setup (TLS + auth handshake) headroom before falling
+// back, without stalling the render for too long on a genuine DB outage.
+const CMS_TIMEOUT_MS = 8000
 
 async function withFallback<T>(fetcher: () => Promise<T | null>, fallback: T): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined

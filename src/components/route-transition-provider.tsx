@@ -1,6 +1,14 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useRef, useState, Suspense } from 'react'
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  Suspense,
+} from 'react'
 import { usePathname, useSearchParams, useRouter as useNextRouter } from 'next/navigation'
 import { Spinner } from '@/components/ui/spinner'
 
@@ -13,27 +21,48 @@ const TransitionContext = createContext<{
 // fast navigations — which is what made every click feel like it "loaded".
 const REVEAL_DELAY_MS = 180
 
-function RouteTransitionInner({ children }: { children: React.ReactNode }) {
+/**
+ * Isolated route-change watcher.
+ *
+ * `useSearchParams()` forces the closest Suspense boundary to client-side
+ * render on statically-generated pages. We keep that read inside this tiny
+ * component (which renders nothing) and wrap ONLY it in <Suspense>, so the
+ * bailout is contained here and the rest of the page — header, content,
+ * footer — still server-renders. Rendering `{children}` inside the same
+ * boundary (the previous bug) bailed the ENTIRE app to CSR, producing empty
+ * SSR HTML on every route in production.
+ */
+function RouteChangeWatcher({ onCommit }: { onCommit: () => void }) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
+
+  // Route (path or query) committed → notify parent to hide the loader.
+  useEffect(() => {
+    onCommit()
+  }, [pathname, searchParams, onCommit])
+
+  return null
+}
+
+function RouteTransitionInner({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(false)
   const revealTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const clearReveal = () => {
+  const clearReveal = useCallback(() => {
     if (revealTimer.current) {
       clearTimeout(revealTimer.current)
       revealTimer.current = null
     }
-  }
+  }, [])
 
   // Route committed → cancel any pending reveal and hide the loader.
-  useEffect(() => {
+  const handleCommit = useCallback(() => {
     clearReveal()
     setLoading(false)
-  }, [pathname, searchParams])
+  }, [clearReveal])
 
   // Clean up the pending timer on unmount.
-  useEffect(() => () => clearReveal(), [])
+  useEffect(() => () => clearReveal(), [clearReveal])
 
   // Safety fallback so the overlay can never get stuck.
   useEffect(() => {
@@ -42,13 +71,16 @@ function RouteTransitionInner({ children }: { children: React.ReactNode }) {
     return () => clearTimeout(timer)
   }, [loading])
 
-  const startTransition = (href: string) => {
-    const currentUrl = window.location.pathname + window.location.search
-    if (href && href !== currentUrl && href.startsWith('/')) {
-      clearReveal()
-      revealTimer.current = setTimeout(() => setLoading(true), REVEAL_DELAY_MS)
-    }
-  }
+  const startTransition = useCallback(
+    (href: string) => {
+      const currentUrl = window.location.pathname + window.location.search
+      if (href && href !== currentUrl && href.startsWith('/')) {
+        clearReveal()
+        revealTimer.current = setTimeout(() => setLoading(true), REVEAL_DELAY_MS)
+      }
+    },
+    [clearReveal],
+  )
 
   useEffect(() => {
     const handleAnchorClick = (e: MouseEvent) => {
@@ -83,10 +115,15 @@ function RouteTransitionInner({ children }: { children: React.ReactNode }) {
     return () => {
       document.removeEventListener('click', handleAnchorClick, { capture: true })
     }
-  }, [])
+  }, [startTransition])
 
   return (
     <TransitionContext.Provider value={{ startTransition }}>
+      {/* Contained CSR bailout — see RouteChangeWatcher. Renders nothing. */}
+      <Suspense fallback={null}>
+        <RouteChangeWatcher onCommit={handleCommit} />
+      </Suspense>
+
       {loading && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-white/70"
@@ -100,17 +137,14 @@ function RouteTransitionInner({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       )}
+
       {children}
     </TransitionContext.Provider>
   )
 }
 
 export function RouteTransitionProvider({ children }: { children: React.ReactNode }) {
-  return (
-    <Suspense fallback={null}>
-      <RouteTransitionInner>{children}</RouteTransitionInner>
-    </Suspense>
-  )
+  return <RouteTransitionInner>{children}</RouteTransitionInner>
 }
 
 export function useRouter() {

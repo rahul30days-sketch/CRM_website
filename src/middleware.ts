@@ -13,23 +13,35 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 const isProd = process.env.NODE_ENV === 'production'
 
-const CSP = [
-  "default-src 'self'",
-  // Next.js dev tooling (HMR / React Refresh) and the Payload admin bundle
-  // use eval in development; production is built without it and stays strict.
-  `script-src 'self' 'unsafe-inline'${isProd ? '' : " 'unsafe-eval'"}`,
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
-  "font-src 'self' data:",
-  "connect-src 'self'",
-  "worker-src 'self' blob:",
-  "media-src 'self'",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "frame-ancestors 'none'",
-  ...(isProd ? ['upgrade-insecure-requests'] : []),
-].join('; ')
+// Payload media is served from Vercel Blob in production, which is a
+// different origin than the site — so `img-src 'self'` alone would block
+// the logo, favicon and hero. Scoped to the Blob host only; no wildcard
+// beyond the subdomain the store is provisioned under.
+const BLOB_HOST = 'https://*.public.blob.vercel-storage.com'
+
+// The Payload admin bundle (and some of its deps, e.g. the Lexical editor)
+// rely on eval / new Function at runtime — in production too — so admin
+// routes need 'unsafe-eval' or the panel renders as a blank screen. The
+// public marketing pages never need it and stay strict.
+function buildCSP(pathname: string): string {
+  const isAdmin = pathname.startsWith('/admin')
+  const allowEval = !isProd || isAdmin
+  return [
+    "default-src 'self'",
+    `script-src 'self' 'unsafe-inline'${allowEval ? " 'unsafe-eval'" : ''}`,
+    "style-src 'self' 'unsafe-inline'",
+    `img-src 'self' data: blob: ${BLOB_HOST}`,
+    "font-src 'self' data:",
+    "connect-src 'self'",
+    "worker-src 'self' blob:",
+    "media-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+    ...(isProd ? ['upgrade-insecure-requests'] : []),
+  ].join('; ')
+}
 
 // JSON API bodies are small; media uploads (multipart to /api/media) get
 // their own 8 MB cap inside Payload's upload config.
@@ -54,7 +66,7 @@ export function middleware(request: NextRequest) {
 
   const response = NextResponse.next()
 
-  response.headers.set('Content-Security-Policy', CSP)
+  response.headers.set('Content-Security-Policy', buildCSP(pathname))
   response.headers.set('X-Content-Type-Options', 'nosniff')
   response.headers.set('X-Frame-Options', 'DENY')
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')

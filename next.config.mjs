@@ -6,6 +6,14 @@ const nextConfig = {
   poweredByHeader: false,
   images: {
     formats: ['image/avif', 'image/webp'],
+    // Media moves to Vercel Blob in production; next/image refuses to
+    // optimize a remote host that isn't allowlisted here.
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.public.blob.vercel-storage.com',
+      },
+    ],
   },
   // NOTE: no `experimental.serverActions.bodySizeLimit` override here.
   // Payload's admin drives editing through Server Actions, and its form-state

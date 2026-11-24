@@ -23,6 +23,10 @@ const serverEnvSchema = z.object({
   // CRM incoming-webhook URL — demo/contact leads are forwarded here.
   // Contains a secret token, so it is server-only (never NEXT_PUBLIC_).
   CRM_WEBHOOK_URL: z.string().url().optional(),
+  // Vercel Blob storage for Payload media. Optional so local dev keeps
+  // writing to ./media; required in production, where the filesystem is
+  // read-only and uploads would otherwise 404.
+  BLOB_READ_WRITE_TOKEN: z.string().min(1).optional(),
   SMTP_HOST: z.string().optional(),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
@@ -35,6 +39,7 @@ const parsed = serverEnvSchema.safeParse({
   SITE_URL: process.env.SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL,
   REVALIDATION_SECRET: process.env.REVALIDATION_SECRET,
   CRM_WEBHOOK_URL: process.env.CRM_WEBHOOK_URL,
+  BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
   SMTP_HOST: process.env.SMTP_HOST,
   SMTP_USER: process.env.SMTP_USER,
   SMTP_PASS: process.env.SMTP_PASS,
