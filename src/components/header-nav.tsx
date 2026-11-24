@@ -34,10 +34,14 @@ export function HeaderNav({
   const [open, setOpen] = React.useState(false)
   const [scrolled, setScrolled] = React.useState(false)
   const [hovered, setHovered] = React.useState<string | null>(null)
+  const [openMenu, setOpenMenu] = React.useState<string | null>(null)
   const pathname = usePathname()
   const reduce = useReducedMotion()
 
-  React.useEffect(() => setOpen(false), [pathname])
+  React.useEffect(() => {
+    setOpen(false)
+    setOpenMenu(null)
+  }, [pathname])
 
   React.useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24)
@@ -87,6 +91,7 @@ export function HeaderNav({
               const active = isActive(item.href)
               const submenu = dropdowns[item.href]
               const showPill = pillHref === item.href
+              const menuOpen = openMenu === item.href
 
               const inner = (
                 <>
@@ -101,7 +106,10 @@ export function HeaderNav({
                     {item.label}
                     {submenu && submenu.length > 0 && (
                       <ChevronDown
-                        className="h-3.5 w-3.5 transition-transform duration-200 group-hover:rotate-180"
+                        className={cn(
+                          'h-3.5 w-3.5 transition-transform duration-200',
+                          menuOpen && 'rotate-180',
+                        )}
                         aria-hidden
                       />
                     )}
@@ -118,13 +126,32 @@ export function HeaderNav({
                 return (
                   <div
                     key={item.href}
-                    className="group relative"
-                    onMouseEnter={() => setHovered(item.href)}
+                    className="relative"
+                    onMouseEnter={() => {
+                      setHovered(item.href)
+                      setOpenMenu(item.href)
+                    }}
+                    onMouseLeave={() => setOpenMenu(null)}
+                    onFocus={() => setOpenMenu(item.href)}
+                    onBlur={(e) => {
+                      if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpenMenu(null)
+                    }}
                   >
-                    <Link href={item.href} aria-haspopup="menu" className={base}>
+                    <Link
+                      href={item.href}
+                      aria-haspopup="menu"
+                      aria-expanded={menuOpen}
+                      className={base}
+                      onClick={() => setOpenMenu(null)}
+                    >
                       {inner}
                     </Link>
-                    <div className="invisible absolute left-0 top-full z-50 pt-2 opacity-0 transition-all duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+                    <div
+                      className={cn(
+                        'absolute left-0 top-full z-50 pt-2 transition-all duration-150',
+                        menuOpen ? 'visible opacity-100' : 'invisible opacity-0',
+                      )}
+                    >
                       <div
                         role="menu"
                         className="min-w-[15rem] rounded-card border border-line bg-white/95 p-2 shadow-glass backdrop-blur-xl"
@@ -134,6 +161,7 @@ export function HeaderNav({
                             key={sub.href}
                             href={sub.href}
                             role="menuitem"
+                            onClick={() => setOpenMenu(null)}
                             className={cn(
                               'block rounded-chip px-3 py-2 text-sm transition-colors',
                               pathname === sub.href
@@ -146,6 +174,7 @@ export function HeaderNav({
                         ))}
                         <Link
                           href={item.href}
+                          onClick={() => setOpenMenu(null)}
                           className="mt-1 block border-t border-line px-3 pt-2.5 text-xs font-semibold uppercase tracking-wider text-brand hover:underline"
                         >
                           View all →

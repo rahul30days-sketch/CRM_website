@@ -20,6 +20,7 @@ import { FinalCtaCinematic } from '@/components/sections/final-cta-cinematic'
 import { JsonLd } from '@/components/json-ld'
 import { buttonVariants } from '@/components/ui/button'
 import { getHomepage, getIntegrations, getModules, getTestimonials } from '@/lib/cms'
+import { faqs } from '@/content/site'
 import { cn } from '@/lib/utils'
 
 export const revalidate = 300
@@ -49,21 +50,65 @@ export default async function HomePage() {
       <JsonLd
         data={{
           '@context': 'https://schema.org',
-          '@type': 'Organization',
-          name: 'EZCRM',
-          url: siteUrl,
-          description: 'The sales command center for Indian teams.',
-          contactPoint: { '@type': 'ContactPoint', email: 'hello@ezcrm.in', contactType: 'sales' },
+          '@graph': [
+            {
+              '@type': 'Organization',
+              '@id': `${siteUrl}/#organization`,
+              name: 'EZCRM',
+              url: siteUrl,
+              logo: `${siteUrl}/icon.svg`,
+              description:
+                'EZCRM is a sales CRM and business-automation platform for Indian SMBs — lead capture, WhatsApp, GST quotations, pipeline, automations and analytics on one screen.',
+              email: 'hello@ezcrm.in',
+              areaServed: { '@type': 'Country', name: 'India' },
+              contactPoint: {
+                '@type': 'ContactPoint',
+                email: 'hello@ezcrm.in',
+                contactType: 'sales',
+                areaServed: 'IN',
+                availableLanguage: ['English', 'Hindi'],
+              },
+            },
+            {
+              '@type': 'WebSite',
+              '@id': `${siteUrl}/#website`,
+              url: siteUrl,
+              name: 'EZCRM',
+              description: `${home.hero.heading}`,
+              publisher: { '@id': `${siteUrl}/#organization` },
+              inLanguage: 'en-IN',
+            },
+            {
+              '@type': 'SoftwareApplication',
+              name: 'EZCRM',
+              applicationCategory: 'BusinessApplication',
+              applicationSubCategory: 'CRM',
+              operatingSystem: 'Web, Android, iOS',
+              url: siteUrl,
+              description:
+                'Capture leads from IndiaMART, JustDial, Facebook and your website, engage on the official WhatsApp API, send GST-compliant quotations, and track every deal from first touch to payment.',
+              publisher: { '@id': `${siteUrl}/#organization` },
+              featureList: modules.map((m) => m.title),
+              offers: {
+                '@type': 'AggregateOffer',
+                priceCurrency: 'INR',
+                lowPrice: '0',
+                highPrice: '50000',
+                offerCount: 4,
+              },
+            },
+          ],
         }}
       />
       <JsonLd
         data={{
           '@context': 'https://schema.org',
-          '@type': 'SoftwareApplication',
-          name: 'EZCRM 3.0',
-          applicationCategory: 'BusinessApplication',
-          operatingSystem: 'Web',
-          offers: { '@type': 'Offer', price: '599', priceCurrency: 'INR' },
+          '@type': 'FAQPage',
+          mainEntity: faqs.slice(0, 8).map((f) => ({
+            '@type': 'Question',
+            name: f.question,
+            acceptedAnswer: { '@type': 'Answer', text: f.answer },
+          })),
         }}
       />
 
@@ -217,6 +262,37 @@ export default async function HomePage() {
           </h2>
         </div>
         <TestimonialWall testimonials={testimonials} />
+      </section>
+
+      {/* 14b — FAQ (AEO: answer-engine content + FAQPage schema) */}
+      <section className="shell py-14 lg:py-20" aria-labelledby="faq-heading">
+        <div className="mx-auto max-w-3xl">
+          <header className="mb-8 text-center">
+            <p className="kicker mb-3">FAQ</p>
+            <h2
+              id="faq-heading"
+              className="font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl"
+            >
+              Questions, answered.
+            </h2>
+          </header>
+          <div className="divide-y divide-line overflow-hidden rounded-card border border-line bg-white">
+            {faqs.slice(0, 8).map((faq) => (
+              <details key={faq.question} className="group px-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-left font-semibold text-ink [&::-webkit-details-marker]:hidden">
+                  {faq.question}
+                  <span
+                    aria-hidden
+                    className="shrink-0 font-mono text-xl text-brand transition-transform duration-200 group-open:rotate-45"
+                  >
+                    +
+                  </span>
+                </summary>
+                <p className="pb-5 pr-6 text-sm leading-relaxed text-slate">{faq.answer}</p>
+              </details>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* 15 — Cinematic final CTA */}

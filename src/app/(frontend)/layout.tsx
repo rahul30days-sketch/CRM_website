@@ -38,14 +38,37 @@ export async function generateMetadata(): Promise<Metadata> {
   // rebuild and a cached fallback render can't pin the wrong icon into static HTML.
   const faviconUrl = '/site-favicon'
 
+  const title = `${settings.siteName} — ${settings.tagline}`
+  const description =
+    'Leads, WhatsApp, quotations and pipelines on one screen. EZCRM pulls enquiries from IndiaMART, JustDial and Facebook, routes them in seconds, and shows you the numbers all day.'
+
   return {
     metadataBase: new URL(siteUrl),
     title: {
-      default: `${settings.siteName} — ${settings.tagline}`,
+      default: title,
       template: `%s · ${settings.siteName}`,
     },
-    description:
-      'Leads, WhatsApp, quotations and pipelines on one screen. EZCRM pulls enquiries from IndiaMART, JustDial and Facebook, routes them in seconds, and shows you the numbers all day.',
+    description,
+    applicationName: settings.siteName,
+    authors: [{ name: settings.siteName }],
+    creator: settings.siteName,
+    publisher: settings.siteName,
+    category: 'business software',
+    keywords: [
+      'CRM',
+      'CRM software India',
+      'sales CRM',
+      'WhatsApp CRM',
+      'IndiaMART CRM integration',
+      'JustDial leads',
+      'lead management software',
+      'GST quotation software',
+      'sales pipeline',
+      'sales automation',
+      'CRM for small business',
+    ],
+    // Per-page self-referencing canonical (resolved against metadataBase + path).
+    alternates: { canonical: './' },
     icons: {
       icon: faviconUrl,
       shortcut: faviconUrl,
@@ -54,9 +77,21 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: 'website',
       siteName: settings.siteName,
+      title,
+      description,
+      url: './',
       locale: 'en_IN',
     },
-    robots: { index: true, follow: true },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
+    },
   }
 }
 
