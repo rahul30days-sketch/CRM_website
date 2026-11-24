@@ -33,10 +33,18 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    /* Clip any horizontal bleed at the root too (body alone misses elements
+       whose containing block is <html>). `clip` doesn't create a scroll
+       container, so position: sticky keeps working. */
+    overflow-x: clip;
   }
 
   body {
     @apply bg-base text-ink font-sans antialiased;
+    /* Clip stray decorative bleed (glows, offscreen motion start-states)
+       without creating a scroll container — `clip` keeps position: sticky
+       working, unlike `hidden`. Prevents horizontal page scroll on mobile. */
+    overflow-x: clip;
   }
 
   ::selection {

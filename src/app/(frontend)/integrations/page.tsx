@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { PageIntro } from '@/components/page-intro'
 import { CtaBand } from '@/components/sections/cta-band'
+import { BrandLogo } from '@/components/brand-logo'
 import { getIntegrations } from '@/lib/cms'
 
 export const revalidate = 300
@@ -43,8 +44,11 @@ export default async function IntegrationsPage() {
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {items.map((integration) => (
                   <article key={integration.slug} className="panel-frame p-5">
-                    <h3 className="font-medium text-bright">{integration.name}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-fog">
+                    <div className="flex items-center gap-3">
+                      <BrandLogo slug={integration.slug} name={integration.name} />
+                      <h3 className="font-medium text-bright">{integration.name}</h3>
+                    </div>
+                    <p className="mt-3 text-sm leading-relaxed text-fog">
                       {integration.description}
                     </p>
                   </article>

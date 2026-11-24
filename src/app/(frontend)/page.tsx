@@ -1,33 +1,34 @@
 import Link from 'next/link'
 import { Star } from 'lucide-react'
-import { ConsoleHero } from '@/components/console/console-hero'
-import { HeroDashboardImage } from '@/components/console/hero-dashboard-image'
 import { HeroVisuals } from '@/components/console/hero-visuals'
+import { HeroStage } from '@/components/hero-stage'
 import { StatStrip } from '@/components/sections/stat-strip'
 import { LogoCloud } from '@/components/sections/logo-cloud'
-import { ModuleRows } from '@/components/sections/module-rows'
 import { WhatsAppShowcase } from '@/components/sections/whatsapp-showcase'
 import { TestimonialWall } from '@/components/sections/testimonial-wall'
-import { CtaBand } from '@/components/sections/cta-band'
+import { ChaosToControl } from '@/components/sections/chaos-to-control'
+import { LeadJourneyCinematic } from '@/components/sections/lead-journey-cinematic'
+import { LeadMagnet } from '@/components/sections/lead-magnet'
+import { SalesPipeline } from '@/components/sections/sales-pipeline'
+import { ExplodedDashboard } from '@/components/sections/exploded-dashboard'
+import { IndiaIntelligence } from '@/components/sections/india-intelligence'
+import { QuotationAssembly } from '@/components/sections/quotation-assembly'
+import { AutomationWorkflow } from '@/components/sections/automation-workflow'
+import { FeatureBento } from '@/components/sections/feature-bento'
+import { IndustryExperiences } from '@/components/sections/industry-experiences'
+import { FinalCtaCinematic } from '@/components/sections/final-cta-cinematic'
 import { JsonLd } from '@/components/json-ld'
 import { buttonVariants } from '@/components/ui/button'
-import {
-  getHomepage,
-  getIntegrations,
-  getModules,
-  getSiteSettings,
-  getTestimonials,
-} from '@/lib/cms'
+import { getHomepage, getIntegrations, getModules, getTestimonials } from '@/lib/cms'
 import { cn } from '@/lib/utils'
 
 export const revalidate = 300
 
 export default async function HomePage() {
-  const [modules, testimonials, integrations, settings, home] = await Promise.all([
+  const [modules, testimonials, integrations, home] = await Promise.all([
     getModules(),
     getTestimonials(),
     getIntegrations(),
-    getSiteSettings(),
     getHomepage(),
   ])
 
@@ -145,46 +146,36 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div id="live" className="mx-auto mt-14 max-w-5xl scroll-mt-24">
-            {settings.heroDashboard ? (
-              <HeroDashboardImage image={settings.heroDashboard} />
-            ) : (
-              <ConsoleHero />
-            )}
+          {/*
+            Hero centerpiece: the EZCRM "sales universe" — a rotating cloud of
+            the lead sources and CRM functions the product covers. Pure DOM +
+            lucide icons (no WebGL, CSP-safe), billboarded to always face the
+            viewer, and static under reduced motion. The hero copy/CTAs above
+            are server-rendered, so this is purely decorative enhancement.
+          */}
+          <div id="live" className="mx-auto mt-4 max-w-6xl scroll-mt-24">
+            <HeroStage />
           </div>
         </div>
       </section>
 
-      {/* Glass stat strip */}
+      {/* 02 — Trust: animated stats + integrations */}
       <section className="shell -mt-8 pb-8">
         <StatStrip stats={home.stats} />
       </section>
-
-      {/* Integrations logo cloud */}
       <LogoCloud integrations={integrations} heading={home.logoCloudHeading} />
 
-      {/* Modules — alternating rows */}
-      <section className="shell py-16 lg:py-24" aria-labelledby="modules-heading">
-        <div className="mx-auto mb-16 max-w-2xl text-center lg:mb-24">
-          <p className="kicker mb-3">{home.modulesSection.kicker}</p>
-          <h2
-            id="modules-heading"
-            className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl"
-          >
-            {home.modulesSection.heading}
-          </h2>
-          <p className="mt-4 text-lg text-slate">{home.modulesSection.subheading}</p>
-        </div>
-        <ModuleRows modules={modules} />
-        <div className="mt-16 text-center">
-          <Link href="/features" className={cn(buttonVariants({ variant: 'secondary', size: 'lg' }))}>
-            See all 14 modules
-          </Link>
-        </div>
-      </section>
+      {/* 03 — From chaos to control */}
+      <ChaosToControl />
 
-      {/* WhatsApp showcase */}
-      <div className="border-y border-line bg-sky/40">
+      {/* 04 — The cinematic lead-to-revenue journey */}
+      <LeadJourneyCinematic />
+
+      {/* 05 — Lead integration hub */}
+      <LeadMagnet />
+
+      {/* 06 — WhatsApp communication */}
+      <div className="overflow-hidden border-y border-line bg-sky/40">
         <WhatsAppShowcase
           kicker={home.whatsapp.kicker}
           heading={home.whatsapp.heading}
@@ -193,8 +184,29 @@ export default async function HomePage() {
         />
       </div>
 
-      {/* Testimonials */}
-      <section className="shell py-24 lg:py-32" aria-labelledby="testimonials-heading">
+      {/* 07 — Interactive sales pipeline */}
+      <SalesPipeline />
+
+      {/* 08 — Exploding dashboard */}
+      <ExplodedDashboard />
+
+      {/* 09 — India sales intelligence */}
+      <IndiaIntelligence />
+
+      {/* 10 — GST quotation assembly */}
+      <QuotationAssembly />
+
+      {/* 11 — Automation workflow */}
+      <AutomationWorkflow />
+
+      {/* 12 — Interactive feature bento */}
+      <FeatureBento modules={modules} />
+
+      {/* 13 — Industry experiences */}
+      <IndustryExperiences />
+
+      {/* 14 — Customer success */}
+      <section className="shell py-14 lg:py-20" aria-labelledby="testimonials-heading">
         <div className="mb-12 max-w-2xl">
           <p className="kicker mb-3">{home.testimonialsSection.kicker}</p>
           <h2
@@ -207,13 +219,10 @@ export default async function HomePage() {
         <TestimonialWall testimonials={testimonials} />
       </section>
 
-      <CtaBand
-        heading={home.cta.heading}
-        subheading={home.cta.subheading}
-        primaryLabel={home.cta.primary.label}
-        primaryHref={home.cta.primary.href}
-        secondaryLabel={home.cta.secondary.label}
-        secondaryHref={home.cta.secondary.href}
+      {/* 15 — Cinematic final CTA */}
+      <FinalCtaCinematic
+        primary={{ label: home.cta.primary.label, href: home.cta.primary.href }}
+        secondary={{ label: home.cta.secondary.label, href: home.cta.secondary.href }}
       />
     </>
   )

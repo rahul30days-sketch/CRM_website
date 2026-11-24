@@ -28,7 +28,7 @@ export function WhatsAppShowcase({
   points: string[]
 }) {
   return (
-    <section className="shell py-24 lg:py-32">
+    <section className="shell py-14 lg:py-20">
       <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
         <div>
           <p className="kicker mb-3">{kicker}</p>
