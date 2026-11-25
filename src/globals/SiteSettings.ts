@@ -43,7 +43,7 @@ export const SiteSettings: GlobalConfig = {
       ],
     },
     { name: 'footerNote', type: 'textarea' },
-    { name: 'supportEmail', type: 'email', defaultValue: 'support@ezcrm.in' },
+    { name: 'supportEmail', type: 'email', defaultValue: 'info@30days.in' },
     { name: 'salesPhone', type: 'text' },
   ],
 }

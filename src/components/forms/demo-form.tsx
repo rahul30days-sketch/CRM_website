@@ -8,20 +8,35 @@ import { Field, Input, Select, Textarea } from '@/components/ui/field'
 import { Button } from '@/components/ui/button'
 import { Spinner } from '@/components/ui/spinner'
 import { modules } from '@/content/modules'
+import { track } from '@/lib/analytics'
 
 const initialState: FormState = { status: 'idle', message: '' }
 
 export function DemoForm({ source = 'demo-page' }: { source?: string }) {
   const [state, formAction, pending] = useActionState(submitDemoRequest, initialState)
-  const [renderedAt] = React.useState(() => Date.now())
+  // Set after mount: a value computed during render differs between server
+  // and client and causes a hydration mismatch.
+  const [renderedAt, setRenderedAt] = React.useState(0)
+  React.useEffect(() => setRenderedAt(Date.now()), [])
+  const formRef = React.useRef<HTMLFormElement>(null)
+  const started = React.useRef(false)
+
+  // Analytics: started (first interaction) and submitted — never field values.
+  React.useEffect(() => {
+    if (state.status === 'success') track('demo_form_submitted', { source })
+    // On a validation error, move focus to the first invalid field.
+    if (state.status === 'error') {
+      formRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus()
+    }
+  }, [state, source])
 
   if (state.status === 'success') {
     return (
       <div className="panel-frame flex items-start gap-3 p-6" role="status">
         <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-won" aria-hidden />
         <div>
-          <p className="font-medium text-bright">Request received.</p>
-          <p className="mt-1 text-sm text-fog">{state.message}</p>
+          <p className="font-medium text-ink">Request received.</p>
+          <p className="mt-1 text-sm text-slate">{state.message}</p>
         </div>
       </div>
     )
@@ -30,7 +45,17 @@ export function DemoForm({ source = 'demo-page' }: { source?: string }) {
   const errors = state.fieldErrors ?? {}
 
   return (
-    <form action={formAction} className="space-y-5" noValidate>
+    <form
+      ref={formRef}
+      action={formAction}
+      className="space-y-5"
+      noValidate
+      onFocusCapture={() => {
+        if (started.current) return
+        started.current = true
+        track('demo_form_started', { source })
+      }}
+    >
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Your name" htmlFor="demo-name" required error={errors.name}>
           <Input id="demo-name" name="name" required autoComplete="name" maxLength={120} aria-invalid={Boolean(errors.name)} />
@@ -39,7 +64,7 @@ export function DemoForm({ source = 'demo-page' }: { source?: string }) {
           <Input id="demo-email" name="workEmail" type="email" required autoComplete="email" maxLength={254} aria-invalid={Boolean(errors.workEmail)} />
         </Field>
         <Field label="Mobile number" htmlFor="demo-phone" required error={errors.phone}>
-          <Input id="demo-phone" name="phone" type="tel" required autoComplete="tel" placeholder="+91 98765 43210" maxLength={20} aria-invalid={Boolean(errors.phone)} />
+          <Input id="demo-phone" name="phone" type="tel" required autoComplete="tel" placeholder="10-digit mobile number" maxLength={20} aria-invalid={Boolean(errors.phone)} />
         </Field>
         <Field label="Company" htmlFor="demo-company" required error={errors.company}>
           <Input id="demo-company" name="company" required autoComplete="organization" maxLength={160} aria-invalid={Boolean(errors.company)} />
@@ -102,7 +127,7 @@ export function DemoForm({ source = 'demo-page' }: { source?: string }) {
           'Book my demo'
         )}
       </Button>
-      <p className="text-xs text-fog">
+      <p className="text-xs text-slate">
         A product specialist calls within one working day. Your details are used only to arrange
         the demo — see our <a href="/legal/privacy" className="underline underline-offset-2">privacy policy</a>.
       </p>

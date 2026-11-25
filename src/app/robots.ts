@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+import { INDEXABLE, SITE_URL } from '@/lib/site'
 
 /**
  * Robots policy.
@@ -28,7 +29,12 @@ const AI_BOTS = [
 ]
 
 export default function robots(): MetadataRoute.Robots {
-  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, '')
+  // Preview / development deployments: block everything so branch URLs never
+  // compete with production in search results.
+  if (!INDEXABLE) {
+    return { rules: [{ userAgent: '*', disallow: '/' }] }
+  }
+
   const disallow = ['/admin', '/api/']
 
   return {
@@ -36,7 +42,6 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: '*', allow: '/', disallow },
       ...AI_BOTS.map((userAgent) => ({ userAgent, allow: '/', disallow })),
     ],
-    sitemap: `${siteUrl}/sitemap.xml`,
-    host: siteUrl,
+    sitemap: `${SITE_URL}/sitemap.xml`,
   }
 }

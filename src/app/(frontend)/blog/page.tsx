@@ -26,7 +26,7 @@ export default async function BlogPage() {
       <PageIntro
         kicker="Blog"
         title="Playbooks for the sales floor."
-        lede="What we learn watching hundreds of Indian sales teams work — written up so yours can skip the expensive lessons."
+        lede="What we learn working with Indian sales teams — written up so yours can skip the expensive lessons."
       />
 
       <div className="shell max-w-4xl space-y-1 pb-20">
@@ -34,7 +34,7 @@ export default async function BlogPage() {
           <Link
             key={post.slug}
             href={`/blog/${post.slug}`}
-            className="group block border-t border-line py-6 transition-colors last:border-b hover:bg-panel/50 sm:px-3"
+            className="group block border-t border-line py-6 transition-colors last:border-b hover:bg-white/50 sm:px-3"
           >
             <p className="kicker mb-2">
               {CATEGORY_LABELS[post.category] ?? post.category} ·{' '}
@@ -46,10 +46,10 @@ export default async function BlogPage() {
                 })}
               </time>
             </p>
-            <h2 className="font-display text-2xl font-bold leading-snug text-bright group-hover:text-marigold">
+            <h2 className="font-display text-2xl font-bold leading-snug text-ink group-hover:text-brand">
               {post.title}
             </h2>
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-fog">{post.excerpt}</p>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate">{post.excerpt}</p>
           </Link>
         ))}
       </div>

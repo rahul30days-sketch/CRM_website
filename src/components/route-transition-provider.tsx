@@ -10,7 +10,6 @@ import React, {
   Suspense,
 } from 'react'
 import { usePathname, useSearchParams, useRouter as useNextRouter } from 'next/navigation'
-import { Spinner } from '@/components/ui/spinner'
 
 const TransitionContext = createContext<{
   startTransition: (href: string) => void
@@ -74,7 +73,10 @@ function RouteTransitionInner({ children }: { children: React.ReactNode }) {
   const startTransition = useCallback(
     (href: string) => {
       const currentUrl = window.location.pathname + window.location.search
-      if (href && href !== currentUrl && href.startsWith('/')) {
+      // Ignore the hash: a same-page anchor (/pricing#faq) never commits a
+      // route change, so it must not start the indicator.
+      const target = href.split('#')[0]
+      if (href && href.startsWith('/') && target !== '' && target !== currentUrl) {
         clearReveal()
         revealTimer.current = setTimeout(() => setLoading(true), REVEAL_DELAY_MS)
       }
@@ -124,18 +126,20 @@ function RouteTransitionInner({ children }: { children: React.ReactNode }) {
         <RouteChangeWatcher onCommit={handleCommit} />
       </Suspense>
 
+      {/*
+        Slow-navigation indicator: a thin bar along the top edge. It never
+        covers or blocks the page — the visitor can keep reading or click
+        elsewhere while the next route loads.
+      */}
+      <div role="status" aria-live="polite" className="sr-only">
+        {loading ? 'Loading page' : ''}
+      </div>
       {loading && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-white/70"
           id="global-page-loader"
-          role="status"
-          aria-live="polite"
-        >
-          <div className="panel-frame flex flex-col items-center gap-3 p-6 bg-white border border-line shadow-float">
-            <Spinner size={40} className="text-brand" />
-            <p className="font-mono text-xs text-slate uppercase tracking-wider">Loading...</p>
-          </div>
-        </div>
+          aria-hidden
+          className="pointer-events-none fixed inset-x-0 top-0 z-[100] h-0.5 origin-left animate-nav-progress bg-brand"
+        />
       )}
 
       {children}

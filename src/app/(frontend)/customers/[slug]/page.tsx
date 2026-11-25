@@ -1,10 +1,13 @@
 import type { Metadata } from 'next'
+import { BUSINESS } from '@/content/business'
+import { UnverifiedNotice } from '@/components/unverified-notice'
 import { notFound } from 'next/navigation'
 import { PageIntro } from '@/components/page-intro'
 import { CtaBand } from '@/components/sections/cta-band'
 import { JsonLd } from '@/components/json-ld'
 import { caseStudies as factoryCaseStudies } from '@/content/stories'
 import { getCaseStudy } from '@/lib/cms'
+import { SITE_URL } from '@/lib/site'
 
 export const revalidate = 300
 
@@ -20,7 +23,12 @@ export async function generateMetadata({
   const { slug } = await params
   const cs = await getCaseStudy(slug)
   if (!cs) return {}
-  return { title: `${cs.client} — customer story`, description: cs.summary }
+  return {
+    title: `${cs.client} — customer story`,
+    description: cs.summary,
+    alternates: { canonical: `/customers/${slug}` },
+    ...(BUSINESS.socialProofVerified ? {} : { robots: { index: false, follow: true } }),
+  }
 }
 
 export default async function CaseStudyPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -28,7 +36,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
   const cs = await getCaseStudy(slug)
   if (!cs) notFound()
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+  const siteUrl = SITE_URL
 
   return (
     <>
@@ -43,16 +51,22 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
         }}
       />
 
-      <PageIntro kicker={cs.industry} title={cs.client} lede={cs.summary} />
+      <PageIntro
+        kicker={cs.industry}
+        title={cs.client}
+        lede={cs.summary}
+        breadcrumbs={[{ label: 'Customers', href: '/customers' }]}
+      />
 
       <div className="shell max-w-4xl pb-20">
+        {BUSINESS.socialProofVerified ? null : <UnverifiedNotice className="mb-8" />}
         <dl className="mb-12 grid gap-4 border-y border-line py-6 sm:grid-cols-3">
           {cs.metrics.map((metric) => (
             <div key={metric.label}>
-              <dd className="font-mono text-2xl font-semibold tabular-nums text-marigold">
+              <dd className="font-mono text-2xl font-semibold tabular-nums text-brand">
                 {metric.value}
               </dd>
-              <dt className="mt-1 font-mono text-[0.625rem] uppercase tracking-wider text-fog">
+              <dt className="mt-1 font-mono text-[0.625rem] uppercase tracking-wider text-slate">
                 {metric.label}
               </dt>
             </div>
@@ -67,7 +81,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
           ].map((section) => (
             <section key={section.heading} aria-label={section.heading}>
               <h2 className="kicker mb-3">{section.heading}</h2>
-              <p className="text-lg leading-relaxed text-bright">{section.text}</p>
+              <p className="text-lg leading-relaxed text-ink">{section.text}</p>
             </section>
           ))}
         </div>

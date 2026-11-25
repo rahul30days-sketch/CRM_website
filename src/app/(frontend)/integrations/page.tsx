@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { PageIntro } from '@/components/page-intro'
 import { CtaBand } from '@/components/sections/cta-band'
-import { BrandLogo } from '@/components/brand-logo'
+import { IntegrationDirectory } from '@/components/directory/integration-directory'
 import { getIntegrations } from '@/lib/cms'
 
 export const revalidate = 300
@@ -9,20 +9,12 @@ export const revalidate = 300
 export const metadata: Metadata = {
   title: 'Integrations — IndiaMART, JustDial, Facebook, WhatsApp & more',
   description:
-    'EZCRM connects to the places your leads already are: Facebook Lead Ads, IndiaMART, JustDial, the official Meta WhatsApp API, Razorpay, Cashfree, Slack and custom webhooks.',
-}
-
-const CATEGORY_LABELS: Record<string, string> = {
-  'lead-sources': 'Lead sources',
-  messaging: 'Messaging',
-  payments: 'Payments',
-  notifications: 'Notifications',
-  developer: 'Developer',
+    'EZCRM connects to the places your leads already are: Facebook Lead Ads, IndiaMART, JustDial, the official WhatsApp Business Platform, Razorpay, Cashfree, Slack and custom webhooks.',
+  alternates: { canonical: '/integrations' },
 }
 
 export default async function IntegrationsPage() {
   const integrations = await getIntegrations()
-  const categories = ['lead-sources', 'messaging', 'payments', 'notifications', 'developer']
 
   return (
     <>
@@ -33,36 +25,13 @@ export default async function IntegrationsPage() {
       />
 
       <div className="shell space-y-12 pb-20">
-        {categories.map((category) => {
-          const items = integrations.filter((i) => i.category === category)
-          if (items.length === 0) return null
-          return (
-            <section key={category} aria-labelledby={`cat-${category}`}>
-              <h2 id={`cat-${category}`} className="kicker mb-4 border-b border-line pb-2">
-                {CATEGORY_LABELS[category]}
-              </h2>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {items.map((integration) => (
-                  <article key={integration.slug} className="panel-frame p-5">
-                    <div className="flex items-center gap-3">
-                      <BrandLogo slug={integration.slug} name={integration.name} />
-                      <h3 className="font-medium text-bright">{integration.name}</h3>
-                    </div>
-                    <p className="mt-3 text-sm leading-relaxed text-fog">
-                      {integration.description}
-                    </p>
-                  </article>
-                ))}
-              </div>
-            </section>
-          )
-        })}
+        <IntegrationDirectory integrations={integrations} />
 
         <section className="panel-frame p-6" aria-labelledby="api-heading">
-          <h2 id="api-heading" className="font-display text-xl font-bold text-bright">
+          <h2 id="api-heading" className="font-display text-xl font-bold text-ink">
             Something custom? There’s a REST API for that.
           </h2>
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-fog">
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate">
             Token-authenticated REST endpoints cover leads, contacts, deals and activities, plus
             inbound webhooks that accept JSON from any system — your website backend, a landing
             page tool, or that internal ERP nobody wants to touch. Rate-limited, scoped per token,

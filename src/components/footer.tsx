@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { BUSINESS } from '@/content/business'
 import { getNavigation, getSiteSettings } from '@/lib/cms'
 import { NewsletterForm } from '@/components/forms/newsletter-form'
 import EZPZTypeCube from '@/components/ui/ezpz-type-cube'
@@ -39,9 +40,9 @@ export async function Footer() {
             <EZPZTypeCube
               words={['EZCRM', 'EZCRM', 'EZCRM', 'EZCRM']}
               background="transparent"
-              topColor="#2B5CE6"
-              leftColor="#1E42B4"
-              rightColor="#5B84F0"
+              topColor="rgb(var(--c-brand))"
+              leftColor="rgb(var(--c-brand-deep))"
+              rightColor="rgb(var(--c-brand-hi))"
               fontFamily='var(--font-display), "Helvetica Neue", Arial, sans-serif'
               label="EZCRM"
             />
@@ -65,9 +66,21 @@ export async function Footer() {
               </span>
             )}
           </Link>
-          <p className="max-w-xs text-sm leading-relaxed text-fog">
+          <p className="max-w-xs text-sm leading-relaxed text-slate">
             The sales command center for Indian teams — leads, WhatsApp, quotations and pipelines
             on one screen.
+          </p>
+          <p className="text-sm text-slate">
+            A product of{' '}
+            <a
+              href={BUSINESS.companyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-semibold text-ink underline-offset-4 hover:text-brand hover:underline"
+            >
+              {BUSINESS.company}
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
           </p>
           <NewsletterForm />
         </div>
@@ -78,7 +91,7 @@ export async function Footer() {
             <ul className="space-y-2">
               {group.links.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-sm text-fog hover:text-bright">
+                  <Link href={link.href} className="text-sm text-slate hover:text-ink">
                     {link.label}
                   </Link>
                 </li>
@@ -89,8 +102,19 @@ export async function Footer() {
       </div>
 
       <div className="border-t border-line">
-        <div className="shell flex flex-col gap-2 py-5 text-xs text-fog sm:flex-row sm:items-center sm:justify-between">
-          <p>© {year} EZCRM Technologies Pvt. Ltd. All rights reserved.</p>
+        <div className="shell flex flex-col gap-2 py-5 text-xs text-slate sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © {year} {BUSINESS.legalName}. EZCRM is a product of{' '}
+            <a
+              href={BUSINESS.companyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline-offset-4 hover:text-ink hover:underline"
+            >
+              {BUSINESS.company}
+            </a>
+            .
+          </p>
           <p className="font-mono uppercase tracking-wider">
             Made for the Indian sales floor · Data stays yours
           </p>

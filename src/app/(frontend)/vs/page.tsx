@@ -8,7 +8,7 @@ import { getComparisons } from '@/lib/cms'
 export const revalidate = 300
 
 export const metadata: Metadata = {
-  title: 'EZCRM compared — honest alternatives for Indian sales teams',
+  title: 'EZCRM compared — alternatives for Indian sales teams',
   description:
     'How EZCRM compares to Zoho CRM, Freshsales, Kylas and the classic Excel + WhatsApp setup — feature by feature, with the honest trade-offs.',
 }

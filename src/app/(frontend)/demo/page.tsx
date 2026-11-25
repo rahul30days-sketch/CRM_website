@@ -55,8 +55,17 @@ export default async function DemoPage() {
               {content.preferToTalk.heading}
             </h2>
             <p className="mt-2 text-sm text-slate">
-              Call <a href={`tel:${content.preferToTalk.phone.replace(/\s+/g, '')}`} className="font-mono text-brand font-semibold hover:underline">{content.preferToTalk.phone}</a>{' '}
-              (Mon–Sat, 10:00–19:00 IST) or write to{' '}
+              {content.preferToTalk.phone ? (
+                <>
+                  Call{' '}
+                  <a href={`tel:${content.preferToTalk.phone.replace(/\s+/g, '')}`} className="font-mono text-brand font-semibold hover:underline">
+                    {content.preferToTalk.phone}
+                  </a>{' '}
+                  (Mon–Sat, 9:00 am–6:00 pm IST) or write to{' '}
+                </>
+              ) : (
+                <>Write to{' '}</>
+              )}
               <a href={`mailto:${content.preferToTalk.email}`} className="font-mono text-brand font-semibold hover:underline">
                 {content.preferToTalk.email}
               </a>

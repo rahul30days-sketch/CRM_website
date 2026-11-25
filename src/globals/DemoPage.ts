@@ -28,8 +28,8 @@ export const DemoPage: GlobalConfig = {
       type: 'group',
       fields: [
         { name: 'heading', type: 'text', defaultValue: 'Prefer to talk first?' },
-        { name: 'phone', type: 'text', defaultValue: '+91 98765 43210' },
-        { name: 'email', type: 'email', defaultValue: 'hello@ezcrm.in' },
+        { name: 'phone', type: 'text', admin: { description: 'Public sales phone. Leave empty to hide.' } },
+        { name: 'email', type: 'email', defaultValue: 'info@30days.in' },
       ],
     },
   ],

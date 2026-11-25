@@ -1495,6 +1495,9 @@ export interface DemoPage {
     | null;
   preferToTalk?: {
     heading?: string | null;
+    /**
+     * Public sales phone. Leave empty to hide.
+     */
     phone?: string | null;
     email?: string | null;
   };

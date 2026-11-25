@@ -29,12 +29,12 @@ export function CtaBand({
             <h2 className="max-w-2xl font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl">
               {heading}
             </h2>
-            <p className="mt-3 max-w-xl text-lg text-ink/70">{subheading}</p>
+            <p className="mt-3 max-w-xl text-lg text-slate">{subheading}</p>
           </div>
           <div className="flex shrink-0 flex-wrap gap-3">
             <Link
               href={primaryHref}
-              className="inline-flex h-13 items-center justify-center rounded-chip bg-[rgb(var(--btn-ink))] px-7 text-base font-semibold text-white shadow-soft transition-transform hover:-translate-y-0.5"
+              className="inline-flex h-13 items-center justify-center rounded-chip bg-btn-ink px-7 text-base font-semibold text-white shadow-soft transition-transform hover:-translate-y-0.5"
             >
               {primaryLabel}
             </Link>

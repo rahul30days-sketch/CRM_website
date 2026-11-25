@@ -6,16 +6,16 @@ export function FaqList({ faqs }: { faqs: FaqContent[] }) {
     <div className="divide-y divide-line border-y border-line">
       {faqs.map((faq) => (
         <details key={faq.question} className="group">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-left font-medium text-bright hover:text-marigold [&::-webkit-details-marker]:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-left font-medium text-ink hover:text-brand [&::-webkit-details-marker]:hidden">
             {faq.question}
             <span
               aria-hidden
-              className="shrink-0 font-mono text-lg text-fog transition-transform group-open:rotate-45"
+              className="shrink-0 font-mono text-lg text-slate transition-transform group-open:rotate-45"
             >
               +
             </span>
           </summary>
-          <p className="pb-5 pr-8 text-sm leading-relaxed text-fog">{faq.answer}</p>
+          <p className="pb-5 pr-8 text-sm leading-relaxed text-slate">{faq.answer}</p>
         </details>
       ))}
     </div>

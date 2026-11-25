@@ -73,7 +73,7 @@ const SECTIONS: { title: string; body: string[]; points?: string[] }[] = [
   {
     title: 'Responsible disclosure',
     body: [
-      'Found a vulnerability? Email security@ezcrm.in with reproduction steps. We acknowledge within 48 hours, keep you updated while we fix, and credit researchers who report responsibly. Please avoid testing against tenants you don’t own.',
+      'Found a vulnerability? Email info@30days.in with reproduction steps. We acknowledge within 48 hours, keep you updated while we fix, and credit researchers who report responsibly. Please avoid testing against tenants you don’t own.',
     ],
   },
 ]
@@ -85,23 +85,23 @@ export default async function SecurityPage() {
     <>
       <PageIntro
         kicker="Security & trust"
-        title="Your customer list is your business, We treat it that way."
+        title="Your customer list is your business. We treat it that way."
         lede="A CRM holds the most commercially sensitive data an SMB owns. This page explains — specifically, not in badges — how EZCRM protects it."
       />
 
       <div className="shell max-w-4xl space-y-12 pb-20">
         {SECTIONS.map((section) => (
           <section key={section.title} aria-label={section.title} className="border-t border-line pt-8">
-            <h2 className="font-display text-2xl font-bold text-bright">{section.title}</h2>
+            <h2 className="font-display text-2xl font-bold text-ink">{section.title}</h2>
             {section.body.map((paragraph, i) => (
-              <p key={i} className="mt-3 leading-relaxed text-fog">
+              <p key={i} className="mt-3 leading-relaxed text-slate">
                 {paragraph}
               </p>
             ))}
             {section.points ? (
               <ul className="mt-4 space-y-2">
                 {section.points.map((point) => (
-                  <li key={point} className="flex gap-3 text-sm text-fog">
+                  <li key={point} className="flex gap-3 text-sm text-slate">
                     <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-won" aria-hidden />
                     {point}
                   </li>
@@ -113,7 +113,7 @@ export default async function SecurityPage() {
 
         {securityFaqs.length > 0 ? (
           <section aria-labelledby="security-faq" className="border-t border-line pt-8">
-            <h2 id="security-faq" className="mb-4 font-display text-2xl font-bold text-bright">
+            <h2 id="security-faq" className="mb-4 font-display text-2xl font-bold text-ink">
               Common questions
             </h2>
             <FaqList faqs={securityFaqs} />

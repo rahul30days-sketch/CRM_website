@@ -1,3 +1,4 @@
+import { BUSINESS, TRIAL_TEXT } from './business'
 /**
  * Sitewide fallback/seed content: navigation, integrations, pricing,
  * testimonials, FAQs, ticker events and platform trust points.
@@ -88,7 +89,7 @@ export const integrations: IntegrationContent[] = [
     name: 'Meta WhatsApp Business API',
     category: 'messaging',
     description:
-      'The official API — approved templates, multi-number support, and none of the grey-market ban risk.',
+      'The official WhatsApp Business Platform — Meta-approved templates and multi-number support, instead of grey-market gateways.',
   },
   {
     slug: 'google',
@@ -168,18 +169,18 @@ export const pricingPlans: PricingPlanContent[] = [
     priceMonthly: 0,
     priceQuarterly: null,
     priceYearly: null,
-    trialText: '30-day free trial',
+    trialText: TRIAL_TEXT,
     limits: [
       { label: 'Admins', value: '1' },
       { label: 'Users', value: '5' },
       { label: 'Contacts', value: '500' },
       { label: 'Storage', value: '512 MB' },
-      { label: 'SMTP', value: '1' },
-      { label: 'WhatsApp', value: '0' },
-      { label: 'SMS', value: '0' },
+      { label: 'SMTP accounts', value: '1' },
+      { label: 'WhatsApp numbers', value: '0' },
+      { label: 'SMS senders', value: '0' },
     ],
     features: [],
-    limitsNote: 'Free forever · 30-day full-feature trial',
+    limitsNote: `Forever free, ${BUSINESS.trialDays}-day full-feature trial`,
     cta: { label: 'Start free', href: '/demo' },
     mostPopular: false,
   },
@@ -195,13 +196,13 @@ export const pricingPlans: PricingPlanContent[] = [
       { label: 'Users', value: '1' },
       { label: 'Contacts', value: '2,000' },
       { label: 'Storage', value: '1 GB' },
-      { label: 'SMTP', value: '1' },
-      { label: 'WhatsApp', value: '1' },
-      { label: 'SMS', value: '1' },
+      { label: 'SMTP accounts', value: '1' },
+      { label: 'WhatsApp numbers', value: '1' },
+      { label: 'SMS senders', value: '1' },
     ],
     features: [],
     limitsNote: '₹5,000 billed quarterly',
-    cta: { label: 'Start free trial', href: '/demo' },
+    cta: { label: 'Book a demo', href: '/demo' },
     mostPopular: false,
   },
   {
@@ -216,13 +217,13 @@ export const pricingPlans: PricingPlanContent[] = [
       { label: 'Users', value: '5' },
       { label: 'Contacts', value: '5,000' },
       { label: 'Storage', value: '5 GB' },
-      { label: 'SMTP', value: '5' },
-      { label: 'WhatsApp', value: '2' },
-      { label: 'SMS', value: '2' },
+      { label: 'SMTP accounts', value: '5' },
+      { label: 'WhatsApp numbers', value: '2' },
+      { label: 'SMS senders', value: '2' },
     ],
     features: [],
     limitsNote: '₹10,000 billed quarterly',
-    cta: { label: 'Start free trial', href: '/demo' },
+    cta: { label: 'Book a demo', href: '/demo' },
     mostPopular: true,
   },
   {
@@ -237,13 +238,13 @@ export const pricingPlans: PricingPlanContent[] = [
       { label: 'Users', value: '10' },
       { label: 'Contacts', value: '20,000' },
       { label: 'Storage', value: '10 GB' },
-      { label: 'SMTP', value: '15' },
-      { label: 'WhatsApp', value: '5' },
-      { label: 'SMS', value: '5' },
+      { label: 'SMTP accounts', value: '15' },
+      { label: 'WhatsApp numbers', value: '5' },
+      { label: 'SMS senders', value: '5' },
     ],
     features: [],
     limitsNote: '₹15,000 billed quarterly',
-    cta: { label: 'Talk to sales', href: '/contact' },
+    cta: { label: 'Book a demo', href: '/demo' },
     mostPopular: false,
   },
 ]
@@ -310,9 +311,9 @@ export const faqs: FaqContent[] = [
     category: 'onboarding',
   },
   {
-    question: 'Is the WhatsApp integration official? Will my number get banned?',
+    question: 'Is the WhatsApp integration official?',
     answer:
-      'EZCRM uses the official Meta WhatsApp Business API — not a browser hack or grey-market gateway. Broadcasts go out on Meta-approved templates, which is what keeps your number safe. Grey-market tools are precisely how numbers get banned.',
+      'EZCRM uses the official WhatsApp Business Platform (Meta’s Business API) — not a browser hack or grey-market gateway. Broadcasts go out on Meta-approved templates to customers who have opted in. Accounts must still follow WhatsApp’s Business and Commerce policies; Meta can restrict any number that breaks them, so we help you set up templates and opt-in properly.',
     category: 'whatsapp',
   },
   {
@@ -336,13 +337,13 @@ export const faqs: FaqContent[] = [
   {
     question: 'Is there a per-user price? What about the trial?',
     answer:
-      'Plans are priced per user per month, billed monthly or yearly (yearly saves roughly 17%). The 14-day trial includes the full Floor plan — no card required to start.',
+      'Each plan is a monthly price for your account and includes a set number of users; you can add more users at any time. Plans can also be billed quarterly or yearly at a lower effective monthly price — the exact figures are on each plan card. The free trial gives you the full feature set.',
     category: 'pricing',
   },
   {
     question: 'We are a reseller / agency. Can we offer EZCRM under our own brand?',
     answer:
-      'Yes — the Command plan is multi-tenant and white-label: your logo, your domain, your pricing, with each client in an isolated tenant. Talk to us about reseller terms.',
+      'White-label and reseller set-ups are available — your logo, your domain, with each client in an isolated tenant. Talk to us about reseller terms.',
     category: 'pricing',
   },
   {

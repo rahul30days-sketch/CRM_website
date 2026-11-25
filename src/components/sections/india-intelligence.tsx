@@ -1,185 +1,321 @@
 'use client'
 
 /**
- * Section 09 — Across cities. Across teams. One command center.
+ * Section 09: geographic sales intelligence, on a night section.
  *
- * A stylised city-network visualisation of EZCRM's reach across India. This is
- * deliberately a node network (approximate relative positions), NOT a precise
- * geographic boundary map — so it is honest rather than a decorative, wrong
- * map. A national-totals strip, the interactive map, and a top-regions board
- * fill the section. Hover/focus a city for illustrative sample metrics.
+ * A tile map of India (one equal square per state / UT, explicitly not to
+ * scale) heat-shaded by the chosen metric (leads, won revenue, deals won or
+ * conversion) for the chosen period. Selecting a tile, a ranked-list row or
+ * an option in the region picker shows that region's KPIs, its top sales rep
+ * and its top lead source. The ranked list (top 8 by revenue) ends with an
+ * "Other states" row and an All India total, which equals summarize() of
+ * the whole filtered set, so the figures visibly reconcile.
+ *
+ * Accessibility: metric and period are toggle-button groups; the map is a
+ * single tab stop with arrow-key movement (see TileMap); the legend is text;
+ * a visually hidden table carries every state's numbers; changes are
+ * announced through a polite live region. Bars use scaleX only; with reduced
+ * motion they jump. All sample data, labelled as such.
  */
 
-import { useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { AmbientBackdrop } from '@/components/motion/ambient-backdrop'
+import { PERIOD_LABEL } from '@/demo/sample-data'
+import { SampleBadge, SectionHeader } from '@/components/demo/kit'
+import { formatINR, formatINRCompact } from '@/lib/gst'
+import { EASE } from '@/lib/motion'
+import { cn } from '@/lib/utils'
+import { RegionPanel } from '@/components/geo/region-panel'
+import { TileMap } from '@/components/geo/tile-map'
+import {
+  GEO_PERIODS,
+  HEAT_LEVELS,
+  HEAT_STEPS,
+  METRICS,
+  buildGeo,
+  metricById,
+  metricValue,
+  regionInsights,
+  type GeoMetric,
+  type GeoPeriod,
+} from '@/components/geo/geo-model'
 
-type City = { id: string; name: string; x: number; y: number; leads: number; deals: number; revenue: string; rev: number; conv: string }
+const DEFAULT_PERIOD: GeoPeriod = 'month'
+const DEFAULT_REGION = buildGeo(DEFAULT_PERIOD).ranked[0].code
 
-const CITIES: City[] = [
-  { id: 'delhi', name: 'Delhi NCR', x: 48, y: 13, leads: 1840, deals: 212, revenue: '₹34.2L', rev: 34.2, conv: '26%' },
-  { id: 'lucknow', name: 'Lucknow', x: 62, y: 23, leads: 520, deals: 58, revenue: '₹8.6L', rev: 8.6, conv: '21%' },
-  { id: 'jaipur', name: 'Jaipur', x: 34, y: 24, leads: 640, deals: 74, revenue: '₹11.1L', rev: 11.1, conv: '23%' },
-  { id: 'ahmedabad', name: 'Ahmedabad', x: 22, y: 41, leads: 980, deals: 131, revenue: '₹19.4L', rev: 19.4, conv: '28%' },
-  { id: 'kolkata', name: 'Kolkata', x: 78, y: 44, leads: 760, deals: 88, revenue: '₹13.0L', rev: 13.0, conv: '22%' },
-  { id: 'mumbai', name: 'Mumbai', x: 24, y: 59, leads: 2120, deals: 268, revenue: '₹41.8L', rev: 41.8, conv: '27%' },
-  { id: 'pune', name: 'Pune', x: 33, y: 63, leads: 1180, deals: 152, revenue: '₹22.3L', rev: 22.3, conv: '29%' },
-  { id: 'hyderabad', name: 'Hyderabad', x: 51, y: 69, leads: 1340, deals: 171, revenue: '₹25.6L', rev: 25.6, conv: '26%' },
-  { id: 'bengaluru', name: 'Bengaluru', x: 44, y: 84, leads: 1760, deals: 238, revenue: '₹38.1L', rev: 38.1, conv: '30%' },
-  { id: 'chennai', name: 'Chennai', x: 57, y: 90, leads: 1090, deals: 139, revenue: '₹20.9L', rev: 20.9, conv: '25%' },
-]
-
-const LINKS: [number, number][] = [
-  [0, 1], [0, 2], [2, 3], [3, 5], [5, 6], [6, 7], [7, 8], [8, 9], [1, 4], [4, 7], [0, 7],
-]
-
-const TOTALS = [
-  { value: '10', label: 'cities live' },
-  { value: '12,230', label: 'leads captured' },
-  { value: '1,531', label: 'deals won' },
-  { value: '₹2.35Cr', label: 'revenue tracked' },
-]
-
-const TOP = [...CITIES].sort((a, b) => b.rev - a.rev).slice(0, 5)
-const maxRev = TOP[0].rev
+function Toggle<T extends string>({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string
+  options: { id: T; label: string }[]
+  value: T
+  onChange: (v: T) => void
+}) {
+  return (
+    <div role="group" aria-label={label} className="flex flex-wrap gap-1 rounded-chip border border-night-line bg-night-raised p-1">
+      {options.map((o) => (
+        <button
+          key={o.id}
+          type="button"
+          aria-pressed={value === o.id}
+          onClick={() => onChange(o.id)}
+          className={cn(
+            'min-h-10 rounded-md px-3 text-xs font-semibold transition-colors duration-fast',
+            value === o.id ? 'bg-white text-night' : 'text-white/75 hover:bg-white/10 hover:text-white',
+          )}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  )
+}
 
 export function IndiaIntelligence() {
   const reduce = useReducedMotion()
-  const [sel, setSel] = useState(5)
-  const [pinned, setPinned] = useState(false)
+  const [period, setPeriod] = useState<GeoPeriod>(DEFAULT_PERIOD)
+  const [metric, setMetric] = useState<GeoMetric>('revenue')
+  const [region, setRegion] = useState<string | null>(DEFAULT_REGION)
+  const [announce, setAnnounce] = useState('')
 
-  useEffect(() => {
-    if (pinned || reduce) return
-    const t = setInterval(() => setSel((s) => (s + 1) % CITIES.length), 2400)
-    return () => clearInterval(t)
-  }, [pinned, reduce])
+  const geo = useMemo(() => buildGeo(period), [period])
+  const m = metricById(metric)
+  const regionRow = geo.states.find((s) => s.code === region) ?? null
+  const insights = useMemo(
+    () => regionInsights(region ? geo.leads.filter((l) => l.state === region) : geo.leads),
+    [geo, region],
+  )
 
-  const active = CITIES[sel]
+  const top = geo.ranked.slice(0, 8)
+  const rest = geo.ranked.slice(8)
+  const restRevenue = rest.reduce((s, r) => s + r.stats.revenue, 0)
+  const restLeads = rest.reduce((s, r) => s + r.stats.leads, 0)
+  const maxRevenue = Math.max(1, top[0]?.stats.revenue ?? 0)
+  const max = Math.max(0, ...geo.states.map((s) => metricValue(s.stats, metric)))
+
+  const select = (code: string | null) => {
+    setRegion(code)
+    const name = code ? geo.states.find((s) => s.code === code)?.name : 'All India'
+    const st = code ? geo.states.find((s) => s.code === code)?.stats : geo.total
+    if (name && st) setAnnounce(`${name} selected: ${st.leads} leads, ${formatINR(st.revenue)} won revenue.`)
+  }
+
+  const legend = HEAT_STEPS.map((step, i) => {
+    const lo = i === 0 ? 0 : (max * (i - 1)) / HEAT_LEVELS
+    const hi = (max * i) / HEAT_LEVELS
+    const text = i === 0 ? 'None' : `${m.short(lo)}–${m.short(hi)}`
+    return { ...step, text }
+  })
 
   return (
-    <section className="relative mesh-deep py-14 lg:py-20">
-      <AmbientBackdrop />
-      <div className="shell relative">
-        <header className="mx-auto max-w-2xl text-center">
-          <p className="kicker mb-3">Geographic intelligence</p>
-          <h2 className="font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl lg:text-5xl">
-            Across cities. Across teams. One command center.
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-lg text-slate">
-            See how leads, deals and revenue flow across your regions — so you know where to push next.
-          </p>
-        </header>
+    <section aria-labelledby="geo-title" className="relative overflow-hidden bg-night py-16 lg:py-24">
+      <div className="shell">
+        <SectionHeader
+          id="geo-title"
+          tone="night"
+          kicker="India sales intelligence"
+          title="Across cities. Across teams. One command center."
+          lede="Every lead carries its state, source and owner. Switch the metric and period, then pick a state to see its numbers, its top rep and its top source."
+        />
 
-        {/* national totals strip — closes the gap and sets context */}
-        <div className="mx-auto mt-8 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
-          {TOTALS.map((t) => (
-            <div key={t.label} className="rounded-card border border-line bg-white/70 px-4 py-3 text-center backdrop-blur">
-              <p className="font-mono text-xl font-extrabold text-ink">{t.value}</p>
-              <p className="text-[11px] text-slate">{t.label}</p>
-            </div>
-          ))}
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-3 lg:mt-14">
+          <div className="flex flex-wrap gap-2">
+            <Toggle
+              label="Map metric"
+              options={METRICS.map((x) => ({ id: x.id, label: x.label }))}
+              value={metric}
+              onChange={(v) => {
+                setMetric(v)
+                setAnnounce(`Map now shows ${metricById(v).label.toLowerCase()}.`)
+              }}
+            />
+            <Toggle
+              label="Period"
+              options={GEO_PERIODS.map((p) => ({ id: p, label: PERIOD_LABEL[p] }))}
+              value={period}
+              onChange={(v) => {
+                setPeriod(v)
+                const t = buildGeo(v).total
+                setAnnounce(`${PERIOD_LABEL[v]}: ${t.leads} leads, ${formatINR(t.revenue)} won revenue across India.`)
+              }}
+            />
+          </div>
+          <SampleBadge tone="night" label="Sample data — not real customer activity" />
         </div>
 
-        <div className="mt-10 grid items-center gap-10 lg:grid-cols-[1.1fr_1fr]">
-          {/* interactive city network */}
-          <div className="relative mx-auto aspect-[4/5] w-full max-w-md">
-            <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" aria-hidden>
-              {LINKS.map(([a, b], i) => (
-                <line
-                  key={i}
-                  x1={CITIES[a].x}
-                  y1={CITIES[a].y}
-                  x2={CITIES[b].x}
-                  y2={CITIES[b].y}
-                  stroke="rgb(43,92,230)"
-                  strokeOpacity={0.18}
-                  strokeWidth={0.3}
-                />
-              ))}
-              {CITIES.map((c, i) => (
-                <g key={c.id}>
-                  {!reduce && (
-                    <motion.circle
-                      cx={c.x}
-                      cy={c.y}
-                      r={1.6}
-                      fill="rgb(43,92,230)"
-                      initial={{ opacity: 0.4, scale: 1 }}
-                      animate={{ opacity: [0.4, 0, 0.4], scale: [1, 2.8, 1] }}
-                      transition={{ duration: 2.2, repeat: Infinity, delay: i * 0.2 }}
-                      style={{ transformOrigin: `${c.x}px ${c.y}px` }}
-                    />
-                  )}
-                  <circle cx={c.x} cy={c.y} r={i === sel ? 1.7 : 1} fill={i === sel ? 'rgb(16,138,74)' : 'rgb(43,92,230)'} />
-                </g>
-              ))}
-            </svg>
+        <div className="mt-5 grid gap-5 lg:grid-cols-12">
+          {/* Map */}
+          <div className="rounded-card border border-night-line bg-night p-3 sm:p-5 lg:col-span-7">
+            <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+              <h3 className="text-sm font-semibold text-white">
+                {m.label} by state · {PERIOD_LABEL[period]}
+              </h3>
+              <p className="font-mono text-[0.6875rem] text-white/70">Tile map · not to scale</p>
+            </div>
 
-            {CITIES.map((c, i) => (
-              <button
-                key={c.id}
-                type="button"
-                onMouseEnter={() => { setSel(i); setPinned(true) }}
-                onMouseLeave={() => setPinned(false)}
-                onFocus={() => { setSel(i); setPinned(true) }}
-                onBlur={() => setPinned(false)}
-                style={{ left: `${c.x}%`, top: `${c.y}%` }}
-                className={`absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-semibold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${
-                  i === sel ? 'z-10 scale-110 bg-ink text-white shadow-float' : 'bg-white/85 text-slate shadow-soft hover:text-ink'
-                }`}
+            <label className="mb-4 block lg:hidden">
+              <span className="mb-1.5 block text-xs font-semibold text-white/80">Region</span>
+              <select
+                value={region ?? ''}
+                onChange={(e) => select(e.target.value || null)}
+                className="h-11 w-full rounded-chip border border-night-line bg-night-raised px-3 text-sm text-white"
               >
-                {c.name}
-              </button>
-            ))}
-          </div>
+                <option value="">All India</option>
+                {[...geo.states]
+                  .sort((a, b) => a.name.localeCompare(b.name, 'en-IN'))
+                  .map((s) => (
+                    <option key={s.code} value={s.code}>
+                      {s.name}
+                    </option>
+                  ))}
+              </select>
+            </label>
 
-          {/* selected-city metrics + top regions board */}
-          <div className="space-y-4">
-            <motion.div
-              key={active.id}
-              initial={reduce ? false : { opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="rounded-card border border-line bg-white p-6 shadow-float"
-            >
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-ink">{active.name}</h3>
-                <span className="rounded-full bg-sky px-2.5 py-0.5 text-[11px] font-semibold text-brand">Sample data</span>
-              </div>
-              <div className="mt-4 grid grid-cols-2 gap-4">
-                {[
-                  { label: 'Leads', value: active.leads.toLocaleString('en-IN') },
-                  { label: 'Deals won', value: String(active.deals) },
-                  { label: 'Revenue', value: active.revenue },
-                  { label: 'Conversion', value: active.conv },
-                ].map((m) => (
-                  <div key={m.label}>
-                    <p className="font-mono text-xl font-extrabold text-ink">{m.value}</p>
-                    <p className="text-xs text-slate">{m.label}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+            <TileMap
+              states={geo.states}
+              metric={metric}
+              selected={region}
+              onSelect={(code) => select(region === code ? null : code)}
+            />
 
-            <div className="rounded-card border border-line bg-white/70 p-5 shadow-soft backdrop-blur">
-              <p className="kicker mb-3">Top regions by revenue</p>
-              <ul className="space-y-2.5">
-                {TOP.map((c) => (
-                  <li key={c.id} className="flex items-center gap-3">
-                    <span className="w-20 shrink-0 text-xs font-semibold text-ink">{c.name}</span>
-                    <span className="h-2 flex-1 overflow-hidden rounded-full bg-line">
-                      <span
-                        className={`block h-full rounded-full ${c.id === active.id ? 'bg-[rgb(var(--c-won))]' : 'bg-brand'}`}
-                        style={{ width: `${(c.rev / maxRev) * 100}%` }}
-                      />
-                    </span>
-                    <span className="w-14 shrink-0 text-right font-mono text-xs text-slate">{c.revenue}</span>
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+              <ul aria-label={`Legend: ${m.label}`} className="flex flex-wrap gap-x-3 gap-y-1.5">
+                {legend.map((l) => (
+                  <li key={l.bg} className="flex items-center gap-1.5 font-mono text-[0.6875rem] text-white/75">
+                    <span aria-hidden className={cn('h-3 w-3 rounded-[3px] border border-white/15', l.bg)} />
+                    {l.text}
                   </li>
                 ))}
               </ul>
+              {region ? (
+                <button
+                  type="button"
+                  onClick={() => select(null)}
+                  className="min-h-10 rounded-md px-2 text-xs font-semibold text-white/80 underline underline-offset-4 hover:text-white"
+                >
+                  Show All India
+                </button>
+              ) : null}
             </div>
           </div>
+
+          {/* Region + ranking */}
+          <div className="space-y-5 lg:col-span-5">
+            <RegionPanel
+              name={regionRow ? regionRow.name : 'All India'}
+              insights={insights}
+              periodLabel={PERIOD_LABEL[period]}
+            />
+
+            <section aria-labelledby="geo-rank-title" className="rounded-card border border-night-line bg-night-raised p-4 sm:p-5">
+              <div className="mb-3 flex items-baseline justify-between gap-2">
+                <h3 id="geo-rank-title" className="text-sm font-semibold text-white">
+                  Top 8 states by won revenue
+                </h3>
+                <span className="font-mono text-[0.6875rem] text-white/70">Leads · Revenue</span>
+              </div>
+              <ol className="space-y-1">
+                {top.map((s, i) => (
+                  <li key={s.code}>
+                    <button
+                      type="button"
+                      onClick={() => select(s.code)}
+                      aria-pressed={region === s.code}
+                      className={cn(
+                        'grid min-h-10 w-full grid-cols-[1.25rem_minmax(0,1fr)_auto] items-center gap-x-2 rounded-md px-2 py-1.5 text-left transition-colors duration-fast',
+                        region === s.code ? 'bg-white/10' : 'hover:bg-white/5',
+                      )}
+                    >
+                      <span className="font-mono text-[0.6875rem] text-white/70">{i + 1}</span>
+                      <span className="min-w-0">
+                        <span className="block truncate text-xs font-semibold text-white">{s.name}</span>
+                        <span aria-hidden className="mt-1 block h-1 overflow-hidden rounded-full bg-white/10">
+                          <motion.span
+                            className="block h-full origin-left rounded-full bg-brand-hi"
+                            initial={false}
+                            animate={{ scaleX: s.stats.revenue / maxRevenue }}
+                            transition={reduce ? { duration: 0 } : { duration: 0.45, ease: EASE }}
+                          />
+                        </span>
+                      </span>
+                      <span className="text-right font-mono text-xs tabular-nums text-white">
+                        <span className="text-white/70">{s.stats.leads}</span>
+                        <span className="sr-only"> leads, </span>
+                        <span className="ml-2">{formatINRCompact(s.stats.revenue)}</span>
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ol>
+              <dl className="mt-2 space-y-1 border-t border-night-line pt-2 font-mono text-xs">
+                <div className="flex justify-between gap-2 px-2 py-1 text-white/75">
+                  <dt className="font-sans">Other {rest.length} states &amp; UTs</dt>
+                  <dd className="tabular-nums">
+                    {restLeads}
+                    <span className="sr-only"> leads, </span>
+                    <span className="ml-2">{formatINRCompact(restRevenue)}</span>
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-2 rounded-md bg-white/5 px-2 py-1.5 font-semibold text-white">
+                  <dt className="font-sans">All India</dt>
+                  <dd className="tabular-nums">
+                    {geo.total.leads}
+                    <span className="sr-only"> leads, </span>
+                    <span className="ml-2">{formatINRCompact(geo.total.revenue)}</span>
+                  </dd>
+                </div>
+              </dl>
+            </section>
+          </div>
         </div>
+
+        <table className="sr-only">
+          <caption>
+            Sample data by state, {PERIOD_LABEL[period].toLowerCase()}. Not real customer activity.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">State or UT</th>
+              <th scope="col">Leads</th>
+              <th scope="col">Deals won</th>
+              <th scope="col">Won revenue</th>
+              <th scope="col">Conversion</th>
+              <th scope="col">Open pipeline</th>
+              <th scope="col">Median response (min)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {geo.ranked.map((s) => (
+              <tr key={s.code}>
+                <th scope="row">{s.name}</th>
+                <td>{s.stats.leads}</td>
+                <td>{s.stats.won}</td>
+                <td>{formatINR(s.stats.revenue)}</td>
+                <td>{s.stats.conversion}%</td>
+                <td>{formatINR(s.stats.pipeline)}</td>
+                <td>{s.stats.medianResponseMins}</td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr>
+              <th scope="row">All India</th>
+              <td>{geo.total.leads}</td>
+              <td>{geo.total.won}</td>
+              <td>{formatINR(geo.total.revenue)}</td>
+              <td>{geo.total.conversion}%</td>
+              <td>{formatINR(geo.total.pipeline)}</td>
+              <td>{geo.total.medianResponseMins}</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <p className="sr-only" role="status" aria-live="polite">
+          {announce}
+        </p>
       </div>
     </section>
   )

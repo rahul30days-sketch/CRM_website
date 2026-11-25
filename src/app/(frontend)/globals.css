@@ -18,9 +18,13 @@
   --c-ink: 15 26 51; /* #0F1A33 headlines, near-black */
   --c-slate: 84 96 122; /* #54607A body text */
   --c-line: 226 233 245; /* #E2E9F5 hairlines, borders */
-  --c-won: 16 138 74; /* #108A4A deal won / positive */
+  --c-won: 14 124 67; /* #0E7C43 deal won / positive — 5.3:1 on white */
   --c-info: 43 92 230; /* brand blue for info */
-  --c-due: 208 74 60; /* #D04A3C overdue / attention */
+  --c-due: 190 58 45; /* #BE3A2D overdue / attention — 5.5:1 on white */
+  --c-night: 11 22 40; /* #0B1628 deep navy — cinematic product sections */
+  --c-night-raised: 20 34 58; /* #14223A cards on night */
+  --c-night-line: 38 54 84; /* #263654 hairlines on night */
+  --c-cyan: 6 182 212; /* #06B6D4 data-flow accent, decorative only */
 
   /* Ink button (highest-contrast object on a light-blue field) */
   --btn-ink: 17 23 38; /* #111726 */
@@ -133,31 +137,9 @@
   }
 }
 
-/* Live-events ticker — seamless loop, paused on hover. */
-@keyframes ticker-scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-.ticker-track {
-  animation: ticker-scroll 45s linear infinite;
-}
-
-.ticker-track:hover {
-  animation-play-state: paused;
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-
-  .ticker-track {
-    animation: none;
   }
 
   *,

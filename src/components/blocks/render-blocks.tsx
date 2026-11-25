@@ -52,15 +52,15 @@ export async function RenderBlocks({ blocks }: { blocks: AnyBlock[] }) {
             return (
               <section key={i} className="shell py-12">
                 {block.heading ? (
-                  <h2 className="mb-8 font-display text-3xl font-bold text-bright">{block.heading}</h2>
+                  <h2 className="mb-8 font-display text-3xl font-bold text-ink">{block.heading}</h2>
                 ) : null}
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {(block.items ?? []).map((item: AnyBlock, j: number) => (
                     <article key={j} className="panel-frame p-5">
-                      <h3 className="font-medium text-bright">{item.title}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-fog">{item.description}</p>
+                      <h3 className="font-medium text-ink">{item.title}</h3>
+                      <p className="mt-2 text-sm leading-relaxed text-slate">{item.description}</p>
                       {item.href ? (
-                        <Link href={item.href} className="mt-3 inline-block font-mono text-xs uppercase tracking-wider text-marigold hover:underline">
+                        <Link href={item.href} className="mt-3 inline-block font-mono text-xs uppercase tracking-wider text-brand hover:underline">
                           Learn more →
                         </Link>
                       ) : null}
@@ -74,7 +74,7 @@ export async function RenderBlocks({ blocks }: { blocks: AnyBlock[] }) {
             return (
               <section key={i} className="shell py-12">
                 {block.heading ? (
-                  <h2 className="mb-8 font-display text-3xl font-bold text-bright">{block.heading}</h2>
+                  <h2 className="mb-8 font-display text-3xl font-bold text-ink">{block.heading}</h2>
                 ) : null}
                 <TestimonialWall
                   testimonials={docs.map((t: AnyBlock) => ({
@@ -105,7 +105,7 @@ export async function RenderBlocks({ blocks }: { blocks: AnyBlock[] }) {
             return (
               <section key={i} className="shell max-w-3xl py-12">
                 {block.heading ? (
-                  <h2 className="mb-6 font-display text-3xl font-bold text-bright">{block.heading}</h2>
+                  <h2 className="mb-6 font-display text-3xl font-bold text-ink">{block.heading}</h2>
                 ) : null}
                 <FaqList faqs={faqs} />
               </section>
@@ -118,7 +118,7 @@ export async function RenderBlocks({ blocks }: { blocks: AnyBlock[] }) {
                 {block.heading ? <p className="kicker mb-4">{block.heading}</p> : null}
                 <ul className="flex flex-wrap gap-2">
                   {logos.map((logo: AnyBlock) => (
-                    <li key={logo.slug} className="rounded-chip border border-line bg-panel px-3 py-1.5 font-mono text-xs text-fog">
+                    <li key={logo.slug} className="rounded-chip border border-line bg-white px-3 py-1.5 font-mono text-xs text-slate">
                       {logo.name}
                     </li>
                   ))}
@@ -128,10 +128,10 @@ export async function RenderBlocks({ blocks }: { blocks: AnyBlock[] }) {
           }
           case 'richText':
             return (
-              <section key={i} className="shell max-w-3xl space-y-6 py-12 leading-relaxed text-bright/90">
+              <section key={i} className="shell max-w-3xl space-y-6 py-12 leading-relaxed text-ink/90">
                 <RichText
                   data={block.content as SerializedEditorState}
-                  className="space-y-6 [&_a]:text-marigold [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold"
+                  className="space-y-6 [&_a]:text-brand [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold"
                 />
               </section>
             )

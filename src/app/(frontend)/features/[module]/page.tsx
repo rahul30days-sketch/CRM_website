@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { BUSINESS } from '@/content/business'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowRight, Check } from 'lucide-react'
@@ -8,6 +9,7 @@ import { TestimonialWall } from '@/components/sections/testimonial-wall'
 import { JsonLd } from '@/components/json-ld'
 import { modules as factoryModules, moduleCategories } from '@/content/modules'
 import { getModuleBySlug, getModules, getTestimonials } from '@/lib/cms'
+import { SITE_URL } from '@/lib/site'
 
 export const revalidate = 300
 
@@ -40,7 +42,7 @@ export default async function ModulePage({ params }: { params: Promise<{ module:
 
   const related = allModules.filter((m) => module_.related.includes(m.slug))
   const moduleTestimonials = testimonials.filter((t) => t.moduleSlug === module_.slug)
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+  const siteUrl = SITE_URL
 
   return (
     <>
@@ -61,6 +63,7 @@ export default async function ModulePage({ params }: { params: Promise<{ module:
       />
 
       <PageIntro
+        breadcrumbs={[{ label: 'Features', href: '/features' }]}
         kicker={`Features · ${moduleCategories[module_.category].label}`}
         title={module_.tagline}
         lede={module_.shortDescription}
@@ -73,7 +76,7 @@ export default async function ModulePage({ params }: { params: Promise<{ module:
               <h2 id="problem-heading" className="kicker mb-3">
                 The problem it removes
               </h2>
-              <p className="max-w-2xl border-l-2 border-due/60 pl-5 text-lg leading-relaxed text-bright">
+              <p className="max-w-2xl border-l-2 border-due/60 pl-5 text-lg leading-relaxed text-ink">
                 {module_.problem}
               </p>
             </section>
@@ -87,13 +90,13 @@ export default async function ModulePage({ params }: { params: Promise<{ module:
               <ol className="space-y-4">
                 {module_.howItWorks.map((step, i) => (
                   <li key={i} className="panel-frame flex gap-4 p-5">
-                    <span className="font-mono text-sm font-semibold tabular-nums text-marigold" aria-hidden>
+                    <span className="font-mono text-sm font-semibold tabular-nums text-brand" aria-hidden>
                       {String(i + 1).padStart(2, '0')}
                     </span>
                     <div>
-                      <h3 className="font-medium text-bright">{step.step}</h3>
+                      <h3 className="font-medium text-ink">{step.step}</h3>
                       {step.detail ? (
-                        <p className="mt-1 text-sm leading-relaxed text-fog">{step.detail}</p>
+                        <p className="mt-1 text-sm leading-relaxed text-slate">{step.detail}</p>
                       ) : null}
                     </div>
                   </li>
@@ -102,16 +105,17 @@ export default async function ModulePage({ params }: { params: Promise<{ module:
             </section>
           ) : null}
 
-          {module_.metric ? (
+          {/* Before/after figures show only once verified (content/business.ts). */}
+          {module_.metric && BUSINESS.socialProofVerified ? (
             <section aria-labelledby="metric-heading" className="panel-frame p-6">
               <h2 id="metric-heading" className="kicker mb-4">
                 {module_.metric.caption}
               </h2>
               <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-                <p className="font-mono text-lg tabular-nums text-fog line-through decoration-due/70">
+                <p className="font-mono text-lg tabular-nums text-slate line-through decoration-due/70">
                   {module_.metric.before}
                 </p>
-                <ArrowRight className="h-4 w-4 text-fog" aria-hidden />
+                <ArrowRight className="h-4 w-4 text-slate" aria-hidden />
                 <p className="font-mono text-lg font-semibold tabular-nums text-won">
                   {module_.metric.after}
                 </p>
@@ -133,7 +137,7 @@ export default async function ModulePage({ params }: { params: Promise<{ module:
             </h2>
             <ul className="space-y-2.5">
               {module_.capabilities.map((capability) => (
-                <li key={capability} className="flex gap-2.5 text-sm text-fog">
+                <li key={capability} className="flex gap-2.5 text-sm text-slate">
                   <Check className="mt-0.5 h-4 w-4 shrink-0 text-won" aria-hidden />
                   {capability}
                 </li>
@@ -151,10 +155,10 @@ export default async function ModulePage({ params }: { params: Promise<{ module:
                   <li key={m.slug}>
                     <Link
                       href={`/features/${m.slug}`}
-                      className="block rounded-chip border border-line px-4 py-3 text-sm text-bright transition-colors hover:border-marigold/60 hover:text-marigold"
+                      className="block rounded-chip border border-line px-4 py-3 text-sm text-ink transition-colors hover:border-brand/60 hover:text-brand"
                     >
                       {m.title}
-                      <span className="mt-0.5 block text-xs text-fog">{m.tagline}</span>
+                      <span className="mt-0.5 block text-xs text-slate">{m.tagline}</span>
                     </Link>
                   </li>
                 ))}

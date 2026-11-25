@@ -1,123 +1,176 @@
 'use client'
 
 /**
- * Section 12 — Interactive feature bento grid.
+ * Homepage "The platform" — an asymmetric bento of every EZCRM module.
  *
- * An editorial bento of real EZCRM modules at varied sizes, each card carrying
- * a small live product demo that animates on hover/focus. Titles and taglines
- * come from the CMS modules (passed as a prop); visuals are illustrative.
+ * Idea: instead of icon cards, each module shows a miniature of itself doing
+ * its job (a lead arriving, a deal changing column, a GST total recalculating).
+ * Titles and taglines come from the CMS `modules` prop; the order and size of
+ * cards come from LAYOUT below, and any module not listed there still renders
+ * as a medium card with a generic preview.
+ *
+ * Layout: 12-column grid with fixed row height at lg (two 2-row hero cards,
+ * mediums and smalls, `grid-flow-dense` so unknown modules fill gaps), two
+ * columns at md (heroes span both), one column on phones.
+ *
+ * Motion & a11y: previews loop slowly only while on screen; a section-level
+ * Pause button stops every loop (WCAG 2.2.2). Each card is one link named by
+ * its module title. Reduced motion shows static final states. All figures and
+ * names are sample data, flagged with one SampleBadge for the grid.
  */
 
 import Link from 'next/link'
-import { motion, useReducedMotion } from 'framer-motion'
-import type { ModuleContent } from '@/content/modules'
-import { MessageCircle, Bot, FileText, Workflow, Ticket, BarChart3, Send, Users } from 'lucide-react'
-import { StaggerGroup, staggerItem } from '@/components/motion/reveal'
+import { useState, type ComponentType } from 'react'
+import { ArrowRight, Pause, Play } from 'lucide-react'
+import { moduleCategories, type ModuleContent } from '@/content/modules'
+import { SampleBadge, SectionHeader } from '@/components/demo/kit'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { BentoCard, type BentoSize } from '@/components/bento/bento-card'
+import {
+  AutomationsPreview,
+  CalendarPreview,
+  ChatbotPreview,
+  ContactsPreview,
+  DashboardPreview,
+  EmailPreview,
+  GenericPreview,
+  IntegrationsPreview,
+  LeadsPreview,
+  MediaPreview,
+  PipelinePreview,
+  QuotationsPreview,
+  SmsPreview,
+  TicketingPreview,
+  WhatsAppPreview,
+  type PreviewProps,
+} from '@/components/bento/previews'
 
-type Cell = { slug: string; span: string; icon: typeof MessageCircle; visual: React.ReactNode }
+type Preview = ComponentType<PreviewProps & { uid: string }>
 
-function MiniBars() {
-  return (
-    <div className="flex h-12 items-end gap-1">
-      {[40, 70, 55, 85, 62, 95, 74].map((h, i) => (
-        <span key={i} className="flex-1 rounded-sm bg-brand" style={{ height: `${h}%`, opacity: 0.3 + i * 0.1 }} />
-      ))}
-    </div>
-  )
-}
-function MiniChat() {
-  return (
-    <div className="space-y-1.5">
-      <div className="max-w-[85%] rounded-xl rounded-tl-sm bg-sky px-2.5 py-1.5 text-[11px] text-ink">Is this in stock?</div>
-      <div className="ml-auto max-w-[85%] rounded-xl rounded-tr-sm bg-[#D7F0DD] px-2.5 py-1.5 text-[11px] text-ink">Yes! Sharing a quote 👍</div>
-    </div>
-  )
-}
-function MiniChips() {
-  return (
-    <div className="flex flex-wrap gap-1.5">
-      {['IndiaMART', 'JustDial', 'Facebook', 'WhatsApp', 'Website'].map((s) => (
-        <span key={s} className="rounded-full bg-sky px-2 py-0.5 text-[10px] font-semibold text-brand">{s}</span>
-      ))}
-    </div>
-  )
-}
-function MiniDoc() {
-  return (
-    <div className="rounded-chip border border-line bg-white p-2 text-[10px]">
-      <div className="flex justify-between"><span className="text-slate">Pump × 4</span><span className="font-mono text-ink">₹1,80,000</span></div>
-      <div className="flex justify-between"><span className="text-slate">GST 18%</span><span className="font-mono text-ink">₹32,400</span></div>
-      <div className="mt-1 flex justify-between border-t border-line pt-1 font-semibold"><span className="text-ink">Total</span><span className="font-mono text-ink">₹2,12,400</span></div>
-    </div>
-  )
-}
-function MiniNodes() {
-  return (
-    <div className="flex items-center gap-1.5">
-      {[0, 1, 2, 3].map((i) => (
-        <div key={i} className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-brand" style={{ opacity: 0.4 + i * 0.2 }} />
-          {i < 3 && <span className="h-px w-5 bg-line" />}
-        </div>
-      ))}
-    </div>
-  )
+interface Slot {
+  span: string
+  size: BentoSize
+  Preview: Preview
+  tone?: 'light' | 'night'
 }
 
-const CELLS: Cell[] = [
-  { slug: 'dashboard', span: 'sm:col-span-2 sm:row-span-2', icon: BarChart3, visual: <MiniBars /> },
-  { slug: 'whatsapp', span: 'sm:row-span-2', icon: MessageCircle, visual: <MiniChat /> },
-  { slug: 'lead-integrations', span: 'sm:col-span-2', icon: Users, visual: <MiniChips /> },
-  { slug: 'quotations', span: '', icon: FileText, visual: <MiniDoc /> },
-  { slug: 'automations', span: '', icon: Workflow, visual: <MiniNodes /> },
-  { slug: 'ai-chatbot', span: '', icon: Bot, visual: <MiniChat /> },
-  { slug: 'email-campaigns', span: '', icon: Send, visual: <MiniChips /> },
-  { slug: 'ticketing', span: '', icon: Ticket, visual: <MiniNodes /> },
+const HERO = 'md:col-span-2 lg:row-span-2'
+
+/** Spans are tuned so the default 14-module order tiles 12 columns exactly. */
+const LAYOUT: Record<string, Slot> = {
+  dashboard: { span: cn(HERO, 'lg:col-span-7'), size: 'hero', Preview: DashboardPreview, tone: 'night' },
+  leads: { span: 'lg:col-span-5', size: 'medium', Preview: LeadsPreview },
+  'deals-pipeline': { span: 'lg:col-span-5', size: 'medium', Preview: PipelinePreview },
+  contacts: { span: 'lg:col-span-4', size: 'medium', Preview: ContactsPreview },
+  ticketing: { span: 'lg:col-span-4', size: 'medium', Preview: TicketingPreview },
+  'email-campaigns': { span: 'lg:col-span-4', size: 'medium', Preview: EmailPreview },
+  'sms-campaigns': { span: 'lg:col-span-3', size: 'small', Preview: SmsPreview },
+  whatsapp: { span: cn(HERO, 'lg:col-span-5'), size: 'hero', Preview: WhatsAppPreview },
+  'lead-integrations': { span: 'lg:col-span-4', size: 'medium', Preview: IntegrationsPreview },
+  quotations: { span: 'lg:col-span-3', size: 'small', Preview: QuotationsPreview },
+  automations: { span: 'lg:col-span-4', size: 'medium', Preview: AutomationsPreview },
+  'ai-chatbot': { span: 'lg:col-span-5', size: 'medium', Preview: ChatbotPreview },
+  calendar: { span: 'lg:col-span-4', size: 'medium', Preview: CalendarPreview },
+  'media-library': { span: 'lg:col-span-3', size: 'small', Preview: MediaPreview },
+}
+
+const FALLBACK: Slot = { span: 'lg:col-span-4', size: 'medium', Preview: GenericPreview }
+
+/**
+ * The homepage shows only these six as cards (dashboard hero + five), in a
+ * clean 12-column, 3-row layout. Every other module is listed as a text link
+ * underneath, and all of them are on /features.
+ */
+const FEATURED: { slug: string; span: string; size: BentoSize }[] = [
+  { slug: 'dashboard', span: cn(HERO, 'lg:col-span-7'), size: 'hero' },
+  { slug: 'leads', span: 'lg:col-span-5', size: 'medium' },
+  { slug: 'deals-pipeline', span: 'lg:col-span-5', size: 'medium' },
+  { slug: 'whatsapp', span: 'lg:col-span-4', size: 'medium' },
+  { slug: 'quotations', span: 'lg:col-span-4', size: 'medium' },
+  { slug: 'automations', span: 'lg:col-span-4', size: 'medium' },
 ]
 
 export function FeatureBento({ modules }: { modules: ModuleContent[] }) {
-  const reduce = useReducedMotion()
+  const [paused, setPaused] = useState(false)
   const bySlug = new Map(modules.map((m) => [m.slug, m]))
+  const featured = FEATURED.flatMap((f) => {
+    const m = bySlug.get(f.slug)
+    return m ? [{ m, f }] : []
+  })
+  const featuredSlugs = new Set(featured.map(({ m }) => m.slug))
+  const others = modules.filter((m) => !featuredSlugs.has(m.slug))
 
   return (
-    <section className="shell py-14 lg:py-20">
-      <header className="mx-auto max-w-2xl text-center">
-        <p className="kicker mb-3">The platform</p>
-        <h2 className="font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl lg:text-5xl">
-          One platform. Every part of the sale.
-        </h2>
-        <p className="mx-auto mt-4 max-w-xl text-lg text-slate">
-          From first enquiry to final payment — explore the modules that run your floor.
-        </p>
-      </header>
+    <section className="py-16 lg:py-24" aria-labelledby="feature-bento-title">
+      <div className="shell">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <SectionHeader
+            id="feature-bento-title"
+            align="left"
+            kicker="The platform"
+            title="One platform. Every part of the sale."
+            lede="From first enquiry to final payment. Hover or focus a module to watch it work, then open it for the full tour."
+          />
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setPaused((p) => !p)}
+              aria-pressed={paused}
+              className={buttonVariants({ variant: 'ghost', size: 'sm' })}
+            >
+              {paused ? <Play className="h-4 w-4" aria-hidden /> : <Pause className="h-4 w-4" aria-hidden />}
+              {paused ? 'Play previews' : 'Pause previews'}
+            </button>
+            <Link href="/features" className={buttonVariants({ variant: 'secondary', size: 'sm' })}>
+              Explore all modules
+              <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
+          </div>
+        </div>
 
-      <StaggerGroup className="mt-12 grid auto-rows-[11rem] grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {CELLS.map((cell) => {
-          const m = bySlug.get(cell.slug)
-          const title = m?.title ?? cell.slug
-          const tagline = m?.tagline ?? ''
-          const Icon = cell.icon
-          return (
-            <motion.div key={cell.slug} variants={reduce ? undefined : staggerItem} className={cell.span}>
-              <Link
-                href={`/features/${cell.slug}`}
-                className="group relative flex h-full flex-col justify-between overflow-hidden rounded-card border border-line bg-white p-4 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-brand/30 hover:shadow-float"
-              >
-                <div className="flex items-start justify-between">
-                  <span className="grid h-9 w-9 place-items-center rounded-chip bg-sky text-brand">
-                    <Icon className="h-4 w-4" aria-hidden />
-                  </span>
-                </div>
-                <div className="my-2 opacity-90 transition-opacity group-hover:opacity-100">{cell.visual}</div>
-                <div>
-                  <p className="text-sm font-bold text-ink">{title}</p>
-                  <p className="mt-0.5 line-clamp-2 text-xs text-slate">{tagline}</p>
-                </div>
-              </Link>
-            </motion.div>
-          )
-        })}
-      </StaggerGroup>
+        <div className="mt-6 flex justify-start">
+          <SampleBadge label="Previews use sample data · illustrative" />
+        </div>
+
+        <ul
+          className="mt-6 grid grid-cols-1 gap-3 md:grid-flow-dense md:grid-cols-2 lg:auto-rows-[17rem] lg:grid-cols-12 lg:gap-4"
+          aria-label="EZCRM modules"
+        >
+          {featured.map(({ m, f }, i) => {
+            const slot = LAYOUT[m.slug] ?? FALLBACK
+            return (
+              <BentoCard
+                key={m.slug}
+                slug={m.slug}
+                title={m.title}
+                tagline={m.tagline}
+                category={moduleCategories[m.category]?.label}
+                Preview={slot.Preview}
+                span={f.span}
+                size={f.size}
+                tone={slot.tone}
+                index={i}
+                paused={paused}
+              />
+            )
+          })}
+        </ul>
+
+        {others.length > 0 ? (
+          <div className="mt-8 flex flex-wrap items-baseline gap-x-2 gap-y-2 text-sm">
+            <span className="font-semibold text-ink">Plus {others.length} more:</span>
+            {others.map((m, i) => (
+              <span key={m.slug} className="text-slate">
+                <Link href={`/features/${m.slug}`} className="text-slate underline-offset-4 hover:text-brand hover:underline">
+                  {m.title}
+                </Link>
+                {i < others.length - 1 ? ',' : ''}
+              </span>
+            ))}
+          </div>
+        ) : null}
+      </div>
     </section>
   )
 }

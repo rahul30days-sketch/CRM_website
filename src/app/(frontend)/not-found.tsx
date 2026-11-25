@@ -5,10 +5,10 @@ export default function NotFound() {
   return (
     <div className="shell flex flex-col items-start justify-center py-32">
       <p className="kicker mb-3">Error 404</p>
-      <h1 className="font-display text-4xl font-bold text-bright">
+      <h1 className="font-display text-4xl font-bold text-ink">
         This lead went cold.
       </h1>
-      <p className="mt-4 max-w-md text-fog">
+      <p className="mt-4 max-w-md text-slate">
         The page you’re after doesn’t exist — maybe it moved, maybe the link had a typo. Either
         way, the follow-up is easy:
       </p>

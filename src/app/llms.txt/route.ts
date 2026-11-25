@@ -7,11 +7,14 @@
  * Served dynamically so links use the correct per-environment site URL.
  */
 
+import { SITE_URL } from '@/lib/site'
+import { BUSINESS } from '@/content/business'
+
 export const dynamic = 'force-static'
 export const revalidate = 86400
 
 export function GET() {
-  const url = (process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000').replace(/\/$/, '')
+  const url = SITE_URL
 
   const body = `# EZCRM
 
@@ -36,7 +39,7 @@ Lead capture → assignment → WhatsApp / email / SMS engagement → GST quotat
 Indian manufacturers, distributors, real-estate firms, service businesses, MSMEs, sales managers and business owners who run their sales on spreadsheets and WhatsApp and want one organised system.
 
 ## Pricing
-- Free plan (₹0) with a 30-day full-feature trial
+- Free plan (₹0) with a ${BUSINESS.trialDays}-day full-feature trial
 - Paid plans (Starter, Pro, Enterprise) with flat per-plan pricing in Indian Rupees, plus add-ons for extra users, storage and contacts
 - See ${url}/pricing
 
@@ -50,7 +53,7 @@ Indian manufacturers, distributors, real-estate firms, service businesses, MSMEs
 - Book a demo: ${url}/demo
 
 ## Trust & data
-- Uses the official Meta WhatsApp Business API (no grey-market ban risk) and DLT-compliant SMS routes
+- Uses the official Meta WhatsApp Business API with Meta-approved templates and DLT-compliant SMS routes
 - Role-based, data-scoped access, a full audit trail, and multi-tenant isolation
 - Your data stays yours — full export (XLSX/CSV) available to admins at any time
 `

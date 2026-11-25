@@ -1,14 +1,11 @@
 import type { Config } from 'tailwindcss'
 
 /**
- * EZCRM "Powder Room" theme — light only.
+ * EZCRM theme — light only. Values live as RGB triplets in globals.css so
+ * alpha modifiers work (`bg-brand/10`). Write colours through these names,
+ * never `[rgb(var(--…))]` or hex literals.
  *
- * Two token families share one palette:
- *  - New craft tokens (base/sky/mist/powder/brand/ink/slate/line) drive the
- *    redesigned surfaces.
- *  - Legacy semantic tokens (console/panel/raised/bright/fog/marigold/won…)
- *    are remapped onto the same light values so existing pages inherit the
- *    new look without a per-file rewrite. `marigold` now means brand-blue.
+ * Motion tokens mirror src/lib/motion.ts (framer-motion reads that file).
  */
 const config: Config = {
   // Light only. No `dark:` variants, no toggle.
@@ -24,20 +21,20 @@ const config: Config = {
         brand: {
           DEFAULT: 'rgb(var(--c-brand) / <alpha-value>)',
           hi: 'rgb(var(--c-brand-hi) / <alpha-value>)',
+          deep: 'rgb(var(--c-brand-deep) / <alpha-value>)',
         },
         ink: 'rgb(var(--c-ink) / <alpha-value>)',
         slate: 'rgb(var(--c-slate) / <alpha-value>)',
         line: 'rgb(var(--c-line) / <alpha-value>)',
-        // ── Legacy aliases (remapped to the light system) ───────────
-        console: 'rgb(var(--c-base) / <alpha-value>)',
-        panel: 'rgb(var(--c-panel) / <alpha-value>)',
-        raised: 'rgb(var(--c-sky) / <alpha-value>)',
-        bright: 'rgb(var(--c-ink) / <alpha-value>)',
-        fog: 'rgb(var(--c-slate) / <alpha-value>)',
-        marigold: {
-          DEFAULT: 'rgb(var(--c-brand) / <alpha-value>)',
-          deep: 'rgb(var(--c-brand-deep) / <alpha-value>)',
+        'btn-ink': 'rgb(var(--btn-ink) / <alpha-value>)',
+        // Deep navy for the dark, cinematic product sections.
+        night: {
+          DEFAULT: 'rgb(var(--c-night) / <alpha-value>)',
+          raised: 'rgb(var(--c-night-raised) / <alpha-value>)',
+          line: 'rgb(var(--c-night-line) / <alpha-value>)',
         },
+        cyan: 'rgb(var(--c-cyan) / <alpha-value>)',
+        // Status signals (AA ≥ 4.5:1 on white and sky for small text).
         won: 'rgb(var(--c-won) / <alpha-value>)',
         info: 'rgb(var(--c-info) / <alpha-value>)',
         due: 'rgb(var(--c-due) / <alpha-value>)',
@@ -66,14 +63,28 @@ const config: Config = {
         soft: '0 1px 2px rgba(15,26,51,.08), 0 8px 20px -8px rgba(43,92,230,.16)',
         press: '0 1px 2px rgba(15,26,51,.12)',
       },
+      transitionTimingFunction: {
+        // The site's one easing curve — same as EASE in src/lib/motion.ts.
+        out: 'cubic-bezier(0.22, 1, 0.36, 1)',
+      },
+      transitionDuration: {
+        fast: '150ms',
+        base: '250ms',
+        slow: '600ms',
+      },
       keyframes: {
         'rise-in': {
           from: { opacity: '0', transform: 'translateY(16px)' },
           to: { opacity: '1', transform: 'translateY(0)' },
         },
+        'nav-progress': {
+          from: { transform: 'scaleX(0)' },
+          to: { transform: 'scaleX(0.85)' },
+        },
       },
       animation: {
-        'rise-in': 'rise-in 0.6s cubic-bezier(0.16,1,0.3,1) both',
+        'rise-in': 'rise-in 0.6s cubic-bezier(0.22,1,0.36,1) both',
+        'nav-progress': 'nav-progress 2.4s cubic-bezier(0.22,1,0.36,1) forwards',
       },
     },
   },

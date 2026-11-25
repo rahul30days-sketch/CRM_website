@@ -17,6 +17,7 @@
 
 import { useEffect, useMemo, useRef } from 'react'
 import { useReducedMotion } from 'framer-motion'
+import { useActiveMotion } from '@/hooks/use-active-motion'
 import {
   Users, UserCheck, Target, TrendingUp, FileText, LayoutDashboard, MessageCircle,
   Mail, MessageSquare, Phone, Ticket, Bell, CalendarClock, Contact, IndianRupee,
@@ -25,7 +26,7 @@ import {
 } from 'lucide-react'
 
 const BRAND = 'rgb(43,92,230)'
-const WON = 'rgb(16,138,74)'
+const WON = 'rgb(var(--c-won))'
 const WA = '#25D366'
 const FB = '#1877F2'
 const ORANGE = '#E8850C'
@@ -85,14 +86,31 @@ export function CrmIconCloud() {
   const rot = useRef({ x: -0.3, y: 0 })
   const vel = useRef({ x: 0, y: 0.0022 })
 
+  // Spin only while on screen, tab visible and motion allowed. Otherwise the
+  // cloud holds its last pose and the loop stops costing CPU.
+  const active = useActiveMotion(containerRef)
+  const size = useRef(0)
+
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
+    // Measure on resize, not every frame — per-frame layout reads were the
+    // main cost of this effect.
+    const measure = () => {
+      const rect = container.getBoundingClientRect()
+      size.current = Math.min(rect.width, rect.height) * 0.42
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(container)
+    return () => ro.disconnect()
+  }, [])
+
+  useEffect(() => {
     let raf = 0
 
     const project = () => {
-      const rect = container.getBoundingClientRect()
-      const R = Math.min(rect.width, rect.height) * 0.42
+      const R = size.current
       const { x: rx, y: ry } = rot.current
       const cosX = Math.cos(rx), sinX = Math.sin(rx)
       const cosY = Math.cos(ry), sinY = Math.sin(ry)
@@ -111,24 +129,24 @@ export function CrmIconCloud() {
         el.style.transform = `translate(-50%, -50%) translate(${(x1 * R).toFixed(1)}px, ${(y2 * R).toFixed(1)}px) scale(${scale.toFixed(3)})`
         el.style.opacity = (0.3 + depth * 0.7).toFixed(3)
         el.style.zIndex = String(Math.round(depth * 100))
-        el.style.filter = `blur(${((1 - depth) * 1.2).toFixed(2)}px)`
       }
     }
 
     const tick = () => {
-      if (!reduce) {
-        rot.current.x += vel.current.x
-        rot.current.y += vel.current.y
-        // ease idle spin back toward baseline after pointer nudges
-        vel.current.x += (0 - vel.current.x) * 0.02
-        vel.current.y += (0.0022 - vel.current.y) * 0.02
-      }
+      rot.current.x += vel.current.x
+      rot.current.y += vel.current.y
+      // ease idle spin back toward baseline after pointer nudges
+      vel.current.x += (0 - vel.current.x) * 0.02
+      vel.current.y += (0.0022 - vel.current.y) * 0.02
       project()
       raf = requestAnimationFrame(tick)
     }
-    tick()
+
+    // Always paint one static pose; animate only while active.
+    project()
+    if (active) raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
-  }, [base, reduce])
+  }, [base, active])
 
   const onPointerMove = (e: React.PointerEvent) => {
     if (reduce) return
@@ -144,7 +162,7 @@ export function CrmIconCloud() {
     <div
       ref={containerRef}
       onPointerMove={onPointerMove}
-      className="relative h-full w-full touch-none"
+      className="relative h-full w-full"
       role="img"
       aria-label="The EZCRM sales universe — leads, conversations, quotations, pipeline, payments and analytics in one platform."
     >

@@ -62,7 +62,7 @@ export const comparisons: ComparisonContent[] = [
       { feature: 'Drag-and-drop pipeline (Kanban)', ezcrm: 'yes', competitor: 'yes' },
       { feature: 'Built-in ticketing / help desk', ezcrm: 'yes', competitor: 'partial', note: 'Zoho: Zoho Desk, separate product' },
       { feature: 'Multi-tenant white-label (for resellers)', ezcrm: 'yes', competitor: 'no' },
-      { feature: 'Priced per user in ₹, India support hours', ezcrm: 'yes', competitor: 'partial', note: 'Zoho: global pricing tiers' },
+      { feature: 'Priced in ₹, India support hours', ezcrm: 'yes', competitor: 'partial', note: 'Zoho: global pricing tiers' },
       { feature: 'Setup without a consultant', ezcrm: 'yes', competitor: 'partial' },
     ],
     differentiators: [
@@ -73,7 +73,7 @@ export const comparisons: ComparisonContent[] = [
     migration:
       'Switching from Zoho is a straight XLSX export/import: leads, contacts and deals map to EZCRM fields, and your WhatsApp number connects through the official Meta API. Most teams are fully moved within a week.',
     faqs: [
-      { question: 'Is EZCRM cheaper than Zoho CRM?', answer: 'EZCRM is priced simply per user per month in rupees, with WhatsApp, quotations and India lead-source connectors included rather than sold as add-ons — so the all-in cost is usually lower for an Indian SMB once you account for the extensions Zoho needs.' },
+      { question: 'Is EZCRM cheaper than Zoho CRM?', answer: 'EZCRM is priced in rupees, with WhatsApp, quotations and India lead-source connectors included rather than sold as add-ons — so the all-in cost is usually lower for an Indian SMB once you account for the extensions Zoho needs.' },
       { question: 'Can I move my Zoho data to EZCRM?', answer: 'Yes. Export your leads, contacts and deals from Zoho as XLSX and import them into EZCRM with field mapping. Your team is usually live within a week.' },
       { question: 'Does EZCRM do everything Zoho does?', answer: 'No — Zoho is a much broader suite. EZCRM deliberately covers what an Indian sales team needs day to day (leads, WhatsApp, pipeline, quotations, campaigns, ticketing) and does those without add-ons.' },
     ],
@@ -108,7 +108,7 @@ export const comparisons: ComparisonContent[] = [
       { feature: 'Email & drip campaigns', ezcrm: 'yes', competitor: 'yes' },
       { feature: 'Built-in ticketing / help desk', ezcrm: 'yes', competitor: 'partial', note: 'Freshsales: Freshdesk, separate product' },
       { feature: 'Multi-tenant white-label (for resellers)', ezcrm: 'yes', competitor: 'no' },
-      { feature: 'Priced per user in ₹, India support hours', ezcrm: 'yes', competitor: 'partial' },
+      { feature: 'Priced in ₹, India support hours', ezcrm: 'yes', competitor: 'partial' },
       { feature: 'Setup without a consultant', ezcrm: 'yes', competitor: 'yes' },
     ],
     differentiators: [
@@ -154,7 +154,7 @@ export const comparisons: ComparisonContent[] = [
       { feature: 'Built-in ticketing / help desk', ezcrm: 'yes', competitor: 'partial' },
       { feature: 'Multi-tenant white-label (for resellers)', ezcrm: 'yes', competitor: 'no' },
       { feature: 'AI chatbot for your website', ezcrm: 'yes', competitor: 'partial' },
-      { feature: 'Pricing model', ezcrm: 'partial', competitor: 'yes', note: 'EZCRM: per user · Kylas: flat unlimited users' },
+      { feature: 'Pricing model', ezcrm: 'partial', competitor: 'yes', note: 'EZCRM: plans include a set number of users, more can be added · Kylas: check their current pricing' },
       { feature: 'India support hours & onboarding', ezcrm: 'yes', competitor: 'yes' },
     ],
     differentiators: [
@@ -166,8 +166,8 @@ export const comparisons: ComparisonContent[] = [
       'Move from Kylas with an XLSX export/import of leads, contacts and deals, and reconnect your WhatsApp number and lead sources. Both tools speak the same India-SMB language, so the switch is quick.',
     faqs: [
       { question: 'Is EZCRM or Kylas better for Indian SMBs?', answer: 'Both are built for India. EZCRM leans into a deeper official-WhatsApp inbox, built-in GST quotations and reseller white-label; Kylas leans into flat unlimited-user pricing. The right choice depends on team size and whether WhatsApp/quotations/white-label matter most to you.' },
-      { question: 'Does EZCRM offer unlimited users like Kylas?', answer: 'EZCRM is priced per user, which is cost-effective for small and mid teams. For very large teams, compare the all-in cost both ways — talk to us and we’ll model it for your headcount.' },
-      { question: 'Can I white-label EZCRM?', answer: 'Yes. EZCRM’s Command plan is multi-tenant and white-label, so agencies and resellers can offer it under their own brand with each client isolated.' },
+      { question: 'Does EZCRM offer unlimited users like Kylas?', answer: 'EZCRM plans include a set number of users, with more added as you grow — cost-effective for small and mid-size teams. For very large teams, compare the all-in cost both ways — talk to us and we’ll model it for your headcount.' },
+      { question: 'Can I white-label EZCRM?', answer: 'Yes. EZCRM is available multi-tenant and white-label, so agencies and resellers can offer it under their own brand with each client isolated.' },
     ],
     order: 3,
   },
@@ -197,7 +197,7 @@ export const comparisons: ComparisonContent[] = [
       { feature: 'Live pipeline & revenue dashboard', ezcrm: 'yes', competitor: 'no' },
       { feature: 'GST quotations with HSN/SAC codes', ezcrm: 'yes', competitor: 'no' },
       { feature: 'Role-based access & audit trail', ezcrm: 'yes', competitor: 'no' },
-      { feature: 'Broadcasts on approved templates (no ban risk)', ezcrm: 'yes', competitor: 'no', note: 'Personal WhatsApp: broadcasting risks a ban' },
+      { feature: 'Broadcasts on Meta-approved templates', ezcrm: 'yes', competitor: 'no', note: 'Bulk messaging from a personal WhatsApp breaks WhatsApp’s terms' },
       { feature: 'Works on your team’s phones', ezcrm: 'yes', competitor: 'yes' },
       { feature: 'Zero software cost', ezcrm: 'no', competitor: 'yes', note: 'The hidden cost of Excel+WhatsApp is the deals you lose' },
     ],

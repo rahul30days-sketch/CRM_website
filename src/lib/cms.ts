@@ -367,9 +367,9 @@ const fallbackHomepage: HomepageContent = {
     kicker: 'EZCRM · CRM for Indian sales teams',
     heading: 'Run your entire sales floor from one screen.',
     subheading:
-      'IndiaMART, JustDial, Facebook and WhatsApp leads — captured in seconds, routed round-robin, followed up on time, and quoted with correct GST.',
-    primaryCta: { label: 'Book a demo', href: '/demo' },
-    secondaryCta: { label: 'See it live', href: '#live' },
+      'Capture every opportunity. Connect every conversation. Automate every follow-up. Close more deals with India’s connected sales command center.',
+    primaryCta: { label: 'Book a free demo', href: '/demo' },
+    secondaryCta: { label: 'Experience EZCRM', href: '/experience' },
     trustText: '500+ teams',
   },
   stats: [
@@ -392,19 +392,19 @@ const fallbackHomepage: HomepageContent = {
   whatsapp: {
     kicker: 'The channel customers actually answer',
     heading: 'One WhatsApp number. Your whole team. Every chat on record.',
-    body: 'Move off personal phones and onto a shared inbox on Meta’s official API. Conversations stay with the business when staff leave, managers see who answered whom, and broadcasts go out on approved templates — safely.',
+    body: 'Move off personal phones and onto a shared inbox on the official WhatsApp Business Platform. Conversations stay with the business when staff leave, managers see who answered whom, and broadcasts go out on Meta-approved templates to customers who have opted in.',
     points: [
-      'Official Meta WhatsApp Business API — no ban risk',
+      'Official WhatsApp Business Platform — approved templates, customer opt-in',
       'Shared team inbox with round-robin agent assignment',
       'Approved-template broadcasts with per-recipient read logs',
     ],
   },
   cta: {
-    heading: 'See your own pipeline on this screen.',
+    heading: 'Your entire sales operation. Finally working as one.',
     subheading:
-      'A 30-minute demo with your lead sources, your stages and your WhatsApp number. No slideware.',
-    primary: { label: 'Book a demo', href: '/demo' },
-    secondary: { label: 'See pricing', href: '/pricing' },
+      'Bring your leads, conversations, salespeople, quotations and customer relationships together with EZCRM.',
+    primary: { label: 'Book your free demo', href: '/demo' },
+    secondary: { label: 'Experience EZCRM', href: '/experience' },
   },
 }
 
@@ -505,7 +505,7 @@ export interface DemoPageContent {
 
 const fallbackDemoPage: DemoPageContent = {
   kicker: 'Book a demo',
-  heading: 'Thirty minutes. Your leads live.',
+  heading: 'Thirty minutes. Your leads, live.',
   lede: 'Fill this in and a product specialist — someone who can configure the system, not read a script — calls you within one working day.',
   whatToExpect: [
     'A 30-minute screen-share at a time you pick — no webinar, no recording of you',
@@ -515,8 +515,8 @@ const fallbackDemoPage: DemoPageContent = {
   ],
   preferToTalk: {
     heading: 'Prefer to talk first?',
-    phone: '+91 98765 43210',
-    email: 'hello@ezcrm.in',
+    phone: '+91 93553 21321',
+    email: 'info@30days.in',
   },
 }
 

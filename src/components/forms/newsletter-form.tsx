@@ -23,7 +23,7 @@ export function NewsletterForm() {
 
   return (
     <form action={formAction} className="space-y-2">
-      <label htmlFor="newsletter-email" className="text-sm text-fog">
+      <label htmlFor="newsletter-email" className="text-sm text-slate">
         One useful sales-ops email a month:
       </label>
       <div className="flex gap-2">

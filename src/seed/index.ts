@@ -249,7 +249,7 @@ async function seed() {
     data: {
       siteName: 'EZCRM',
       tagline: 'The sales command center for Indian teams',
-      supportEmail: 'support@ezcrm.in',
+      supportEmail: 'info@30days.in',
       footerNote: 'Made for the Indian sales floor.',
     },
   })
@@ -288,9 +288,9 @@ async function seed() {
         whatsappKicker: 'The channel customers actually answer',
         whatsappHeading: 'One WhatsApp number. Your whole team. Every chat on record.',
         whatsappBody:
-          'Move off personal phones and onto a shared inbox on Meta’s official API. Conversations stay with the business when staff leave, managers see who answered whom, and broadcasts go out on approved templates — safely.',
+          'Move off personal phones and onto a shared inbox on the official WhatsApp Business Platform. Conversations stay with the business when staff leave, managers see who answered whom, and broadcasts go out on Meta-approved templates to customers who have opted in.',
         whatsappPoints: [
-          { point: 'Official Meta WhatsApp Business API — no ban risk' },
+          { point: 'Official WhatsApp Business Platform — approved templates, customer opt-in' },
           { point: 'Shared team inbox with round-robin agent assignment' },
           { point: 'Approved-template broadcasts with per-recipient read logs' },
         ],
@@ -322,8 +322,8 @@ async function seed() {
         ],
         preferToTalk: {
           heading: 'Prefer to talk first?',
-          phone: '+91 98765 43210',
-          email: 'hello@ezcrm.in',
+          phone: '+91 93553 21321',
+          email: 'info@30days.in',
         },
       },
     })

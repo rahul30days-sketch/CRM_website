@@ -1,99 +1,116 @@
 'use client'
 
 /**
- * Section 11 — One trigger. An entire workflow in motion.
+ * One trigger. An entire workflow in motion.
  *
- * A workflow chain that activates node-by-node to show how one event cascades
- * through EZCRM automations. Auto-plays once on view, replayable on demand.
- * framer-motion; nodes reflect supported automation actions.
+ * A node-based visualizer for five example workflows (WORKFLOWS sample
+ * data). A tablist picks the workflow; the selected panel runs a simulated
+ * execution node by node with a pulse along each SVG connector, condition
+ * lanes (Yes / No, visitor-chosen) and an execution log beside the graph.
+ * These are examples of what can be built, not a list of shipped templates.
+ *
+ * Accessibility: WAI-ARIA tabs with roving tabindex (Left/Right/Up/Down,
+ * Home/End; selection follows focus). All five panels are in the server
+ * HTML; inactive ones use `hidden`. Pause / Replay controls in each panel;
+ * reduced motion shows the completed run (see WorkflowPanel).
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { motion, useInView, useReducedMotion } from 'framer-motion'
-import { Inbox, UserPlus, Users, CalendarClock, MessageCircle, BellRing, Play } from 'lucide-react'
-
-const NODES = [
-  { icon: Inbox, label: 'New enquiry', sub: 'IndiaMART' },
-  { icon: UserPlus, label: 'Lead created', sub: 'Auto-captured' },
-  { icon: Users, label: 'Rep assigned', sub: 'Round-robin' },
-  { icon: CalendarClock, label: 'Follow-up scheduled', sub: '+2 hours' },
-  { icon: MessageCircle, label: 'Customer contacted', sub: 'WhatsApp template' },
-  { icon: BellRing, label: 'Manager notified', sub: 'If no reply in 1h' },
-]
+import { useRef, useState, type KeyboardEvent } from 'react'
+import { SampleBadge, SectionHeader } from '@/components/demo/kit'
+import { WORKFLOWS } from '@/demo/sample-data'
+import { WorkflowPanel } from '@/components/automation/workflow-panel'
+import { cn } from '@/lib/utils'
 
 export function AutomationWorkflow() {
-  const reduce = useReducedMotion()
-  const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, amount: 0.4 })
-  const [step, setStep] = useState(reduce ? NODES.length : -1)
-  const timers = useRef<ReturnType<typeof setTimeout>[]>([])
+  const [selected, setSelected] = useState(0)
+  const tabs = useRef<(HTMLButtonElement | null)[]>([])
 
-  const run = useCallback(() => {
-    timers.current.forEach(clearTimeout)
-    timers.current = []
-    setStep(-1)
-    NODES.forEach((_, i) => {
-      timers.current.push(setTimeout(() => setStep(i), 350 + i * 650))
-    })
-  }, [])
+  const focusTab = (i: number) => {
+    const n = WORKFLOWS.length
+    const next = (i + n) % n
+    setSelected(next)
+    tabs.current[next]?.focus()
+  }
 
-  useEffect(() => {
-    if (inView && !reduce) run()
-    return () => timers.current.forEach(clearTimeout)
-  }, [inView, reduce, run])
+  const onKeyDown = (e: KeyboardEvent<HTMLButtonElement>, i: number) => {
+    const map: Record<string, number> = {
+      ArrowRight: i + 1,
+      ArrowDown: i + 1,
+      ArrowLeft: i - 1,
+      ArrowUp: i - 1,
+      Home: 0,
+      End: WORKFLOWS.length - 1,
+    }
+    if (e.key in map) {
+      e.preventDefault()
+      focusTab(map[e.key])
+    }
+  }
 
   return (
-    <section className="shell py-14 lg:py-20">
-      <header className="mx-auto max-w-2xl text-center">
-        <p className="kicker mb-3">Funnels & automations</p>
-        <h2 className="font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl lg:text-5xl">
-          One trigger. An entire workflow in motion.
-        </h2>
-        <p className="mx-auto mt-4 max-w-xl text-lg text-slate">
-          Set the rule once; EZCRM runs the busywork — assign, remind, message and escalate — every single time.
-        </p>
-      </header>
-
-      <div ref={ref} className="mx-auto mt-12 max-w-4xl">
-        <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 lg:grid-cols-6 lg:gap-x-2">
-          {NODES.map((n, i) => {
-            const on = i <= step
-            const Icon = n.icon
-            return (
-              <div key={n.label} className="relative flex flex-col items-center text-center">
-                <motion.div
-                  animate={{
-                    backgroundColor: on ? 'rgb(43,92,230)' : 'rgb(255,255,255)',
-                    color: on ? 'rgb(255,255,255)' : 'rgb(84,96,122)',
-                    scale: i === step ? 1.12 : 1,
-                    borderColor: on ? 'rgb(43,92,230)' : 'rgb(226,233,245)',
-                  }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 24 }}
-                  className="grid h-14 w-14 place-items-center rounded-2xl border shadow-soft"
-                >
-                  <Icon className="h-6 w-6" aria-hidden />
-                </motion.div>
-                <p className="mt-2 text-xs font-semibold text-ink">{n.label}</p>
-                <p className="font-mono text-[10px] text-slate">{n.sub}</p>
-                {/* connector to next (desktop) */}
-                {i < NODES.length - 1 && (
-                  <span className="absolute right-[-0.5rem] top-7 hidden h-px w-4 bg-line lg:block">
-                    <motion.span className="block h-full bg-brand" initial={{ width: 0 }} animate={{ width: on && i < step ? '100%' : 0 }} transition={{ duration: 0.4 }} />
-                  </span>
-                )}
-              </div>
-            )
-          })}
+    <section aria-labelledby="automation-heading" className="bg-night py-16 lg:py-24">
+      <div className="shell">
+        <div className="flex flex-col items-start gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <SectionHeader
+            id="automation-heading"
+            tone="night"
+            align="left"
+            kicker="Workflow automation"
+            title="One trigger. An entire workflow in motion."
+            lede="Build workflows like these: a trigger starts the run, waits hold it, conditions choose the path and actions do the work. Pick an example and watch a simulated run."
+          />
+          <SampleBadge tone="night" label="Example workflows · simulated" />
         </div>
 
-        <div className="mt-10 flex justify-center">
-          <button
-            type="button"
-            onClick={run}
-            className="inline-flex items-center gap-2 rounded-chip border border-line bg-white px-4 py-2.5 text-sm font-semibold text-ink shadow-soft transition-colors hover:border-brand/40"
+        <div className="mt-10 lg:mt-12">
+          <div
+            role="tablist"
+            aria-label="Example workflows"
+            aria-orientation="horizontal"
+            className="flex flex-wrap gap-2 border-b border-night-line pb-4"
           >
-            <Play className="h-4 w-4 text-brand" aria-hidden /> Replay automation
-          </button>
+            {WORKFLOWS.map((wf, i) => {
+              const isSel = i === selected
+              return (
+                <button
+                  key={wf.id}
+                  ref={(el) => {
+                    tabs.current[i] = el
+                  }}
+                  type="button"
+                  role="tab"
+                  id={`wf-tab-${wf.id}`}
+                  aria-selected={isSel}
+                  aria-controls={`wf-panel-${wf.id}`}
+                  tabIndex={isSel ? 0 : -1}
+                  onClick={() => setSelected(i)}
+                  onKeyDown={(e) => onKeyDown(e, i)}
+                  className={cn(
+                    'inline-flex h-10 items-center rounded-full border px-4 text-sm font-semibold transition-colors duration-fast',
+                    isSel
+                      ? 'border-white bg-white text-night'
+                      : 'border-night-line bg-night-raised text-white/75 hover:bg-white/10 hover:text-white',
+                  )}
+                >
+                  {wf.name}
+                </button>
+              )
+            })}
+          </div>
+
+          {WORKFLOWS.map((wf, i) => (
+            <div
+              key={wf.id}
+              role="tabpanel"
+              id={`wf-panel-${wf.id}`}
+              aria-labelledby={`wf-tab-${wf.id}`}
+              hidden={i !== selected}
+              className="pt-6"
+            >
+              <p className="mb-5 max-w-2xl text-sm text-white/75">{wf.summary}</p>
+              <WorkflowPanel workflow={wf} selected={i === selected} />
+            </div>
+          ))}
         </div>
       </div>
     </section>

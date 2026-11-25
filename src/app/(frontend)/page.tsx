@@ -1,49 +1,66 @@
 import Link from 'next/link'
-import { Star } from 'lucide-react'
-import { HeroVisuals } from '@/components/console/hero-visuals'
+import { ArrowRight } from 'lucide-react'
 import { HeroStage } from '@/components/hero-stage'
 import { StatStrip } from '@/components/sections/stat-strip'
 import { LogoCloud } from '@/components/sections/logo-cloud'
-import { WhatsAppShowcase } from '@/components/sections/whatsapp-showcase'
 import { TestimonialWall } from '@/components/sections/testimonial-wall'
 import { ChaosToControl } from '@/components/sections/chaos-to-control'
 import { LeadJourneyCinematic } from '@/components/sections/lead-journey-cinematic'
 import { LeadMagnet } from '@/components/sections/lead-magnet'
 import { SalesPipeline } from '@/components/sections/sales-pipeline'
 import { ExplodedDashboard } from '@/components/sections/exploded-dashboard'
-import { IndiaIntelligence } from '@/components/sections/india-intelligence'
 import { QuotationAssembly } from '@/components/sections/quotation-assembly'
 import { AutomationWorkflow } from '@/components/sections/automation-workflow'
 import { FeatureBento } from '@/components/sections/feature-bento'
 import { IndustryExperiences } from '@/components/sections/industry-experiences'
 import { FinalCtaCinematic } from '@/components/sections/final-cta-cinematic'
+import { FaqList } from '@/components/sections/faq-list'
+import { PlaygroundInvite } from '@/components/sections/playground-invite'
+import { PricingPreview } from '@/components/sections/pricing-preview'
 import { JsonLd } from '@/components/json-ld'
 import { buttonVariants } from '@/components/ui/button'
-import { getHomepage, getIntegrations, getModules, getTestimonials } from '@/lib/cms'
-import { faqs } from '@/content/site'
+import {
+  getFaqs,
+  getHomepage,
+  getIntegrations,
+  getModules,
+  getPricingPlans,
+  getTestimonials,
+} from '@/lib/cms'
+import { BUSINESS } from '@/content/business'
 import { cn } from '@/lib/utils'
+import { SITE_URL } from '@/lib/site'
 
 export const revalidate = 300
 
+/**
+ * Homepage — "The Living Sales Command Center".
+ *
+ * Narrative: the problem (chaos → control) → one enquiry's whole journey →
+ * each part of the system up close (capture, pipeline, dashboard,
+ * quotation, automation) → try it yourself → the whole platform
+ * → your industry → proof (only once verified) → price → questions → CTA.
+ *
+ * Unverified social proof (stats, ratings, testimonials) renders only when
+ * BUSINESS.socialProofVerified is true — see src/content/business.ts.
+ */
 export default async function HomePage() {
-  const [modules, testimonials, integrations, home] = await Promise.all([
+  const [modules, testimonials, integrations, home, plans, allFaqs] = await Promise.all([
     getModules(),
     getTestimonials(),
     getIntegrations(),
     getHomepage(),
+    getPricingPlans(),
+    getFaqs(),
   ])
+  const faqs = allFaqs.filter((f) => f.category !== 'pricing').slice(0, 8)
+  const proof = BUSINESS.socialProofVerified
 
   const kickerParts = home.hero.kicker.split('·').map((s) => s.trim())
   const brandPart = kickerParts[0] && kickerParts[1] ? kickerParts[0] : 'EZCRM'
   const textPart = kickerParts[1] ? kickerParts.slice(1).join(' · ') : home.hero.kicker
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
-  const avatars = [
-    { initial: 'R', bg: 'bg-brand' },
-    { initial: 'D', bg: 'bg-won' },
-    { initial: 'F', bg: 'bg-[rgb(var(--c-brand-hi))]' },
-    { initial: 'S', bg: 'bg-due' },
-  ]
+  const siteUrl = SITE_URL
 
   return (
     <>
@@ -59,11 +76,18 @@ export default async function HomePage() {
               logo: `${siteUrl}/icon.svg`,
               description:
                 'EZCRM is a sales CRM and business-automation platform for Indian SMBs — lead capture, WhatsApp, GST quotations, pipeline, automations and analytics on one screen.',
-              email: 'hello@ezcrm.in',
+              email: 'info@30days.in',
               areaServed: { '@type': 'Country', name: 'India' },
+              parentOrganization: {
+                '@type': 'Organization',
+                name: BUSINESS.legalName,
+                url: BUSINESS.companyUrl,
+                telephone: BUSINESS.salesPhone ?? undefined,
+                address: { '@type': 'PostalAddress', streetAddress: BUSINESS.address, addressCountry: 'IN' },
+              },
               contactPoint: {
                 '@type': 'ContactPoint',
-                email: 'hello@ezcrm.in',
+                email: 'info@30days.in',
                 contactType: 'sales',
                 areaServed: 'IN',
                 availableLanguage: ['English', 'Hindi'],
@@ -83,7 +107,7 @@ export default async function HomePage() {
               name: 'EZCRM',
               applicationCategory: 'BusinessApplication',
               applicationSubCategory: 'CRM',
-              operatingSystem: 'Web, Android, iOS',
+              operatingSystem: 'Web',
               url: siteUrl,
               description:
                 'Capture leads from IndiaMART, JustDial, Facebook and your website, engage on the official WhatsApp API, send GST-compliant quotations, and track every deal from first touch to payment.',
@@ -93,8 +117,8 @@ export default async function HomePage() {
                 '@type': 'AggregateOffer',
                 priceCurrency: 'INR',
                 lowPrice: '0',
-                highPrice: '50000',
-                offerCount: 4,
+                highPrice: String(Math.max(0, ...plans.map((p) => p.priceYearly ?? p.priceMonthly ?? 0))),
+                offerCount: plans.length,
               },
             },
           ],
@@ -104,7 +128,7 @@ export default async function HomePage() {
         data={{
           '@context': 'https://schema.org',
           '@type': 'FAQPage',
-          mainEntity: faqs.slice(0, 8).map((f) => ({
+          mainEntity: faqs.map((f) => ({
             '@type': 'Question',
             name: f.question,
             acceptedAnswer: { '@type': 'Answer', text: f.answer },
@@ -112,50 +136,35 @@ export default async function HomePage() {
         }}
       />
 
-      {/* Hero — atmospheric mesh, copy rail + floating glass dashboard */}
+      {/* 01 — Hero: the command center */}
       <section className="mesh noise relative overflow-hidden">
-        <HeroVisuals />
-        <div className="shell relative z-10 pb-16 pt-16 lg:pb-24 lg:pt-24">
-          <div className="mx-auto max-w-3xl text-center">
-            <div className="mb-6 flex justify-center">
+        <div className="shell relative z-10 grid items-center gap-10 pb-16 pt-14 lg:grid-cols-[1.1fr_1fr] lg:gap-8 lg:pb-24 lg:pt-20">
+          {/* Copy: centred on small screens, left-aligned beside the visual on lg+ */}
+          <div className="mx-auto max-w-2xl text-center lg:mx-0 lg:text-left">
+            <div className="mb-6 flex justify-center lg:justify-start">
               <Link
                 href="/features"
-                className="group relative inline-flex items-center gap-2.5 rounded-full border border-brand/20 bg-brand/[0.03] p-1.5 pr-4 text-xs font-semibold text-brand transition-all duration-300 hover:border-brand/40 hover:bg-brand/[0.06] hover:shadow-[0_0_20px_rgba(43,92,230,0.12)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+                className="group inline-flex items-center gap-2.5 rounded-full border border-brand/20 bg-white/70 p-1.5 pr-4 text-xs font-semibold text-brand transition-colors duration-fast hover:border-brand/40"
               >
-                {/* Brand Pill with subtle glow */}
-                <span className="relative flex h-6 items-center gap-1.5 rounded-full bg-gradient-to-r from-brand to-brand/80 px-2.5 text-[10px] font-extrabold uppercase tracking-[0.08em] text-white shadow-[0_2px_4px_rgba(43,92,230,0.2)]">
-                  {/* Micro pulsing active indicator */}
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="absolute inline-flex h-full w-full rounded-full bg-white opacity-75 animate-ping" />
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white" />
-                  </span>
+                <span className="flex h-6 items-center rounded-full bg-brand px-2.5 text-[0.6875rem] font-extrabold uppercase tracking-[0.08em] text-white">
                   {brandPart}
                 </span>
-
-                {/* Kicker Text */}
-                <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-slate group-hover:text-brand transition-colors duration-300">
+                <span className="font-mono text-[0.6875rem] font-semibold uppercase tracking-wider text-slate transition-colors duration-fast group-hover:text-brand">
                   {textPart}
                 </span>
-
-                {/* Dynamic Arrow Indicator */}
-                <svg
-                  className="h-3 w-3 translate-x-0 transition-transform duration-300 group-hover:translate-x-1 text-brand/70 group-hover:text-brand"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="3.5"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
+                <ArrowRight
+                  aria-hidden
+                  className="h-3 w-3 transition-transform duration-fast ease-out group-hover:translate-x-0.5"
+                />
               </Link>
             </div>
-            <h1 className="font-display text-4xl font-extrabold leading-[1.03] tracking-tight text-ink sm:text-5xl lg:text-[4.25rem]">
+            <h1 className="font-display text-4xl font-extrabold leading-[1.03] tracking-tight text-ink sm:text-5xl lg:text-[3.75rem] xl:text-[4.25rem]">
               {home.hero.heading}
             </h1>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-slate">
+            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-slate lg:mx-0">
               {home.hero.subheading}
             </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
               <Link href={home.hero.primaryCta.href} className={buttonVariants({ size: 'lg' })}>
                 {home.hero.primaryCta.label}
               </Link>
@@ -166,136 +175,91 @@ export default async function HomePage() {
                 {home.hero.secondaryCta.label}
               </Link>
             </div>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-slate">
-              <div className="flex -space-x-2">
-                {avatars.map((a) => (
-                  <span
-                    key={a.initial}
-                    className={cn(
-                      'flex h-8 w-8 items-center justify-center rounded-full border-2 border-white font-mono text-xs font-bold text-white',
-                      a.bg,
-                    )}
-                  >
-                    {a.initial}
-                  </span>
-                ))}
-              </div>
-              <span className="flex items-center gap-1">
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <Star key={i} className="h-4 w-4 fill-brand text-brand" aria-hidden />
-                ))}
-              </span>
-              <span>
+            {proof && home.hero.trustText ? (
+              <p className="mt-6 text-sm text-slate">
                 <strong className="font-semibold text-ink">{home.hero.trustText}</strong> across India
-              </span>
-            </div>
+              </p>
+            ) : null}
           </div>
 
-          {/*
-            Hero centerpiece: the EZCRM "sales universe" — a rotating cloud of
-            the lead sources and CRM functions the product covers. Pure DOM +
-            lucide icons (no WebGL, CSP-safe), billboarded to always face the
-            viewer, and static under reduced motion. The hero copy/CTAs above
-            are server-rendered, so this is purely decorative enhancement.
-          */}
-          <div id="live" className="mx-auto mt-4 max-w-6xl scroll-mt-24">
+          {/* Visual: the EZCRM sales universe, on the right from lg */}
+          <div id="live" className="w-full scroll-mt-24">
             <HeroStage />
           </div>
         </div>
       </section>
 
-      {/* 02 — Trust: animated stats + integrations */}
-      <section className="shell -mt-8 pb-8">
-        <StatStrip stats={home.stats} />
-      </section>
+      {/* 02 — Trust: what EZCRM connects to (+ verified stats, once confirmed) */}
+      {proof ? (
+        <section className="shell pt-12">
+          <StatStrip stats={home.stats} />
+        </section>
+      ) : null}
       <LogoCloud integrations={integrations} heading={home.logoCloudHeading} />
 
-      {/* 03 — From chaos to control */}
+      {/* 03 — The problem, and the turn */}
       <ChaosToControl />
 
-      {/* 04 — The cinematic lead-to-revenue journey */}
+      {/* 04 — Signature: one enquiry, start to finish */}
       <LeadJourneyCinematic />
 
-      {/* 05 — Lead integration hub */}
+      {/* 05 — Capture from every source */}
       <LeadMagnet />
 
-      {/* 06 — WhatsApp communication */}
-      <div className="overflow-hidden border-y border-line bg-sky/40">
-        <WhatsAppShowcase
-          kicker={home.whatsapp.kicker}
-          heading={home.whatsapp.heading}
-          body={home.whatsapp.body}
-          points={home.whatsapp.points}
-        />
-      </div>
-
-      {/* 07 — Interactive sales pipeline */}
+      {/* 07 — Pipeline playground */}
       <SalesPipeline />
 
-      {/* 08 — Exploding dashboard */}
+      {/* 08 — Dashboard & analytics */}
       <ExplodedDashboard />
 
-      {/* 09 — India sales intelligence */}
-      <IndiaIntelligence />
-
-      {/* 10 — GST quotation assembly */}
+      {/* 10 — GST quotation */}
       <QuotationAssembly />
 
-      {/* 11 — Automation workflow */}
+      {/* 11 — Automation */}
       <AutomationWorkflow />
 
-      {/* 12 — Interactive feature bento */}
+      {/* 12 — Try it yourself */}
+      <PlaygroundInvite />
+
+      {/* 13 — The whole platform */}
       <FeatureBento modules={modules} />
 
-      {/* 13 — Industry experiences */}
+      {/* 14 — Industries */}
       <IndustryExperiences />
 
-      {/* 14 — Customer success */}
-      <section className="shell py-14 lg:py-20" aria-labelledby="testimonials-heading">
-        <div className="mb-12 max-w-2xl">
-          <p className="kicker mb-3">{home.testimonialsSection.kicker}</p>
-          <h2
-            id="testimonials-heading"
-            className="font-display text-3xl font-bold tracking-tight text-ink sm:text-4xl"
-          >
-            {home.testimonialsSection.heading}
-          </h2>
-        </div>
-        <TestimonialWall testimonials={testimonials} />
-      </section>
+      {/* 15 — Customer stories (only once verified) */}
+      {proof && testimonials.length > 0 ? (
+        <section className="shell py-16 lg:py-24" aria-labelledby="testimonials-heading">
+          <div className="mb-12 max-w-2xl">
+            <p className="kicker mb-3">{home.testimonialsSection.kicker}</p>
+            <h2
+              id="testimonials-heading"
+              className="font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl"
+            >
+              {home.testimonialsSection.heading}
+            </h2>
+          </div>
+          <TestimonialWall testimonials={testimonials} />
+        </section>
+      ) : null}
 
-      {/* 14b — FAQ (AEO: answer-engine content + FAQPage schema) */}
-      <section className="shell py-14 lg:py-20" aria-labelledby="faq-heading">
+      {/* 16 — Pricing preview */}
+      <PricingPreview plans={plans} />
+
+      {/* 17 — FAQ */}
+      <section className="shell py-16 lg:py-24" aria-labelledby="faq-heading">
         <div className="mx-auto max-w-3xl">
           <header className="mb-8 text-center">
             <p className="kicker mb-3">FAQ</p>
-            <h2
-              id="faq-heading"
-              className="font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl"
-            >
+            <h2 id="faq-heading" className="font-display text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">
               Questions, answered.
             </h2>
           </header>
-          <div className="divide-y divide-line overflow-hidden rounded-card border border-line bg-white">
-            {faqs.slice(0, 8).map((faq) => (
-              <details key={faq.question} className="group px-5">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-left font-semibold text-ink [&::-webkit-details-marker]:hidden">
-                  {faq.question}
-                  <span
-                    aria-hidden
-                    className="shrink-0 font-mono text-xl text-brand transition-transform duration-200 group-open:rotate-45"
-                  >
-                    +
-                  </span>
-                </summary>
-                <p className="pb-5 pr-6 text-sm leading-relaxed text-slate">{faq.answer}</p>
-              </details>
-            ))}
-          </div>
+          <FaqList faqs={faqs} />
         </div>
       </section>
 
-      {/* 15 — Cinematic final CTA */}
+      {/* 18 — Final conversion */}
       <FinalCtaCinematic
         primary={{ label: home.cta.primary.label, href: home.cta.primary.href }}
         secondary={{ label: home.cta.secondary.label, href: home.cta.secondary.href }}

@@ -7,8 +7,9 @@
  * no-JS users see the real value; JS only overrides it during the animation.
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { animate, useInView, useReducedMotion } from 'framer-motion'
+import { EASE } from '@/lib/motion'
 
 function parse(value: string): { prefix: string; num: number; decimals: number; suffix: string } | null {
   const m = value.match(/^(\D*?)([\d,]+(?:\.\d+)?)(\D*)$/)
@@ -25,13 +26,14 @@ export function CountUp({ value, className }: { value: string; className?: strin
   const inView = useInView(ref, { once: true, amount: 0.5 })
   const reduce = useReducedMotion()
   const [display, setDisplay] = useState(value)
-  const parsed = parse(value)
+  // Memoised: a fresh object each render would restart the animation from 0.
+  const parsed = useMemo(() => parse(value), [value])
 
   useEffect(() => {
     if (!inView || reduce || !parsed) return
     const controls = animate(0, parsed.num, {
       duration: 1.4,
-      ease: [0.22, 1, 0.36, 1],
+      ease: EASE,
       onUpdate(v) {
         const formatted =
           parsed.decimals > 0

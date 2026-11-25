@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { BUSINESS } from '@/content/business'
 import { PageIntro } from '@/components/page-intro'
 
 export const metadata: Metadata = {
@@ -10,7 +11,7 @@ const SECTIONS: { title: string; body: string[] }[] = [
   {
     title: '1. Who we are',
     body: [
-      'This website is operated by EZCRM Technologies Pvt. Ltd. (“EZCRM”, “we”), 4th Floor, Baner Road, Pune 411045, Maharashtra, India. Using this site or requesting a trial means you accept these terms.',
+      `This website is operated by ${BUSINESS.legalName} (“30Days”, “we”), the company that builds EZCRM, at ${BUSINESS.address}. Using this site or requesting a trial means you accept these terms.`,
     ],
   },
   {
@@ -22,7 +23,7 @@ const SECTIONS: { title: string; body: string[] }[] = [
   {
     title: '3. Trials and demos',
     body: [
-      'Trial tenants are provided free for 14 days for evaluation. Don’t upload data you have no right to process, don’t use the trial to send spam (WhatsApp, SMS or email), and don’t attempt to probe or disrupt the service. We may suspend trials that break these rules. Trial data is deleted 30 days after expiry unless you convert.',
+      `Trial tenants are provided free for ${BUSINESS.trialDays} days for evaluation. Don’t upload data you have no right to process, don’t use the trial to send spam (WhatsApp, SMS or email), and don’t attempt to probe or disrupt the service. We may suspend trials that break these rules. Trial data is deleted 30 days after expiry unless you convert.`,
     ],
   },
   {
@@ -59,9 +60,9 @@ export default function TermsPage() {
       <div className="shell max-w-3xl space-y-10 pb-20">
         {SECTIONS.map((section) => (
           <section key={section.title} aria-label={section.title}>
-            <h2 className="mb-3 font-display text-xl font-bold text-bright">{section.title}</h2>
+            <h2 className="mb-3 font-display text-xl font-bold text-ink">{section.title}</h2>
             {section.body.map((paragraph, i) => (
-              <p key={i} className="mt-2 text-sm leading-relaxed text-fog">
+              <p key={i} className="mt-2 text-sm leading-relaxed text-slate">
                 {paragraph}
               </p>
             ))}

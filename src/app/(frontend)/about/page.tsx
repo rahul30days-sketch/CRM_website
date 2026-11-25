@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { BUSINESS } from '@/content/business'
 import { PageIntro } from '@/components/page-intro'
 import { CtaBand } from '@/components/sections/cta-band'
 
@@ -32,12 +33,12 @@ export default function AboutPage() {
     <>
       <PageIntro
         kicker="About"
-        title="Built by people who’ve sat on the sales floor."
-        lede="EZCRM started when we watched a Rajkot manufacturer lose a ₹4 lakh order because the IndiaMART enquiry email was read a day late. The global CRMs weren’t built for that problem. So we built one that was."
+        title="Built for the Indian sales floor."
+        lede={`EZCRM is built by ${BUSINESS.legalName} — the engineering team behind seven cloud products Indian businesses run on, from GST billing and payroll to manufacturing ERP.`}
       />
 
       <div className="shell max-w-4xl space-y-12 pb-20">
-        <section aria-label="Our story" className="space-y-4 text-lg leading-relaxed text-bright/90">
+        <section aria-label="Our story" className="space-y-4 text-lg leading-relaxed text-ink">
           <p>
             Indian SMB sales runs on a stack the big CRM vendors have never seen: portal
             subscriptions that cost real money, customers who reply on WhatsApp within minutes but
@@ -45,10 +46,17 @@ export default function AboutPage() {
             the sales head, the collections department and the after-sales desk.
           </p>
           <p>
-            EZCRM 3.0 is our answer: fourteen modules that behave like one product, priced in
-            rupees per user, fast on a mid-range phone over patchy 4G. Today it runs sales floors
-            in manufacturing, real estate, distribution and services across India — from
-            three-person desks to multi-branch operations under white-label reseller brands.
+            EZCRM 3.0 is our answer: one product for the sales desk, priced in rupees, built for
+            manufacturing, real estate, distribution and service businesses — from three-person
+            desks to multi-branch teams.
+          </p>
+          <p>
+            It sits alongside {BUSINESS.company}’ other products — SugamERP, EZHRM, BharatBills,
+            EZNEXT, Proprite and Etribes — all built by one engineering team from our office in
+            Bahadurgarh, Haryana.{' '}
+            <a href={BUSINESS.companyUrl} className="text-brand underline-offset-4 hover:underline">
+              About {BUSINESS.company}
+            </a>
           </p>
         </section>
 
@@ -59,8 +67,8 @@ export default function AboutPage() {
           <div className="grid gap-5 sm:grid-cols-2">
             {PRINCIPLES.map((principle) => (
               <div key={principle.title} className="panel-frame p-6">
-                <h3 className="font-display text-lg font-bold text-bright">{principle.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-fog">{principle.body}</p>
+                <h3 className="font-display text-lg font-bold text-ink">{principle.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate">{principle.body}</p>
               </div>
             ))}
           </div>

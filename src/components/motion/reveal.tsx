@@ -13,7 +13,7 @@
 import { motion, useReducedMotion, type Variants } from 'framer-motion'
 import type { ReactNode } from 'react'
 
-const EASE = [0.22, 1, 0.36, 1] as const
+import { EASE, IN_VIEW } from '@/lib/motion'
 
 export function Reveal({
   children,
@@ -35,7 +35,7 @@ export function Reveal({
       className={className}
       initial={reduce ? false : { opacity: 0, y }}
       whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.15 }}
+      viewport={IN_VIEW}
       transition={{ duration: 0.6, delay, ease: EASE }}
     >
       {children}
@@ -69,7 +69,7 @@ export function StaggerGroup({
       variants={staggerContainer}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, amount: 0.15 }}
+      viewport={IN_VIEW}
     >
       {children}
     </motion.div>

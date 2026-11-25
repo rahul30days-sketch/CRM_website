@@ -342,7 +342,7 @@ export const modules: ModuleContent[] = [
       {
         step: 'Connect your official WABA number',
         detail:
-          'Built on Meta’s official WhatsApp Business API — multiple numbers supported, no grey-market gateways, no ban roulette.',
+          'Built on the official WhatsApp Business Platform — multiple numbers supported, Meta-approved templates, no grey-market gateways.',
       },
       {
         step: 'Work from a shared team inbox',

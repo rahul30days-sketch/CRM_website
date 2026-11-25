@@ -39,6 +39,7 @@ export default async function IndustryPage({
   return (
     <>
       <PageIntro
+        breadcrumbs={[]}
         kicker={`Solutions · ${industry.name}`}
         title={industry.headline}
         lede={industry.intro}
@@ -53,7 +54,7 @@ export default async function IndustryPage({
             {industry.pains.map((item) => (
               <li key={item.pain} className="panel-frame grid gap-3 p-5 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
                 <p className="text-sm leading-relaxed text-due">{item.pain}</p>
-                <ArrowRight className="hidden h-4 w-4 text-fog sm:block" aria-hidden />
+                <ArrowRight className="hidden h-4 w-4 text-slate sm:block" aria-hidden />
                 <p className="text-sm leading-relaxed text-won">{item.fix}</p>
               </li>
             ))}
@@ -69,10 +70,10 @@ export default async function IndustryPage({
               <Link
                 key={module.slug}
                 href={`/features/${module.slug}`}
-                className="panel-frame group block p-5 transition-colors hover:border-marigold/60"
+                className="panel-frame group block p-5 transition-colors hover:border-brand/60"
               >
-                <h3 className="font-medium text-bright group-hover:text-marigold">{module.title}</h3>
-                <p className="mt-1.5 text-sm text-fog">{module.tagline}</p>
+                <h3 className="font-medium text-ink group-hover:text-brand">{module.title}</h3>
+                <p className="mt-1.5 text-sm text-slate">{module.tagline}</p>
               </Link>
             ))}
           </div>

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { BUSINESS } from '@/content/business'
 import { PageIntro } from '@/components/page-intro'
 import { DemoForm } from '@/components/forms/demo-form'
 
@@ -6,6 +7,7 @@ export const metadata: Metadata = {
   title: 'Contact — sales, support and partnerships',
   description:
     'Reach the EZCRM team: sales enquiries, support for existing customers, reseller and white-label partnerships.',
+  alternates: { canonical: '/contact' },
 }
 
 export default function ContactPage() {
@@ -26,25 +28,29 @@ export default function ContactPage() {
           {[
             {
               title: 'Sales & partnerships',
-              lines: ['hello@ezcrm.in', '+91 98765 43210 · Mon–Sat, 10:00–19:00 IST'],
+              lines: [
+                BUSINESS.salesEmail,
+                ...(BUSINESS.salesPhone ? [BUSINESS.salesPhone] : []),
+                BUSINESS.hours,
+              ],
             },
             {
               title: 'Existing customers',
-              lines: ['support@ezcrm.in', 'Or raise a ticket from inside EZCRM — SLA timers apply to us too.'],
+              lines: [BUSINESS.supportEmail, 'Or raise a ticket from inside EZCRM.'],
             },
             {
               title: 'Security reports',
-              lines: ['security@ezcrm.in', 'Responsible disclosure — see the security page.'],
+              lines: [BUSINESS.salesEmail, 'Responsible disclosure — see the security page.'],
             },
             {
               title: 'Office',
-              lines: ['EZCRM Technologies Pvt. Ltd.', '4th Floor, Baner Road, Pune 411045, Maharashtra'],
+              lines: [BUSINESS.legalName, BUSINESS.address],
             },
           ].map((block) => (
             <section key={block.title} className="panel-frame p-5">
               <h2 className="kicker mb-2">{block.title}</h2>
               {block.lines.map((line) => (
-                <p key={line} className="text-sm leading-relaxed text-bright/90">
+                <p key={line} className="text-sm leading-relaxed text-ink">
                   {line}
                 </p>
               ))}

@@ -4,6 +4,7 @@ import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { RouteTransitionProvider } from '@/components/route-transition-provider'
 import { getSiteSettings } from '@/lib/cms'
+import { INDEXABLE, SITE_URL } from '@/lib/site'
 import './globals.css'
 
 // Display: bold, slightly geometric, tight tracking on large sizes.
@@ -29,7 +30,7 @@ const mono = JetBrains_Mono({
   display: 'swap',
 })
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+const siteUrl = SITE_URL
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings()
@@ -74,23 +75,22 @@ export async function generateMetadata(): Promise<Metadata> {
       shortcut: faviconUrl,
       apple: faviconUrl,
     },
+    // No title/description here: Next fills og:title / og:description from
+    // each page's own title and description, so every page shares its own
+    // text instead of the homepage's.
     openGraph: {
       type: 'website',
       siteName: settings.siteName,
-      title,
-      description,
       url: './',
       locale: 'en_IN',
     },
     twitter: {
       card: 'summary_large_image',
-      title,
-      description,
     },
     robots: {
-      index: true,
-      follow: true,
-      googleBot: { index: true, follow: true, 'max-image-preview': 'large', 'max-snippet': -1 },
+      index: INDEXABLE,
+      follow: INDEXABLE,
+      googleBot: { index: INDEXABLE, follow: INDEXABLE, 'max-image-preview': 'large', 'max-snippet': -1 },
     },
   }
 }
@@ -103,6 +103,14 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
       <body className="flex min-h-screen flex-col">
+        {/*
+          Scroll reveals server-render their start state (opacity 0) and rely
+          on JS to animate in. Without JS that would hide content for good, so
+          force every such element visible when scripts can't run.
+        */}
+        <noscript>
+          <style>{`[style*="opacity:0"]{opacity:1!important;transform:none!important}`}</style>
+        </noscript>
         <RouteTransitionProvider>
           <a
             href="#main"

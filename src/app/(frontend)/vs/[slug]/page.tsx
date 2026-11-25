@@ -9,6 +9,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { comparisons as factoryComparisons, type CompareValue } from '@/content/comparisons'
 import { getComparison } from '@/lib/cms'
 import { cn } from '@/lib/utils'
+import { SITE_URL } from '@/lib/site'
 
 export const revalidate = 300
 
@@ -25,7 +26,7 @@ export async function generateMetadata({
   const c = await getComparison(slug)
   if (!c) return {}
   return {
-    title: `${c.heading} — an honest comparison`,
+    title: `${c.heading} — feature comparison`,
     description: c.lede,
   }
 }
@@ -59,7 +60,7 @@ export default async function ComparisonPage({
   const c = await getComparison(slug)
   if (!c) notFound()
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+  const siteUrl = SITE_URL
 
   return (
     <>
@@ -87,7 +88,12 @@ export default async function ComparisonPage({
         />
       ) : null}
 
-      <PageIntro kicker={c.kicker} title={c.heading} lede={c.lede} />
+      <PageIntro
+        kicker={c.kicker}
+        title={c.heading}
+        lede={c.lede}
+        breadcrumbs={[{ label: 'Compare', href: '/vs' }]}
+      />
 
       <div className="shell max-w-5xl space-y-16 pb-20">
         {/* Verdict */}
@@ -137,9 +143,14 @@ export default async function ComparisonPage({
 
         {/* Feature comparison table */}
         <section aria-labelledby="table-heading">
-          <h2 id="table-heading" className="mb-5 font-display text-2xl font-bold text-ink">
+          <h2 id="table-heading" className="mb-2 font-display text-2xl font-bold text-ink">
             Feature by feature
           </h2>
+          <p className="mb-5 max-w-2xl text-sm text-slate">
+            Based on our reading of {c.competitor}’s public product information. Vendors change features
+            and pricing often — check {c.competitor}’s own site before you decide, and tell us if
+            anything here is out of date.
+          </p>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[36rem] border-collapse text-left">
               <thead>

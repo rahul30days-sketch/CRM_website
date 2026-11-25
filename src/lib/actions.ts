@@ -35,7 +35,7 @@ export type FormState = {
 
 const GENERIC_ERROR: FormState = {
   status: 'error',
-  message: 'Something went wrong on our side. Please try again, or email hello@ezcrm.in.',
+  message: 'Something went wrong on our side. Please try again, or email info@30days.in.',
 }
 
 async function verifyOrigin(): Promise<boolean> {

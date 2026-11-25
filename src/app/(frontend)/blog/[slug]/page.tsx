@@ -6,7 +6,9 @@ import { PageIntro } from '@/components/page-intro'
 import { CtaBand } from '@/components/sections/cta-band'
 import { JsonLd } from '@/components/json-ld'
 import { blogPosts as factoryPosts } from '@/content/stories'
-import { getBlogPost } from '@/lib/cms'
+import Link from 'next/link'
+import { getBlogPost, getBlogPosts } from '@/lib/cms'
+import { SITE_URL } from '@/lib/site'
 
 export const revalidate = 300
 
@@ -33,8 +35,13 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const { slug } = await params
   const post = await getBlogPost(slug)
   if (!post) notFound()
+  // Related: same category first, then the newest others.
+  const related = (await getBlogPosts())
+    .filter((p) => p.slug !== post.slug)
+    .sort((a, b) => Number(b.category === post.category) - Number(a.category === post.category))
+    .slice(0, 2)
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+  const siteUrl = SITE_URL
 
   return (
     <>
@@ -52,6 +59,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
       <article>
         <PageIntro
+        breadcrumbs={[{ label: 'Blog', href: '/blog' }]}
           kicker={`Blog · ${new Date(post.publishedAt).toLocaleDateString('en-IN', {
             day: 'numeric',
             month: 'long',
@@ -60,19 +68,44 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           title={post.title}
           lede={post.excerpt}
         />
-        <div className="shell max-w-3xl space-y-6 pb-20 text-[1.0625rem] leading-relaxed text-bright/90">
+        <div className="shell max-w-3xl space-y-6 pb-20 text-[1.0625rem] leading-relaxed text-ink/90">
           {post.lexicalContent ? (
             // CMS content is structured Lexical JSON rendered through
             // Payload's official serializer — never raw HTML.
             <RichText
               data={post.lexicalContent as SerializedEditorState}
-              className="space-y-6 [&_a]:text-marigold [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold"
+              className="space-y-6 [&_a]:text-brand [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold"
             />
           ) : (
             post.paragraphs.map((paragraph, i) => <p key={i}>{paragraph}</p>)
           )}
         </div>
       </article>
+
+      {related.length > 0 ? (
+        <aside className="border-t border-line bg-sky/40" aria-labelledby="related-heading">
+          <div className="shell max-w-3xl py-14">
+            <h2 id="related-heading" className="kicker mb-5">
+              Keep reading
+            </h2>
+            <ul className="grid gap-4 sm:grid-cols-2">
+              {related.map((r) => (
+                <li key={r.slug}>
+                  <Link
+                    href={`/blog/${r.slug}`}
+                    className="group block h-full rounded-card border border-line bg-white p-5 shadow-press transition-colors duration-fast hover:border-brand/40"
+                  >
+                    <span className="font-display text-lg font-bold leading-snug text-ink group-hover:text-brand">
+                      {r.title}
+                    </span>
+                    <span className="mt-2 line-clamp-2 block text-sm text-slate">{r.excerpt}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </aside>
+      ) : null}
 
       <CtaBand
         heading="Reading about it is slower than seeing it."

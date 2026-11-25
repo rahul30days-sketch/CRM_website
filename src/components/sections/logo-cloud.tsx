@@ -24,7 +24,7 @@ export function LogoCloud({
         {featured.map((integration) => (
           <li
             key={integration.slug}
-            className="font-display text-lg font-semibold text-slate/50 grayscale transition-colors hover:text-slate"
+            className="font-display text-lg font-semibold text-slate transition-colors hover:text-ink"
           >
             {integration.name}
           </li>

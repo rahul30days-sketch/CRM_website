@@ -36,7 +36,7 @@ const SECTIONS: { title: string; body: string[] }[] = [
   {
     title: 'Your rights',
     body: [
-      'Under the Digital Personal Data Protection Act, 2023, you may request access to, correction of, or deletion of your personal data. Email privacy@ezcrm.in from the address in question and we will act within 30 days. You can also simply ask us, in any form conversation, to delete your enquiry — same result.',
+      'Under the Digital Personal Data Protection Act, 2023, you may request access to, correction of, or deletion of your personal data. Email info@30days.in from the address in question and we will act within 30 days. You can also simply ask us, in any form conversation, to delete your enquiry — same result.',
     ],
   },
   {
@@ -48,7 +48,7 @@ const SECTIONS: { title: string; body: string[] }[] = [
   {
     title: 'Changes and contact',
     body: [
-      'If this policy changes materially, the change is dated here and announced to newsletter subscribers. Questions: privacy@ezcrm.in.',
+      'If this policy changes materially, the change is dated here and announced to newsletter subscribers. Questions: info@30days.in.',
       'Last updated: 1 June 2026.',
     ],
   },
@@ -65,9 +65,9 @@ export default function PrivacyPage() {
       <div className="shell max-w-3xl space-y-10 pb-20">
         {SECTIONS.map((section) => (
           <section key={section.title} aria-label={section.title}>
-            <h2 className="mb-3 font-display text-xl font-bold text-bright">{section.title}</h2>
+            <h2 className="mb-3 font-display text-xl font-bold text-ink">{section.title}</h2>
             {section.body.map((paragraph, i) => (
-              <p key={i} className="mt-2 text-sm leading-relaxed text-fog">
+              <p key={i} className="mt-2 text-sm leading-relaxed text-slate">
                 {paragraph}
               </p>
             ))}
