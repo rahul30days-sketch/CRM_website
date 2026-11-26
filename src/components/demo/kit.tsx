@@ -27,7 +27,7 @@ export function SampleBadge({
         className,
       )}
     >
-      <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-cyan" />
+      <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-brand" />
       {label}
     </span>
   )

@@ -36,18 +36,18 @@ export function RegionPanel({
     },
   ]
   return (
-    <section aria-labelledby="geo-region-title" className="rounded-card border border-night-line bg-night-raised p-4 sm:p-5">
+    <section aria-labelledby="geo-region-title" className="rounded-card border border-line bg-white p-4 sm:p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h3 id="geo-region-title" className="font-display text-lg font-bold text-white">
+        <h3 id="geo-region-title" className="font-display text-lg font-bold text-ink">
           {name}
         </h3>
-        <p className="font-mono text-[0.6875rem] text-white/70">{periodLabel}</p>
+        <p className="font-mono text-[0.6875rem] text-slate">{periodLabel}</p>
       </div>
       <dl className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
         {kpis.map((k) => (
-          <div key={k.label} className="min-w-0 rounded-chip border border-night-line bg-night px-3 py-2.5">
-            <dt className="text-[0.6875rem] text-white/70">{k.label}</dt>
-            <dd className="mt-0.5 font-mono text-base font-semibold tabular-nums text-white">
+          <div key={k.label} className="min-w-0 rounded-chip border border-line bg-sky px-3 py-2.5">
+            <dt className="text-[0.6875rem] text-slate">{k.label}</dt>
+            <dd className="mt-0.5 font-mono text-base font-semibold tabular-nums text-ink">
               <span aria-hidden>{k.value}</span>
               <span className="sr-only">{k.sr}</span>
             </dd>
@@ -55,7 +55,7 @@ export function RegionPanel({
         ))}
       </dl>
       <dl className="mt-3 grid gap-2 sm:grid-cols-2">
-        <div className="flex items-center gap-2.5 rounded-chip border border-night-line px-3 py-2.5">
+        <div className="flex items-center gap-2.5 rounded-chip border border-line px-3 py-2.5">
           {topRep ? (
             <span
               aria-hidden
@@ -65,31 +65,31 @@ export function RegionPanel({
             </span>
           ) : null}
           <div className="min-w-0">
-            <dt className="text-[0.6875rem] text-white/70">Top rep · by won revenue</dt>
-            <dd className="truncate text-sm font-semibold text-white">
+            <dt className="text-[0.6875rem] text-slate">Top rep · by won revenue</dt>
+            <dd className="truncate text-sm font-semibold text-ink">
               {topRep ? (
                 <>
                   {topRep.rep.name}{' '}
-                  <span className="font-mono text-xs font-normal text-white/75">{formatINRCompact(topRep.revenue)}</span>
+                  <span className="font-mono text-xs font-normal text-slate">{formatINRCompact(topRep.revenue)}</span>
                 </>
               ) : (
-                <span className="font-normal text-white/75">No won deals yet</span>
+                <span className="font-normal text-slate">No won deals yet</span>
               )}
             </dd>
           </div>
         </div>
-        <div className="rounded-chip border border-night-line px-3 py-2.5">
-          <dt className="text-[0.6875rem] text-white/70">Top source · by leads</dt>
-          <dd className="truncate text-sm font-semibold text-white">
+        <div className="rounded-chip border border-line px-3 py-2.5">
+          <dt className="text-[0.6875rem] text-slate">Top source · by leads</dt>
+          <dd className="truncate text-sm font-semibold text-ink">
             {topSource ? (
               <>
                 {topSource.source.name}{' '}
-                <span className="font-mono text-xs font-normal text-white/75">
+                <span className="font-mono text-xs font-normal text-slate">
                   {topSource.leads} · {topSource.share}%
                 </span>
               </>
             ) : (
-              <span className="font-normal text-white/75">No leads in this period</span>
+              <span className="font-normal text-slate">No leads in this period</span>
             )}
           </dd>
         </div>

@@ -68,16 +68,15 @@ export function regionInsights(leads: DemoLead[]) {
 /* ── Heat scale ──────────────────────────────────────────────────────── */
 
 /**
- * Six steps: none, then brand at rising opacity over the night background,
- * then brand-hi. Static class strings so Tailwind can see them. RGB values
- * mirror the theme tokens in globals.css and are only used to work out which
- * label colour (white or ink) has the higher contrast on each step.
+ * Six steps: none (a light neutral), then brand at rising opacity over the
+ * white map background. Static class strings so Tailwind can see them. RGB
+ * values mirror the theme tokens in globals.css and are only used to work out
+ * which label colour (white or ink) has the higher contrast on each step.
  */
 const RGB = {
-  night: [11, 22, 40],
-  nightRaised: [20, 34, 58],
+  sky: [241, 243, 247],
   brand: [43, 92, 230],
-  brandHi: [91, 132, 240],
+  brandDeep: [30, 66, 180],
   ink: [15, 26, 51],
   white: [255, 255, 255],
 } as const
@@ -100,12 +99,12 @@ const contrast = (a: RGBt, b: RGBt) => {
 }
 
 const STEP_DEFS: { bg: string; rgb: RGBt }[] = [
-  { bg: 'bg-night-raised', rgb: RGB.nightRaised },
-  { bg: 'bg-brand/20', rgb: mix(RGB.brand, RGB.night, 0.2) },
-  { bg: 'bg-brand/40', rgb: mix(RGB.brand, RGB.night, 0.4) },
-  { bg: 'bg-brand/65', rgb: mix(RGB.brand, RGB.night, 0.65) },
+  { bg: 'bg-sky', rgb: RGB.sky },
+  { bg: 'bg-brand/15', rgb: mix(RGB.brand, RGB.white, 0.15) },
+  { bg: 'bg-brand/35', rgb: mix(RGB.brand, RGB.white, 0.35) },
+  { bg: 'bg-brand/60', rgb: mix(RGB.brand, RGB.white, 0.6) },
   { bg: 'bg-brand', rgb: RGB.brand },
-  { bg: 'bg-brand-hi', rgb: RGB.brandHi },
+  { bg: 'bg-brand-deep', rgb: RGB.brandDeep },
 ]
 
 export const HEAT_STEPS = STEP_DEFS.map((s) => {

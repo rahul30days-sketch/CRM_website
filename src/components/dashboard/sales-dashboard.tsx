@@ -63,20 +63,20 @@ export function SalesDashboard() {
       style={{ transformPerspective: 1600 }}
     >
       <AppWindow
-        tone="night"
+        tone="light"
         title="EZCRM · Sales dashboard"
-        right={<span className="hidden truncate text-xs text-white/70 sm:inline">{SELLER.name}</span>}
-        className="ring-1 ring-white/5"
+        right={<span className="hidden truncate text-xs text-slate sm:inline">{SELLER.name}</span>}
+        className="ring-1 ring-line"
       >
         <motion.div variants={group} className="space-y-3 p-3 sm:space-y-4 sm:p-5">
           <motion.div variants={item}>
             <FilterBar filter={filter} onChange={update} />
           </motion.div>
 
-          <motion.p variants={item} className="text-xs text-white/70">
-            Showing <span className="font-semibold text-white">{description}</span>
+          <motion.p variants={item} className="text-xs text-slate">
+            Showing <span className="font-semibold text-ink">{description}</span>
             <span aria-hidden> · </span>
-            <span className="font-mono tabular-nums text-white">{data.summary.leads}</span> lead
+            <span className="font-mono tabular-nums text-ink">{data.summary.leads}</span> lead
             {data.summary.leads === 1 ? '' : 's'}
           </motion.p>
           <p className="sr-only" aria-live="polite" aria-atomic="true">

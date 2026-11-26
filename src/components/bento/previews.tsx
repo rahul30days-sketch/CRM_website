@@ -108,22 +108,22 @@ export function DashboardPreview({ step, still }: PreviewProps) {
     <div className="flex h-full flex-col gap-3">
       <div className="grid grid-cols-3 gap-2">
         {kpis.map((k) => (
-          <div key={k.label} className="rounded-chip border border-night-line bg-night-raised px-2.5 py-2">
-            <p className="truncate text-[10px] text-white/70">{k.label}</p>
-            <p className="mt-0.5 font-mono text-base font-semibold text-white sm:text-lg">{k.value}</p>
+          <div key={k.label} className="rounded-chip border border-line bg-sky px-2.5 py-2">
+            <p className="truncate text-[10px] text-slate">{k.label}</p>
+            <p className="mt-0.5 font-mono text-base font-semibold text-ink sm:text-lg">{k.value}</p>
           </div>
         ))}
       </div>
-      <div className="rounded-chip border border-night-line bg-night-raised p-3">
+      <div className="rounded-chip border border-line bg-sky p-3">
         <div className="flex items-baseline justify-between text-[10px]">
-          <span className="text-white/70">New leads · last 14 days</span>
-          <span className="font-mono text-white">
+          <span className="text-slate">New leads · last 14 days</span>
+          <span className="font-mono text-ink">
             {day.leads} · {day.daysAgo === 0 ? 'today' : `${day.daysAgo}d ago`}
           </span>
         </div>
         <svg viewBox={`0 0 ${SPARK_W} ${SPARK_H}`} className="mt-2 h-16 w-full" preserveAspectRatio="none">
           <path d={SPARK_AREA} className="fill-cyan/10" />
-          <path d={SPARK_PATH} className="fill-none stroke-cyan" strokeWidth={1.75} vectorEffect="non-scaling-stroke" />
+          <path d={SPARK_PATH} className="fill-none stroke-brand" strokeWidth={1.75} vectorEffect="non-scaling-stroke" />
           <motion.g initial={false} animate={{ x: sparkX(i), y: sparkY(day.leads) }} transition={tr(still, 0.6)}>
             <line x1={0} x2={0} y1={-SPARK_H} y2={SPARK_H} className="stroke-white/20" strokeWidth={1} vectorEffect="non-scaling-stroke" />
             <circle r={3.5} className="fill-cyan" />
@@ -133,7 +133,7 @@ export function DashboardPreview({ step, still }: PreviewProps) {
       <div className="hidden space-y-1.5 sm:block">
         {BY_SOURCE.map((s, idx) => (
           <div key={s.key} className="flex items-center gap-2 text-[10px]">
-            <span className="w-16 shrink-0 truncate text-white/70">{sourceById(s.key as SourceId).short}</span>
+            <span className="w-16 shrink-0 truncate text-slate">{sourceById(s.key as SourceId).short}</span>
             <span className="relative h-2 flex-1 overflow-hidden rounded-full bg-white/10">
               <motion.span
                 className="absolute inset-0 origin-left rounded-full bg-brand-hi"
@@ -143,7 +143,7 @@ export function DashboardPreview({ step, still }: PreviewProps) {
                 transition={tr(still)}
               />
             </span>
-            <span className="w-7 text-right font-mono text-white">{s.leads}</span>
+            <span className="w-7 text-right font-mono text-ink">{s.leads}</span>
           </div>
         ))}
       </div>
@@ -496,7 +496,7 @@ export function IntegrationsPreview({ step, still }: PreviewProps) {
       <div className="relative h-1 overflow-hidden rounded-full bg-mist">
         <motion.span
           key={step}
-          className="absolute inset-0 origin-left rounded-full bg-cyan"
+          className="absolute inset-0 origin-left rounded-full bg-brand"
           initial={still ? false : { scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={tr(still, 0.9)}

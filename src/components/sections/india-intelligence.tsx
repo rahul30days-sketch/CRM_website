@@ -55,7 +55,7 @@ function Toggle<T extends string>({
   onChange: (v: T) => void
 }) {
   return (
-    <div role="group" aria-label={label} className="flex flex-wrap gap-1 rounded-chip border border-night-line bg-night-raised p-1">
+    <div role="group" aria-label={label} className="flex flex-wrap gap-1 rounded-chip border border-line bg-white p-1">
       {options.map((o) => (
         <button
           key={o.id}
@@ -64,7 +64,7 @@ function Toggle<T extends string>({
           onClick={() => onChange(o.id)}
           className={cn(
             'min-h-10 rounded-md px-3 text-xs font-semibold transition-colors duration-fast',
-            value === o.id ? 'bg-white text-night' : 'text-white/75 hover:bg-white/10 hover:text-white',
+            value === o.id ? 'bg-brand text-white' : 'text-slate hover:bg-sky hover:text-ink',
           )}
         >
           {o.label}
@@ -111,11 +111,11 @@ export function IndiaIntelligence() {
   })
 
   return (
-    <section aria-labelledby="geo-title" className="relative overflow-hidden bg-night py-16 lg:py-24">
+    <section aria-labelledby="geo-title" className="relative overflow-hidden bg-sky py-16 lg:py-24">
       <div className="shell">
         <SectionHeader
           id="geo-title"
-          tone="night"
+          tone="light"
           kicker="India sales intelligence"
           title="Across cities. Across teams. One command center."
           lede="Every lead carries its state, source and owner. Switch the metric and period, then pick a state to see its numbers, its top rep and its top source."
@@ -143,25 +143,25 @@ export function IndiaIntelligence() {
               }}
             />
           </div>
-          <SampleBadge tone="night" label="Sample data — not real customer activity" />
+          <SampleBadge tone="light" label="Sample data — not real customer activity" />
         </div>
 
         <div className="mt-5 grid gap-5 lg:grid-cols-12">
           {/* Map */}
-          <div className="rounded-card border border-night-line bg-night p-3 sm:p-5 lg:col-span-7">
+          <div className="rounded-card border border-line bg-white p-3 sm:p-5 lg:col-span-7">
             <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-              <h3 className="text-sm font-semibold text-white">
+              <h3 className="text-sm font-semibold text-ink">
                 {m.label} by state · {PERIOD_LABEL[period]}
               </h3>
-              <p className="font-mono text-[0.6875rem] text-white/70">Tile map · not to scale</p>
+              <p className="font-mono text-[0.6875rem] text-slate">Tile map · not to scale</p>
             </div>
 
             <label className="mb-4 block lg:hidden">
-              <span className="mb-1.5 block text-xs font-semibold text-white/80">Region</span>
+              <span className="mb-1.5 block text-xs font-semibold text-slate">Region</span>
               <select
                 value={region ?? ''}
                 onChange={(e) => select(e.target.value || null)}
-                className="h-11 w-full rounded-chip border border-night-line bg-night-raised px-3 text-sm text-white"
+                className="h-11 w-full rounded-chip border border-line bg-white px-3 text-sm text-ink"
               >
                 <option value="">All India</option>
                 {[...geo.states]
@@ -184,7 +184,7 @@ export function IndiaIntelligence() {
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
               <ul aria-label={`Legend: ${m.label}`} className="flex flex-wrap gap-x-3 gap-y-1.5">
                 {legend.map((l) => (
-                  <li key={l.bg} className="flex items-center gap-1.5 font-mono text-[0.6875rem] text-white/75">
+                  <li key={l.bg} className="flex items-center gap-1.5 font-mono text-[0.6875rem] text-slate">
                     <span aria-hidden className={cn('h-3 w-3 rounded-[3px] border border-white/15', l.bg)} />
                     {l.text}
                   </li>
@@ -194,7 +194,7 @@ export function IndiaIntelligence() {
                 <button
                   type="button"
                   onClick={() => select(null)}
-                  className="min-h-10 rounded-md px-2 text-xs font-semibold text-white/80 underline underline-offset-4 hover:text-white"
+                  className="min-h-10 rounded-md px-2 text-xs font-semibold text-slate underline underline-offset-4 hover:text-ink"
                 >
                   Show All India
                 </button>
@@ -210,12 +210,12 @@ export function IndiaIntelligence() {
               periodLabel={PERIOD_LABEL[period]}
             />
 
-            <section aria-labelledby="geo-rank-title" className="rounded-card border border-night-line bg-night-raised p-4 sm:p-5">
+            <section aria-labelledby="geo-rank-title" className="rounded-card border border-line bg-white p-4 sm:p-5">
               <div className="mb-3 flex items-baseline justify-between gap-2">
-                <h3 id="geo-rank-title" className="text-sm font-semibold text-white">
+                <h3 id="geo-rank-title" className="text-sm font-semibold text-ink">
                   Top 8 states by won revenue
                 </h3>
-                <span className="font-mono text-[0.6875rem] text-white/70">Leads · Revenue</span>
+                <span className="font-mono text-[0.6875rem] text-slate">Leads · Revenue</span>
               </div>
               <ol className="space-y-1">
                 {top.map((s, i) => (
@@ -226,13 +226,13 @@ export function IndiaIntelligence() {
                       aria-pressed={region === s.code}
                       className={cn(
                         'grid min-h-10 w-full grid-cols-[1.25rem_minmax(0,1fr)_auto] items-center gap-x-2 rounded-md px-2 py-1.5 text-left transition-colors duration-fast',
-                        region === s.code ? 'bg-white/10' : 'hover:bg-white/5',
+                        region === s.code ? 'bg-sky' : 'hover:bg-line',
                       )}
                     >
-                      <span className="font-mono text-[0.6875rem] text-white/70">{i + 1}</span>
+                      <span className="font-mono text-[0.6875rem] text-slate">{i + 1}</span>
                       <span className="min-w-0">
-                        <span className="block truncate text-xs font-semibold text-white">{s.name}</span>
-                        <span aria-hidden className="mt-1 block h-1 overflow-hidden rounded-full bg-white/10">
+                        <span className="block truncate text-xs font-semibold text-ink">{s.name}</span>
+                        <span aria-hidden className="mt-1 block h-1 overflow-hidden rounded-full bg-sky">
                           <motion.span
                             className="block h-full origin-left rounded-full bg-brand-hi"
                             initial={false}
@@ -241,8 +241,8 @@ export function IndiaIntelligence() {
                           />
                         </span>
                       </span>
-                      <span className="text-right font-mono text-xs tabular-nums text-white">
-                        <span className="text-white/70">{s.stats.leads}</span>
+                      <span className="text-right font-mono text-xs tabular-nums text-ink">
+                        <span className="text-slate">{s.stats.leads}</span>
                         <span className="sr-only"> leads, </span>
                         <span className="ml-2">{formatINRCompact(s.stats.revenue)}</span>
                       </span>
@@ -250,8 +250,8 @@ export function IndiaIntelligence() {
                   </li>
                 ))}
               </ol>
-              <dl className="mt-2 space-y-1 border-t border-night-line pt-2 font-mono text-xs">
-                <div className="flex justify-between gap-2 px-2 py-1 text-white/75">
+              <dl className="mt-2 space-y-1 border-t border-line pt-2 font-mono text-xs">
+                <div className="flex justify-between gap-2 px-2 py-1 text-slate">
                   <dt className="font-sans">Other {rest.length} states &amp; UTs</dt>
                   <dd className="tabular-nums">
                     {restLeads}
@@ -259,7 +259,7 @@ export function IndiaIntelligence() {
                     <span className="ml-2">{formatINRCompact(restRevenue)}</span>
                   </dd>
                 </div>
-                <div className="flex justify-between gap-2 rounded-md bg-white/5 px-2 py-1.5 font-semibold text-white">
+                <div className="flex justify-between gap-2 rounded-md bg-line px-2 py-1.5 font-semibold text-ink">
                   <dt className="font-sans">All India</dt>
                   <dd className="tabular-nums">
                     {geo.total.leads}

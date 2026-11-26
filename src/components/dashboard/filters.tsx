@@ -39,7 +39,7 @@ export function FilterBar({
   return (
     <div className="flex flex-col gap-3 xl:flex-row xl:items-end xl:justify-between">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div role="group" aria-label="Period" className="flex w-full rounded-chip border border-night-line bg-night p-1 sm:w-auto">
+        <div role="group" aria-label="Period" className="flex w-full rounded-chip border border-line bg-sky p-1 sm:w-auto">
           {PERIODS.map((p) => {
             const active = filter.period === p
             return (
@@ -51,7 +51,7 @@ export function FilterBar({
                 className={cn(
                   'min-h-10 flex-1 rounded-[0.5rem] px-2 text-xs sm:flex-none font-semibold transition-colors duration-fast ease-out sm:px-3.5 sm:text-sm',
                   focusRing,
-                  active ? 'bg-white text-night shadow-press' : 'text-white/75 hover:bg-white/10 hover:text-white',
+                  active ? 'bg-white text-ink shadow-press' : 'text-slate hover:bg-sky hover:text-ink',
                 )}
               >
                 <span className="sm:hidden">{PERIOD_SHORT[p]}</span>
@@ -67,7 +67,7 @@ export function FilterBar({
           aria-controls={panelId}
           onClick={() => setOpen((o) => !o)}
           className={cn(
-            'inline-flex min-h-10 shrink-0 items-center justify-center gap-1.5 rounded-chip border border-night-line bg-night px-3 text-xs font-semibold text-white sm:hidden',
+            'inline-flex min-h-10 shrink-0 items-center justify-center gap-1.5 rounded-chip border border-line bg-white px-3 text-xs font-semibold text-ink sm:hidden',
             focusRing,
           )}
         >
@@ -107,7 +107,7 @@ export function FilterBar({
           onClick={() => onChange(DEFAULT_FILTER)}
           disabled={isDefault}
           className={cn(
-            'inline-flex min-h-10 items-center justify-center gap-1.5 rounded-chip border border-night-line px-3 text-xs font-semibold text-white/80 transition-colors duration-fast hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent',
+            'inline-flex min-h-10 items-center justify-center gap-1.5 rounded-chip border border-line px-3 text-xs font-semibold text-slate transition-colors duration-fast hover:bg-sky hover:text-ink disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent',
             focusRing,
           )}
         >
@@ -135,7 +135,7 @@ function Select({
   const id = useId()
   return (
     <div className="flex min-w-0 flex-col gap-1">
-      <label htmlFor={id} className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-white/70">
+      <label htmlFor={id} className="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-slate">
         {label}
       </label>
       <div className="relative">
@@ -144,22 +144,22 @@ function Select({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className={cn(
-            'min-h-10 w-full min-w-0 appearance-none truncate rounded-chip border bg-night py-2 pl-3 pr-8 text-sm text-white transition-colors duration-fast',
-            value ? 'border-cyan/60' : 'border-night-line hover:border-white/30',
+            'min-h-10 w-full min-w-0 appearance-none truncate rounded-chip border bg-white py-2 pl-3 pr-8 text-sm text-ink transition-colors duration-fast',
+            value ? 'border-cyan/60' : 'border-line hover:border-line',
             focusRing,
           )}
         >
-          <option value="" className="bg-night text-white">
+          <option value="" className="bg-white text-ink">
             {all}
           </option>
           {options.map((o) => (
-            <option key={o.value} value={o.value} className="bg-night text-white">
+            <option key={o.value} value={o.value} className="bg-white text-ink">
               {o.label}
             </option>
           ))}
         </select>
         <ChevronDown
-          className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60"
+          className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate"
           aria-hidden
         />
       </div>

@@ -153,17 +153,17 @@ export function LeadJourneyCinematic() {
   const playPanels = active && !reduce
 
   return (
-    <section ref={sectionRef} aria-labelledby="journey-title" className="bg-night py-16 text-white lg:py-24">
+    <section ref={sectionRef} aria-labelledby="journey-title" className="bg-sky py-16 text-ink lg:py-24">
       <div className="shell">
         <SectionHeader
           id="journey-title"
-          tone="night"
+          tone="light"
           kicker="One enquiry, start to finish"
           title="Watch one enquiry become revenue."
           lede={`Follow a single IndiaMART enquiry from ${JOURNEY_CUSTOMER.company} through all seven stages of the EZCRM lifecycle, in one workspace.`}
         />
         <div className="mt-5 flex justify-center">
-          <SampleBadge tone="night" />
+          <SampleBadge tone="light" />
         </div>
 
         <div ref={trackRef} className="relative mt-10 lg:mt-14 lg:motion-safe:h-[490vh]">
@@ -184,21 +184,21 @@ export function LeadJourneyCinematic() {
                     aria-current={on ? 'step' : undefined}
                     className={cn(
                       'lg:border-l lg:py-2 lg:pl-5',
-                      on ? 'lg:border-cyan' : 'sr-only lg:not-sr-only lg:border-night-line',
+                      on ? 'lg:border-cyan' : 'sr-only lg:not-sr-only lg:border-line',
                     )}
                   >
-                    <p className={cn('font-mono text-xs font-semibold', on ? 'text-cyan' : 'text-white/70')}>
+                    <p className={cn('font-mono text-xs font-semibold', on ? 'text-brand' : 'text-slate')}>
                       {String(i + 1).padStart(2, '0')} · {s.label}
                     </p>
                     <h3
                       className={cn(
                         'font-display font-bold tracking-tight',
-                        on ? 'mt-1 text-2xl text-white sm:text-3xl lg:text-2xl' : 'text-base text-white/70 lg:sr-only',
+                        on ? 'mt-1 text-2xl text-ink sm:text-3xl lg:text-2xl' : 'text-base text-slate lg:sr-only',
                       )}
                     >
                       {c.title}
                     </h3>
-                    <p className={cn('text-base leading-relaxed text-white/75', on ? 'mt-2' : 'sr-only')}>{c.copy}</p>
+                    <p className={cn('text-base leading-relaxed text-slate', on ? 'mt-2' : 'sr-only')}>{c.copy}</p>
                   </li>
                 )
               })}
@@ -254,7 +254,7 @@ export function LeadJourneyCinematic() {
             </div>
 
             <DemoControls
-              tone="night"
+              tone="light"
               label="Lead lifecycle stages"
               steps={JOURNEY_STEPS}
               index={stage}

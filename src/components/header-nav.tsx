@@ -415,17 +415,17 @@ function PanelLink({ link, current, roomy }: { link: MenuLink; current: boolean;
  */
 function FeatureCard({ kind }: { kind: MenuPanel['feature'] }) {
   return (
-    <div className="hidden flex-col justify-between rounded-card bg-night p-5 text-white xl:flex">
+    <div className="hidden flex-col justify-between rounded-card border border-line bg-sky p-5 text-ink xl:flex">
       {kind === 'pipeline' && <MiniPipeline />}
       {kind === 'industries' && <MiniFlow />}
       {kind === 'proof' && <MiniTimeline />}
       <div className="mt-5">
-        <p className="font-display text-base font-bold leading-snug">
+        <p className="font-display text-base font-bold leading-snug text-ink">
           {kind === 'industries'
             ? 'Your sales process, mapped in the first call.'
             : 'See your own leads flow through EZCRM.'}
         </p>
-        <p className="mt-1 text-xs text-white/70">30-minute walkthrough with our team.</p>
+        <p className="mt-1 text-xs text-slate">30-minute walkthrough with our team.</p>
         <Link href="/demo" className={cn(buttonVariants({ variant: 'brand', size: 'sm' }), 'mt-4 w-full')}>
           Book a demo
         </Link>
@@ -443,15 +443,15 @@ function MiniPipeline() {
   return (
     <div aria-hidden className="grid grid-cols-3 gap-2">
       {cols.map((c) => (
-        <div key={c.name} className="rounded-chip border border-night-line bg-night-raised p-2">
-          <p className="mb-2 font-mono text-[0.625rem] uppercase tracking-wider text-white/60">{c.name}</p>
+        <div key={c.name} className="rounded-chip border border-line bg-white p-2">
+          <p className="mb-2 font-mono text-[0.625rem] uppercase tracking-wider text-slate">{c.name}</p>
           <div className="space-y-1.5">
             {Array.from({ length: c.cards }).map((_, i) => (
               <div
                 key={i}
                 className={cn(
                   'h-6 rounded-md border',
-                  c.name === 'Won' ? 'border-won/50 bg-won/25' : 'border-night-line bg-white/5',
+                  c.name === 'Won' ? 'border-won/50 bg-won/25' : 'border-line bg-sky',
                 )}
               />
             ))}
@@ -472,13 +472,13 @@ function MiniFlow() {
             className={cn(
               'grid h-6 w-6 place-items-center rounded-full border font-mono text-[0.625rem]',
               i === steps.length - 1
-                ? 'border-won/60 bg-won/25 text-white'
-                : 'border-night-line bg-night-raised text-white/70',
+                ? 'border-won/60 bg-won/25 text-won'
+                : 'border-line bg-white text-slate',
             )}
           >
             {i + 1}
           </span>
-          <span className="text-xs text-white/80">{s}</span>
+          <span className="text-xs text-slate">{s}</span>
         </li>
       ))}
     </ol>
@@ -491,8 +491,8 @@ function MiniTimeline() {
     <ul aria-hidden className="space-y-2.5">
       {rows.map((r, i) => (
         <li key={r} className="flex items-start gap-2.5">
-          <span className={cn('mt-1 h-2 w-2 shrink-0 rounded-full', i === 2 ? 'bg-won' : 'bg-cyan')} />
-          <span className="text-xs leading-snug text-white/80">{r}</span>
+          <span className={cn('mt-1 h-2 w-2 shrink-0 rounded-full', i === 2 ? 'bg-won' : 'bg-brand')} />
+          <span className="text-xs leading-snug text-slate">{r}</span>
         </li>
       ))}
     </ul>

@@ -73,7 +73,7 @@ export function BentoCard({
           'group relative flex h-full flex-col overflow-hidden rounded-card border p-4 transition-[transform,box-shadow,border-color] duration-base ease-out hover:-translate-y-0.5 sm:p-5',
           size === 'hero' ? 'min-h-[26rem] lg:min-h-0' : 'min-h-[17rem] lg:min-h-0',
           night
-            ? 'border-night-line bg-night shadow-float hover:border-brand-hi/60'
+            ? 'border-line bg-white shadow-float hover:border-brand/40'
             : 'border-line bg-white shadow-soft hover:border-brand/30 hover:shadow-float',
         )}
       >
@@ -83,14 +83,14 @@ export function BentoCard({
         <div className="mt-4 flex items-end justify-between gap-3">
           <div className="min-w-0">
             {category ? (
-              <p className={cn('kicker mb-1 text-[0.625rem]', night && 'text-cyan')}>{category}</p>
+              <p className={cn('kicker mb-1 text-[0.625rem]', night && 'text-brand')}>{category}</p>
             ) : null}
             <h3
               id={titleId}
               className={cn(
                 'font-display font-bold tracking-tight',
                 size === 'hero' ? 'text-xl sm:text-2xl' : 'text-base',
-                night ? 'text-white' : 'text-ink',
+                night ? 'text-ink' : 'text-ink',
               )}
             >
               {title}
@@ -100,7 +100,7 @@ export function BentoCard({
               className={cn(
                 'mt-1 text-sm leading-snug',
                 size !== 'hero' && 'line-clamp-2',
-                night ? 'text-white/75' : 'text-slate',
+                night ? 'text-slate' : 'text-slate',
               )}
             >
               {tagline}
@@ -110,7 +110,7 @@ export function BentoCard({
             aria-hidden
             className={cn(
               'grid h-9 w-9 shrink-0 place-items-center rounded-full border transition-transform duration-base ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-focus-visible:-translate-y-0.5 group-focus-visible:translate-x-0.5',
-              night ? 'border-night-line text-white' : 'border-line text-brand',
+              night ? 'border-line text-brand' : 'border-line text-brand',
             )}
           >
             <ArrowUpRight className="h-4 w-4" />

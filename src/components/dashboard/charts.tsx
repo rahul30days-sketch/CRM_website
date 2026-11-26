@@ -27,7 +27,7 @@ import {
   type TrendPoint,
 } from './data'
 
-const focusRing = 'focus-visible:outline-cyan'
+const focusRing = 'focus-visible:outline-brand'
 
 function useTransition(duration = 0.6) {
   const reduce = useReducedMotion()
@@ -52,12 +52,12 @@ export function Panel({
   className?: string
 }) {
   return (
-    <section className={cn('flex min-w-0 flex-col rounded-chip border border-night-line bg-night/60 p-4', className)}>
+    <section className={cn('flex min-w-0 flex-col rounded-chip border border-line bg-white p-4', className)}>
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <h3 className="font-display text-sm font-bold text-white">{title}</h3>
+        <h3 className="font-display text-sm font-bold text-ink">{title}</h3>
         {action}
       </div>
-      <p className="mt-1 text-xs leading-relaxed text-white/70">{summary}</p>
+      <p className="mt-1 text-xs leading-relaxed text-slate">{summary}</p>
       <div className="mt-4 flex-1">{children}</div>
       <div className="sr-only">{table}</div>
     </section>
@@ -175,7 +175,7 @@ export function TrendChart({
       title={`Revenue & leads trend${period === 'today' ? ' · last 7 days' : ''}`}
       summary={summary}
       action={
-        <div role="group" aria-label="Trend metric" className="flex rounded-[0.5rem] border border-night-line p-0.5">
+        <div role="group" aria-label="Trend metric" className="flex rounded-[0.5rem] border border-line p-0.5">
           {(['revenue', 'leads'] as const).map((m) => (
             <button
               key={m}
@@ -185,7 +185,7 @@ export function TrendChart({
               className={cn(
                 'min-h-8 rounded-[0.375rem] px-2.5 text-xs font-semibold transition-colors duration-fast',
                 focusRing,
-                metric === m ? 'bg-white/15 text-white' : 'text-white/70 hover:text-white',
+                metric === m ? 'bg-brand/10 text-brand' : 'text-slate hover:text-ink',
               )}
             >
               {m === 'revenue' ? 'Revenue' : 'Leads'}
@@ -218,16 +218,16 @@ export function TrendChart({
       }
     >
       <div className="flex gap-2">
-        <div aria-hidden className="flex h-40 w-11 shrink-0 flex-col justify-between pb-0 text-right font-mono text-[0.625rem] tabular-nums text-white/70 sm:h-48">
+        <div aria-hidden className="flex h-40 w-11 shrink-0 flex-col justify-between pb-0 text-right font-mono text-[0.625rem] tabular-nums text-slate sm:h-48">
           <span>{fmt(max)}</span>
           <span>{fmt(max / 2)}</span>
           <span>0</span>
         </div>
         <div className="relative min-w-0 flex-1">
           <div aria-hidden className="pointer-events-none absolute inset-0 flex flex-col justify-between">
-            <span className="h-px bg-night-line" />
-            <span className="h-px bg-night-line" />
-            <span className="h-px bg-white/20" />
+            <span className="h-px bg-line" />
+            <span className="h-px bg-line" />
+            <span className="h-px bg-line" />
           </div>
           <svg
             viewBox={`0 0 ${W} ${H}`}
@@ -243,9 +243,9 @@ export function TrendChart({
               </linearGradient>
             </defs>
             {period === 'today' ? (
-              <rect x={W - W / 12} y={0} width={W / 12} height={H} className="fill-white/5" />
+              <rect x={W - W / 12} y={0} width={W / 12} height={H} className="fill-[rgb(var(--c-sky))]" />
             ) : null}
-            <g className={metric === 'revenue' ? 'text-brand-hi' : 'text-cyan'}>
+            <g className={metric === 'revenue' ? 'text-brand-hi' : 'text-brand'}>
               <motion.path
                 key={`a-${drawKey}`}
                 initial={morph && !reduce ? { opacity: 0, d: area } : false}
@@ -281,30 +281,30 @@ export function TrendChart({
             <>
               <span
                 aria-hidden
-                className="pointer-events-none absolute inset-y-0 w-px bg-white/30"
+                className="pointer-events-none absolute inset-y-0 w-px bg-ink/20"
                 style={{ left: `${hx}%` }}
               />
               <span
                 aria-hidden
-                className="pointer-events-none absolute h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-night bg-white"
+                className="pointer-events-none absolute h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-brand shadow-soft"
                 style={{ left: `${hx}%`, top: `${(xy[hover!].y / H) * 100}%` }}
               />
               <div
                 aria-hidden
                 className={cn(
-                  'pointer-events-none absolute top-0 z-10 whitespace-nowrap rounded-chip border border-night-line bg-night px-2.5 py-1.5 text-[0.6875rem] text-white shadow-float',
+                  'pointer-events-none absolute top-0 z-10 whitespace-nowrap rounded-chip border border-line bg-white px-2.5 py-1.5 text-[0.6875rem] text-ink shadow-float',
                   hx < 20 ? '' : hx > 80 ? '-translate-x-full' : '-translate-x-1/2',
                 )}
                 style={{ left: `${hx}%` }}
               >
                 <p className="font-semibold">{hp.longLabel}</p>
-                <p className="font-mono tabular-nums text-white/80">
+                <p className="font-mono tabular-nums text-slate">
                   {hp.leads} leads · {money(hp.revenue)}
                 </p>
               </div>
             </>
           ) : null}
-          <div aria-hidden className="relative mt-2 h-4 font-mono text-[0.625rem] text-white/70">
+          <div aria-hidden className="relative mt-2 h-4 font-mono text-[0.625rem] text-slate">
             {xLabels.map(({ i, label }) => {
               const left = n === 1 ? 50 : (i / (n - 1)) * 100
               return (
@@ -369,15 +369,15 @@ export function FunnelChart({ funnel }: { funnel: Dashboard['funnel'] }) {
         {funnel.map((s) => (
           <li key={s.id}>
             <div className="mb-1 flex items-baseline justify-between gap-2 text-xs">
-              <span className="text-white/80">
+              <span className="text-slate">
                 {s.label}
-                {s.id !== 'won' ? <span className="ml-1.5 font-mono text-[0.625rem] text-white/70">{s.probability}%</span> : null}
+                {s.id !== 'won' ? <span className="ml-1.5 font-mono text-[0.625rem] text-slate">{s.probability}%</span> : null}
               </span>
-              <span className="font-mono tabular-nums text-white">
-                {s.count} <span className="text-white/70">· {money(s.value)}</span>
+              <span className="font-mono tabular-nums text-ink">
+                {s.count} <span className="text-slate">· {money(s.value)}</span>
               </span>
             </div>
-            <div className="h-2.5 rounded-full bg-white/5">
+            <div className="h-2.5 rounded-full bg-line">
               <Bar value={s.count / max} origin="center" className={s.id === 'won' ? 'bg-won' : 'bg-brand-hi'} />
             </div>
           </li>
@@ -427,7 +427,7 @@ export function SourceChart({ sources, selected }: { sources: Dashboard['sources
       }
     >
       <div aria-hidden>
-        <div className="mb-2 grid grid-cols-[4.5rem_1fr_3rem] gap-2 font-mono text-[0.625rem] uppercase tracking-[0.1em] text-white/70">
+        <div className="mb-2 grid grid-cols-[4.5rem_1fr_3rem] gap-2 font-mono text-[0.625rem] uppercase tracking-[0.1em] text-slate">
           <span>Source</span>
           <span>Leads</span>
           <span className="text-right">Conv.</span>
@@ -440,14 +440,14 @@ export function SourceChart({ sources, selected }: { sources: Dashboard['sources
                 key={s.id}
                 className={cn('grid grid-cols-[4.5rem_1fr_3rem] items-center gap-2 text-xs transition-opacity duration-base', dim && 'opacity-45')}
               >
-                <span className="truncate text-white/80">{s.name}</span>
+                <span className="truncate text-slate">{s.name}</span>
                 <span className="flex items-center gap-2">
-                  <span className="h-2 flex-1 rounded-full bg-white/5">
-                    <Bar value={s.leads / max} className={selected === s.id ? 'bg-cyan' : 'bg-brand-hi'} />
+                  <span className="h-2 flex-1 rounded-full bg-line">
+                    <Bar value={s.leads / max} className={selected === s.id ? 'bg-brand' : 'bg-brand-hi'} />
                   </span>
-                  <span className="w-7 text-right font-mono tabular-nums text-white">{s.leads}</span>
+                  <span className="w-7 text-right font-mono tabular-nums text-ink">{s.leads}</span>
                 </span>
-                <span className="text-right font-mono tabular-nums text-white">{s.decided ? pct(s.conversion) : '—'}</span>
+                <span className="text-right font-mono tabular-nums text-ink">{s.decided ? pct(s.conversion) : '—'}</span>
               </li>
             )
           })}
@@ -502,20 +502,20 @@ export function RepChart({ reps, selected }: { reps: Dashboard['reps']; selected
               <span
                 className={cn(
                   'flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-mono text-[0.625rem] font-semibold',
-                  selected === r.id ? 'bg-cyan text-night' : 'bg-white/10 text-white',
+                  selected === r.id ? 'bg-brand text-white' : 'bg-sky text-ink',
                 )}
               >
                 {r.initials}
               </span>
               <div className="min-w-0 flex-1">
                 <div className="mb-1 flex items-baseline justify-between gap-2 text-xs">
-                  <span className="truncate text-white/80">{r.name}</span>
-                  <span className="shrink-0 font-mono tabular-nums text-white">{money(r.revenue)}</span>
+                  <span className="truncate text-slate">{r.name}</span>
+                  <span className="shrink-0 font-mono tabular-nums text-ink">{money(r.revenue)}</span>
                 </div>
-                <div className="h-2 rounded-full bg-white/5">
-                  <Bar value={r.revenue / max} className={selected === r.id ? 'bg-cyan' : 'bg-won'} />
+                <div className="h-2 rounded-full bg-line">
+                  <Bar value={r.revenue / max} className={selected === r.id ? 'bg-brand' : 'bg-won'} />
                 </div>
-                <p className="mt-1 font-mono text-[0.625rem] tabular-nums text-white/70">
+                <p className="mt-1 font-mono text-[0.625rem] tabular-nums text-slate">
                   {r.won} won · {r.leads} leads · {r.decided ? pct(r.conversion) : '—'} conv.
                 </p>
               </div>
@@ -544,7 +544,7 @@ export function RecentActivity({ recent, total }: { recent: Dashboard['recent'];
       summary={`Latest ${recent.length} of ${total} lead${total === 1 ? '' : 's'} in view, newest first.`}
       table={null}
     >
-      <ul className="divide-y divide-night-line">
+      <ul className="divide-y divide-line">
         <AnimatePresence initial={false} mode="popLayout">
           {recent.map((l) => {
             const src = SOURCES.find((s) => s.id === l.source)
@@ -562,24 +562,24 @@ export function RecentActivity({ recent, total }: { recent: Dashboard['recent'];
                   aria-hidden
                   className={cn(
                     'mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full',
-                    l.status === 'won' ? 'bg-won' : l.status === 'lost' ? 'bg-white/30' : 'bg-brand-hi',
+                    l.status === 'won' ? 'bg-won' : l.status === 'lost' ? 'bg-slate/40' : 'bg-brand-hi',
                   )}
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="flex flex-wrap items-baseline gap-x-2 text-xs text-white">
+                  <p className="flex flex-wrap items-baseline gap-x-2 text-xs text-ink">
                     <span className="font-semibold">
                       {l.status === 'won' ? 'Deal won' : l.status === 'lost' ? 'Marked lost' : STAGE_LABEL[l.stage]}
                     </span>
-                    <span className="font-mono tabular-nums text-white/80">{money(l.value)}</span>
+                    <span className="font-mono tabular-nums text-slate">{money(l.value)}</span>
                   </p>
-                  <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[0.6875rem] text-white/70">
-                    <span className="rounded-full border border-night-line px-1.5 py-px font-medium text-white/80">{src?.short}</span>
+                  <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[0.6875rem] text-slate">
+                    <span className="rounded-full border border-line px-1.5 py-px font-medium text-slate">{src?.short}</span>
                     <span>{rep?.name}</span>
                     <span aria-hidden>·</span>
                     <span>{stateName(l.state)}</span>
                   </p>
                 </div>
-                <span className="shrink-0 font-mono text-[0.625rem] text-white/70">
+                <span className="shrink-0 font-mono text-[0.625rem] text-slate">
                   <span className="sr-only">{l.id}, </span>
                   {relativeDay(l.daysAgo)}
                 </span>
@@ -604,12 +604,12 @@ export function EmptyState({
   onReset: () => void
 }) {
   return (
-    <div className="flex flex-col items-center rounded-chip border border-dashed border-night-line bg-night/40 px-6 py-12 text-center">
-      <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/5">
-        <Inbox className="h-5 w-5 text-white/70" aria-hidden />
+    <div className="flex flex-col items-center rounded-chip border border-dashed border-line bg-sky px-6 py-12 text-center">
+      <span className="flex h-11 w-11 items-center justify-center rounded-full bg-line">
+        <Inbox className="h-5 w-5 text-slate" aria-hidden />
       </span>
-      <h3 className="mt-4 font-display text-base font-bold text-white">No leads match {description}</h3>
-      <p className="mt-1.5 max-w-sm text-sm text-white/70">
+      <h3 className="mt-4 font-display text-base font-bold text-ink">No leads match {description}</h3>
+      <p className="mt-1.5 max-w-sm text-sm text-slate">
         Nothing came in for this combination. Widen the period or clear a filter to see the charts again.
       </p>
       <div className="mt-5 flex flex-wrap justify-center gap-2">
@@ -617,7 +617,7 @@ export function EmptyState({
           <button
             type="button"
             onClick={onWiden}
-            className={cn('min-h-10 rounded-chip bg-white px-4 text-sm font-semibold text-night hover:bg-white/90', focusRing)}
+            className={cn('min-h-10 rounded-chip bg-brand px-4 text-sm font-semibold text-white hover:bg-brand-deep', focusRing)}
           >
             Show this quarter
           </button>
@@ -625,7 +625,7 @@ export function EmptyState({
         <button
           type="button"
           onClick={onReset}
-          className={cn('min-h-10 rounded-chip border border-night-line px-4 text-sm font-semibold text-white hover:bg-white/10', focusRing)}
+          className={cn('min-h-10 rounded-chip border border-line px-4 text-sm font-semibold text-ink hover:bg-sky', focusRing)}
         >
           Clear filters
         </button>

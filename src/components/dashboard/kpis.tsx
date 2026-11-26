@@ -43,18 +43,18 @@ export function KpiGrid({ data, animate }: { data: Dashboard; animate: boolean }
   return (
     <dl className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4">
       {kpis.map((k) => (
-        <div key={k.label} className="relative min-w-0 overflow-hidden rounded-chip border border-night-line bg-night/60 p-3 sm:p-4">
+        <div key={k.label} className="relative min-w-0 overflow-hidden rounded-chip border border-line bg-white p-3 sm:p-4">
           <span
             aria-hidden
             className={cn(
               'absolute inset-x-0 top-0 h-px',
-              k.accent === 'won' ? 'bg-won' : k.accent === 'cyan' ? 'bg-cyan' : k.accent === 'brand' ? 'bg-brand-hi' : 'bg-night-line',
+              k.accent === 'won' ? 'bg-won' : k.accent === 'cyan' ? 'bg-brand' : k.accent === 'brand' ? 'bg-brand-hi' : 'bg-slate/40',
             )}
           />
-          <dt className="text-[0.6875rem] leading-tight font-semibold uppercase tracking-[0.08em] text-white/70 sm:text-xs">{k.label}</dt>
+          <dt className="text-[0.6875rem] leading-tight font-semibold uppercase tracking-[0.08em] text-slate sm:text-xs">{k.label}</dt>
           <dd className="mt-1.5">
             <KpiValue value={k.value} animate={animate} />
-            <span className="mt-1 block text-[0.6875rem] leading-snug text-white/70 sm:text-xs">{k.note}</span>
+            <span className="mt-1 block text-[0.6875rem] leading-snug text-slate sm:text-xs">{k.note}</span>
           </dd>
         </div>
       ))}
@@ -70,7 +70,7 @@ function KpiValue({ value, animate }: { value: string; animate: boolean }) {
       initial={animate && !reduce ? { opacity: 0, y: 6 } : false}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: EASE }}
-      className="block truncate font-mono text-xl font-semibold tabular-nums text-white sm:text-2xl"
+      className="block truncate font-mono text-xl font-semibold tabular-nums text-ink sm:text-2xl"
     >
       {value}
     </motion.span>

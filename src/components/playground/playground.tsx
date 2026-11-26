@@ -120,7 +120,7 @@ function Shell() {
       {/* App toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-white px-3 py-2.5 sm:px-4">
         <div className="flex min-w-0 items-center gap-2.5">
-          <span aria-hidden className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-chip bg-night font-display text-xs font-extrabold text-white">
+          <span aria-hidden className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-chip bg-brand font-display text-xs font-extrabold text-white">
             EZ
           </span>
           <p className="min-w-0 leading-tight">

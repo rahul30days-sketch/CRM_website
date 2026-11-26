@@ -48,18 +48,18 @@ export function AutomationWorkflow() {
   }
 
   return (
-    <section aria-labelledby="automation-heading" className="bg-night py-16 lg:py-24">
+    <section aria-labelledby="automation-heading" className="bg-sky py-16 lg:py-24">
       <div className="shell">
         <div className="flex flex-col items-start gap-4 lg:flex-row lg:items-end lg:justify-between">
           <SectionHeader
             id="automation-heading"
-            tone="night"
+            tone="light"
             align="left"
             kicker="Workflow automation"
             title="One trigger. An entire workflow in motion."
             lede="Build workflows like these: a trigger starts the run, waits hold it, conditions choose the path and actions do the work. Pick an example and watch a simulated run."
           />
-          <SampleBadge tone="night" label="Example workflows · simulated" />
+          <SampleBadge tone="light" label="Example workflows · simulated" />
         </div>
 
         <div className="mt-10 lg:mt-12">
@@ -67,7 +67,7 @@ export function AutomationWorkflow() {
             role="tablist"
             aria-label="Example workflows"
             aria-orientation="horizontal"
-            className="flex flex-wrap gap-2 border-b border-night-line pb-4"
+            className="flex flex-wrap gap-2 border-b border-line pb-4"
           >
             {WORKFLOWS.map((wf, i) => {
               const isSel = i === selected
@@ -88,8 +88,8 @@ export function AutomationWorkflow() {
                   className={cn(
                     'inline-flex h-10 items-center rounded-full border px-4 text-sm font-semibold transition-colors duration-fast',
                     isSel
-                      ? 'border-white bg-white text-night'
-                      : 'border-night-line bg-night-raised text-white/75 hover:bg-white/10 hover:text-white',
+                      ? 'border-brand bg-brand text-white'
+                      : 'border-line bg-white text-slate hover:bg-sky hover:text-ink',
                   )}
                 >
                   {wf.name}
@@ -107,7 +107,7 @@ export function AutomationWorkflow() {
               hidden={i !== selected}
               className="pt-6"
             >
-              <p className="mb-5 max-w-2xl text-sm text-white/75">{wf.summary}</p>
+              <p className="mb-5 max-w-2xl text-sm text-slate">{wf.summary}</p>
               <WorkflowPanel workflow={wf} selected={i === selected} />
             </div>
           ))}

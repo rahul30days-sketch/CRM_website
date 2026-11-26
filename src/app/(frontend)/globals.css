@@ -9,15 +9,15 @@
 :root {
   --c-base: 255 255 255; /* #FFFFFF page base */
   --c-panel: 255 255 255; /* card fills */
-  --c-sky: 238 244 255; /* #EEF4FF soft section fill / glass interior */
-  --c-mist: 220 232 251; /* #DCE8FB gradient mid-stop */
-  --c-powder: 199 219 247; /* #C7DBF7 gradient deep-stop, edges only */
+  --c-sky: 241 243 247; /* #F1F3F7 neutral soft section fill (de-blued) */
+  --c-mist: 232 235 240; /* #E8EBF0 neutral gradient mid-stop (de-blued) */
+  --c-powder: 221 225 231; /* #DDE1E7 neutral gradient deep-stop (de-blued) */
   --c-brand: 43 92 230; /* #2B5CE6 primary blue — links, active, data */
   --c-brand-hi: 91 132 240; /* #5B84F0 lighter brand, gradient partner */
   --c-brand-deep: 30 66 180; /* pressed brand */
   --c-ink: 15 26 51; /* #0F1A33 headlines, near-black */
   --c-slate: 84 96 122; /* #54607A body text */
-  --c-line: 226 233 245; /* #E2E9F5 hairlines, borders */
+  --c-line: 228 231 236; /* #E4E7EC neutral hairlines, borders (de-blued) */
   --c-won: 14 124 67; /* #0E7C43 deal won / positive — 5.3:1 on white */
   --c-info: 43 92 230; /* brand blue for info */
   --c-due: 190 58 45; /* #BE3A2D overdue / attention — 5.5:1 on white */
@@ -115,11 +115,13 @@
   }
 
   .mesh-deep {
+    /* Soft neutral surface — no glowing blue. A faint brand wash at the
+       very edges keeps it from looking flat, but reads grey, not blue. */
     background-color: rgb(var(--c-sky));
     background-image:
-      radial-gradient(60rem 44rem at 50% 120%, rgba(43, 92, 230, 0.5), transparent 60%),
-      radial-gradient(40rem 34rem at 8% 90%, rgba(91, 132, 240, 0.4), transparent 55%),
-      radial-gradient(46rem 36rem at 96% 100%, rgba(199, 219, 247, 0.9), transparent 55%);
+      radial-gradient(60rem 44rem at 50% 120%, rgba(203, 208, 219, 0.5), transparent 60%),
+      radial-gradient(46rem 36rem at 96% 100%, rgba(221, 225, 231, 0.9), transparent 55%),
+      radial-gradient(40rem 34rem at 6% 94%, rgba(43, 92, 230, 0.06), transparent 55%);
   }
 
   /*

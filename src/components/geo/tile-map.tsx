@@ -115,7 +115,7 @@ export function TileMap({
         <div
           aria-hidden
           className={cn(
-            'pointer-events-none absolute z-20 w-max max-w-[12rem] rounded-md border border-night-line bg-night-raised px-2.5 py-2 text-xs text-white shadow-float',
+            'pointer-events-none absolute z-20 w-max max-w-[12rem] rounded-md border border-line bg-white px-2.5 py-2 text-xs text-ink shadow-float',
             tip.col <= 1 ? 'translate-x-0' : tip.col >= COLS - 2 ? '-translate-x-full' : '-translate-x-1/2',
             '-translate-y-full',
           )}
@@ -125,8 +125,8 @@ export function TileMap({
           }}
         >
           <p className="font-semibold">{tip.name}</p>
-          <p className="mt-0.5 font-mono text-white/80">{m.long(metricValue(tip.stats, metric))}</p>
-          <p className="font-mono text-white/70">
+          <p className="mt-0.5 font-mono text-slate">{m.long(metricValue(tip.stats, metric))}</p>
+          <p className="font-mono text-slate">
             {tip.stats.leads} leads · {tip.stats.won} won
           </p>
         </div>

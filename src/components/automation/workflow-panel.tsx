@@ -120,13 +120,13 @@ export function WorkflowPanel({ workflow, selected }: { workflow: Workflow; sele
         {/* controls */}
         <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
           {reduce ? (
-            <p className="text-sm text-white/75">Reduced motion is on, so the completed run is shown.</p>
+            <p className="text-sm text-slate">Reduced motion is on, so the completed run is shown.</p>
           ) : (
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => (complete ? replay() : setPlaying((p) => !p))}
-                className="inline-flex h-10 items-center gap-2 rounded-full bg-white px-4 text-sm font-semibold text-night transition-colors duration-fast hover:bg-white/90"
+                className="inline-flex h-10 items-center gap-2 rounded-full bg-brand px-4 text-sm font-semibold text-white transition-colors duration-fast hover:bg-brand-deep"
               >
                 {complete ? (
                   <Play className="h-4 w-4" aria-hidden />
@@ -141,21 +141,21 @@ export function WorkflowPanel({ workflow, selected }: { workflow: Workflow; sele
                 type="button"
                 onClick={replay}
                 aria-label="Replay from the trigger"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-night-line bg-night-raised text-white transition-colors duration-fast hover:bg-white/10"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-line bg-white text-ink transition-colors duration-fast hover:bg-sky"
               >
                 <RotateCcw className="h-4 w-4" aria-hidden />
               </button>
             </div>
           )}
-          <p className="font-mono text-xs text-white/70">{phaseText}</p>
+          <p className="font-mono text-xs text-slate">{phaseText}</p>
         </div>
 
         {plan.condition ? (
           <div role="group" aria-label="Sample answer to the condition" className="mt-4 flex flex-wrap items-center gap-2 text-sm">
-            <span className="text-white/75">
-              Sample answer to <span className="font-semibold text-white">“{plan.condition.node.title}”</span>
+            <span className="text-slate">
+              Sample answer to <span className="font-semibold text-ink">“{plan.condition.node.title}”</span>
             </span>
-            <span className="inline-flex rounded-full border border-night-line bg-night-raised p-1">
+            <span className="inline-flex rounded-full border border-line bg-white p-1">
               {(['yes', 'no'] as const).map((b) => (
                 <button
                   key={b}
@@ -164,7 +164,7 @@ export function WorkflowPanel({ workflow, selected }: { workflow: Workflow; sele
                   onClick={() => chooseBranch(b)}
                   className={cn(
                     'inline-flex h-8 min-w-[52px] items-center justify-center rounded-full px-3 text-xs font-semibold transition-colors duration-fast',
-                    branch === b ? 'bg-white text-night' : 'text-white/75 hover:text-white',
+                    branch === b ? 'bg-brand text-white shadow-press' : 'text-slate hover:text-ink',
                   )}
                 >
                   {b === 'yes' ? 'Yes' : 'No'}
@@ -196,15 +196,15 @@ export function WorkflowPanel({ workflow, selected }: { workflow: Workflow; sele
                       key={b}
                       className={cn(
                         'min-w-0 rounded-card border p-3',
-                        taken ? 'border-night-line bg-white/[0.03]' : 'border-dashed border-night-line',
+                        taken ? 'border-line bg-sky' : 'border-dashed border-line',
                       )}
                     >
                       <p className="mb-2 flex flex-wrap items-center gap-x-2 text-xs">
-                        <span className="inline-flex h-6 items-center rounded-full bg-white/10 px-2 font-bold text-white">
+                        <span className="inline-flex h-6 items-center rounded-full bg-brand/10 px-2 font-bold text-brand">
                           If {b === 'yes' ? 'Yes' : 'No'}
                         </span>
-                        <span className="text-white/75">{label}</span>
-                        <span className={cn('ml-auto font-semibold', taken ? 'text-white' : 'text-white/70')}>
+                        <span className="text-slate">{label}</span>
+                        <span className={cn('ml-auto font-semibold', taken ? 'text-ink' : 'text-slate')}>
                           {resolved ? (taken ? 'Taken' : 'Skipped') : taken ? 'Sample path' : 'Not chosen'}
                         </span>
                       </p>
@@ -219,10 +219,10 @@ export function WorkflowPanel({ workflow, selected }: { workflow: Workflow; sele
       </div>
 
       {/* execution log */}
-      <div className="min-w-0 rounded-card border border-night-line bg-night-raised p-4">
+      <div className="min-w-0 rounded-card border border-line bg-white p-4">
         <div className="flex items-baseline justify-between gap-2">
-          <h3 className="text-sm font-semibold text-white">Execution log</h3>
-          <span className="text-[11px] text-white/70">Simulated timings</span>
+          <h3 className="text-sm font-semibold text-ink">Execution log</h3>
+          <span className="text-[11px] text-slate">Simulated timings</span>
         </div>
         <ol className="mt-3 space-y-2">
           {logItems.map((p) => {
@@ -233,17 +233,17 @@ export function WorkflowPanel({ workflow, selected }: { workflow: Workflow; sele
               <li
                 key={p.key}
                 className={cn(
-                  'grid grid-cols-[auto_minmax(0,1fr)] gap-x-2 border-b border-night-line pb-2 text-xs last:border-0',
-                  s === 'running' && 'text-white',
+                  'grid grid-cols-[auto_minmax(0,1fr)] gap-x-2 border-b border-line pb-2 text-xs last:border-0',
+                  s === 'running' && 'text-ink',
                 )}
               >
                 <StIcon className={cn('mt-0.5 h-3.5 w-3.5', st.iconClass, s === 'running' && active && 'animate-spin')} aria-hidden />
                 <div className="min-w-0">
                   <p className="flex flex-wrap items-baseline justify-between gap-x-2">
-                    <span className="font-semibold text-white">{p.node.title}</span>
-                    <span className="font-mono tabular-nums text-white/70">{p.timing}</span>
+                    <span className="font-semibold text-ink">{p.node.title}</span>
+                    <span className="font-mono tabular-nums text-slate">{p.timing}</span>
                   </p>
-                  <p className="text-white/70">
+                  <p className="text-slate">
                     {KIND_META[p.node.kind].label}
                     {p.lane !== 'main' ? ` · ${p.lane === 'yes' ? 'Yes' : 'No'} branch` : ''} ·{' '}
                     <span className={st.className}>{s === 'skipped' ? 'Skipped, branch not taken' : st.label}</span>

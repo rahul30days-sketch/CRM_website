@@ -62,17 +62,17 @@ export function FinalCtaCinematic({
   return (
     <MotionConfig reducedMotion="user">
       <section ref={sectionRef} aria-labelledby="final-cta-title" className="shell py-16 lg:py-24">
-        <div className="relative overflow-hidden rounded-[2rem] bg-night px-5 py-14 sm:px-10 sm:py-16 lg:px-16 lg:py-20">
+        <div className="relative overflow-hidden rounded-[2rem] bg-sky px-5 py-14 sm:px-10 sm:py-16 lg:px-16 lg:py-20">
           <div className="relative grid items-center gap-10 lg:grid-cols-[1.1fr_1fr] lg:gap-12">
             {/* Copy and CTAs */}
             <div className="text-center lg:order-1 lg:text-left">
               <h2
                 id="final-cta-title"
-                className="font-display text-3xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-4xl lg:text-5xl"
+                className="font-display text-3xl font-extrabold leading-[1.08] tracking-tight text-ink sm:text-4xl lg:text-5xl"
               >
                 Your entire sales operation. <span className="text-brand-hi">Finally working as one.</span>
               </h2>
-              <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-white/75 lg:mx-0">
+              <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-slate lg:mx-0">
                 Bring your leads, conversations, salespeople, quotations and customer relationships together with
                 EZCRM.
               </p>
@@ -104,7 +104,7 @@ export function FinalCtaCinematic({
                 />
 
                 <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full" aria-hidden focusable="false">
-                  <circle cx={50} cy={50} r={36} fill="none" strokeWidth={0.3} className="stroke-night-line" />
+                  <circle cx={50} cy={50} r={36} fill="none" strokeWidth={0.3} className="stroke-line" />
                   {NODES.map((n) => (
                     <line
                       key={n.label}
@@ -114,7 +114,7 @@ export function FinalCtaCinematic({
                       y2={50}
                       strokeWidth={0.4}
                       strokeLinecap="round"
-                      className="stroke-cyan/30"
+                      className="stroke-brand/20"
                     />
                   ))}
                   {!flowing &&
@@ -163,10 +163,10 @@ export function FinalCtaCinematic({
                         transition={{ duration: 0.8, delay: i * 0.07, ease: EASE }}
                         className="flex flex-col items-center gap-1.5"
                       >
-                        <span className="grid h-10 w-10 place-items-center rounded-full border border-night-line bg-night-raised text-cyan sm:h-11 sm:w-11">
+                        <span className="grid h-10 w-10 place-items-center rounded-full border border-line bg-white text-brand sm:h-11 sm:w-11">
                           <Icon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
                         </span>
-                        <span className="whitespace-nowrap text-[11px] font-semibold text-white/80 sm:text-xs">
+                        <span className="whitespace-nowrap text-[11px] font-semibold text-slate sm:text-xs">
                           {n.label}
                         </span>
                       </motion.div>
@@ -191,11 +191,11 @@ export function FinalCtaCinematic({
                     viewport={{ once: true, amount: 0.4 }}
                     transition={{ duration: 0.6, delay: 0.45, ease: EASE }}
                     className={cn(
-                      'relative grid h-20 w-20 place-items-center rounded-2xl border border-cyan/30 bg-night-raised shadow-float sm:h-24 sm:w-24',
+                      'relative grid h-20 w-20 place-items-center rounded-2xl border border-cyan/30 bg-white shadow-float sm:h-24 sm:w-24',
                     )}
                   >
-                    <span className="font-display text-lg font-extrabold tracking-tight text-white sm:text-xl">
-                      EZ<span className="text-cyan">CRM</span>
+                    <span className="font-display text-lg font-extrabold tracking-tight text-ink sm:text-xl">
+                      EZ<span className="text-brand">CRM</span>
                     </span>
                   </motion.div>
                 </div>
@@ -203,7 +203,7 @@ export function FinalCtaCinematic({
 
               {canAnimate && (
                 <div className="mt-2 flex justify-center lg:justify-end">
-                  <MotionToggle tone="night" paused={paused} onToggle={() => setPaused((p) => !p)} />
+                  <MotionToggle tone="light" paused={paused} onToggle={() => setPaused((p) => !p)} />
                 </div>
               )}
             </div>

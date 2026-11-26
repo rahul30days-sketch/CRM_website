@@ -210,7 +210,7 @@ export function AssignPanel({ play }: PanelProps) {
 
       <Show show={phase >= 3} className="mt-auto">
         <div className="flex items-start gap-3 rounded-chip bg-ink p-3 text-white shadow-float">
-          <BellRing className="mt-0.5 h-4 w-4 shrink-0 text-cyan" aria-hidden />
+          <BellRing className="mt-0.5 h-4 w-4 shrink-0 text-brand" aria-hidden />
           <div className="min-w-0 text-xs">
             <p className="font-semibold">New lead assigned to you</p>
             <p className="text-white/75">
